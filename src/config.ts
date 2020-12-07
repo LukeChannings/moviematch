@@ -1,4 +1,4 @@
-import { config } from 'https://deno.land/x/dotenv/mod.ts'
+import { config } from 'https://deno.land/x/dotenv@v1.0.1/mod.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 
 export const {
