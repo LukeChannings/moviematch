@@ -50,6 +50,13 @@ export const getAllMovies = (() => {
 
     const films: PlexMediaContainer<PlexVideo> = await req.json()
 
+    const encoder = new TextEncoder()
+
+    await Deno.writeFile(
+      Deno.cwd() + '/all-movies.json',
+      encoder.encode(JSON.stringify(films, null, 2))
+    )
+
     cache = films
 
     setTimeout(() => {
@@ -76,7 +83,6 @@ export const getRandomMovie = (() => {
 
     const movie = getRandom(allMovies.MediaContainer.Metadata)
 
-    log.debug(JSON.stringify(movie, null, 2))
     return movie
   }
 })()

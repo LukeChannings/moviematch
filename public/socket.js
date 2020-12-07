@@ -41,12 +41,12 @@ export class MovieMatchAPI extends EventTarget {
     }
   }
 
-  respond(movie, wantsToWatch) {
+  respond({ guid, wantsToWatch }) {
     this.socket.send(
       JSON.stringify({
         type: 'response',
         payload: {
-          guid: movie.guid,
+          guid,
           wantsToWatch,
         },
       })
@@ -81,17 +81,14 @@ export class MovieMatchAPI extends EventTarget {
         return {
           i: 0,
           async next() {
-            if (
-              api._movieList.length === 0 ||
-              api._movieList.length < this.i + 1
-            ) {
+            if (!api._movieList[this.i]) {
               await api.requestNextBatch()
             }
 
-            const movie = api._movieList.slice(this.i, this.i + 2)
+            const value = [api._movieList[this.i], this.i]
             this.i += 1
             return {
-              value: movie,
+              value,
               done: false,
             }
           },

@@ -1,4 +1,5 @@
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
+import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
 import { getRandomMovie } from '../api/plex.ts'
 import { getPosterUrl } from '../api/tmdb.ts'
 import { MOVIE_BATCH_SIZE } from '../config.ts'
@@ -123,6 +124,10 @@ class Session {
         }
         case 'response': {
           const { guid, wantsToWatch } = decodedMessage.payload
+          assert(
+            typeof guid === 'string' && typeof wantsToWatch === 'boolean',
+            'Response message was empty'
+          )
           user.responses.push(decodedMessage.payload)
           if (wantsToWatch) {
             const movie = this.movieList.find(_ => _.guid === guid)
@@ -140,9 +145,6 @@ class Session {
               this.likedMovies.set(movie, [user])
             }
           }
-          log.debug(
-            `${user.name} rated ${JSON.stringify(decodedMessage.payload)}`
-          )
           break
         }
       }

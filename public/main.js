@@ -3,6 +3,7 @@ import { MovieMatchAPI } from './socket.js'
 import { login } from './login.js'
 import { Matches } from './Matches.js'
 ;(async () => {
+  const CARD_STACK_SIZE = 4
   const user = await login()
 
   let api = new MovieMatchAPI(user)
@@ -10,33 +11,44 @@ import { Matches } from './Matches.js'
 
   api.addEventListener('match', e => matches.add(e.data))
 
-  let currentMovieCard
-  let nextMovieCard
   const rateControls = document.querySelector('.rate-controls')
 
   rateControls.addEventListener('click', e => {
+    let wantsToWatch
     if (e.target.classList.contains('rate-thumbs-down')) {
-      currentMovieCard.rate(false)
+      wantsToWatch = false
     } else if (e.target.classList.contains('rate-thumbs-up')) {
-      currentMovieCard.rate(true)
+      wantsToWatch = true
+    } else {
+      return
     }
+
+    document
+      .querySelector('.js-card-list :first-child')
+      .dispatchEvent(new MessageEvent('rate', { data: wantsToWatch }))
   })
 
-  for await (let [movie, nextMovie] of api.getMovieListIterable()) {
-    if (!currentMovieCard && !nextMovieCard) {
-      currentMovieCard = new MovieCard(movie)
-      nextMovieCard = new MovieCard(nextMovie)
-    } else {
-      currentMovieCard = nextMovieCard
-      nextMovieCard = new MovieCard(movie)
+  const cardStackEventTarget = new EventTarget()
+
+  // here we're iterating an infinite (well, based on the size of your collection)
+  // list of movies. The first CARD_STACK_SIZE cards will be rendered directly,
+  // but for every card rendered after that we need a card to be dismissed.
+  for await (let [movie, i] of api.getMovieListIterable()) {
+    if (i > CARD_STACK_SIZE) {
+      const response = await new Promise(resolve => {
+        cardStackEventTarget.addEventListener(
+          'response',
+          e => {
+            resolve(e.data)
+          },
+          {
+            once: true,
+          }
+        )
+      })
+      api.respond(response)
     }
 
-    const wantsToWatch = await new Promise(resolve => {
-      currentMovieCard.addEventListener('response', e => resolve(e.data), {
-        once: true,
-      })
-    })
-
-    api.respond(movie, wantsToWatch)
+    new MovieCard(movie, cardStackEventTarget)
   }
 })()

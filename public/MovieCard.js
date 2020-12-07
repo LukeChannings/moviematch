@@ -1,9 +1,9 @@
 const cardList = document.querySelector('.js-card-list')
 
-export class MovieCard extends EventTarget {
-  constructor(movieData) {
-    super()
+export class MovieCard {
+  constructor(movieData, eventTarget) {
     this.movieData = movieData
+    this.eventTarget = eventTarget
     this.render()
   }
 
@@ -13,19 +13,36 @@ export class MovieCard extends EventTarget {
     node.classList.add('card')
     node.addEventListener('pointerdown', e => this.handleSwipe(e))
     node.addEventListener('touchstart', e => e.preventDefault())
+    node.addEventListener('rate', e => this.rate(e.data, true))
 
-    const { title, art } = this.movieData
-    node.innerHTML = `<img src="${art}" alt="${title} poster" />`
+    const { title, art, year, guid } = this.movieData
+    node.dataset.guid = guid
+    node.innerHTML = `
+      <img src="${art}" alt="${title} poster" />
+      <p>${title} (${year})</p>
+    `
     cardList.appendChild(node)
   }
 
-  async rate(wantsToWatch) {
-    await new Promise(resolve => {
-      const animation = this.getAnimation(wantsToWatch ? 'right' : 'left', 150)
-      animation.onfinish = resolve
-    })
+  async rate(wantsToWatch, animateOut = false) {
+    if (animateOut) {
+      await new Promise(resolve => {
+        const animation = this.getAnimation(
+          wantsToWatch ? 'right' : 'left',
+          150
+        )
+        animation.onfinish = resolve
+      })
+    }
 
-    this.dispatchEvent(new MessageEvent('response', { data: wantsToWatch }))
+    this.eventTarget.dispatchEvent(
+      new MessageEvent('response', {
+        data: {
+          guid: this.movieData.guid,
+          wantsToWatch,
+        },
+      })
+    )
     this.destroy()
   }
 
@@ -64,17 +81,12 @@ export class MovieCard extends EventTarget {
     this.node.addEventListener('pointermove', handleMove, { passive: true })
     this.node.addEventListener(
       'lostpointercapture',
-      () => {
+      async () => {
         this.node.removeEventListener('pointermove', handleMove)
         if (animation) {
           if (position >= 0.5) {
             animation.play()
-            this.dispatchEvent(
-              new MessageEvent('response', {
-                data: currentDirection === 'right',
-              })
-            )
-            this.destroy()
+            await this.rate(currentDirection === 'right')
           } else {
             animation.reverse()
           }

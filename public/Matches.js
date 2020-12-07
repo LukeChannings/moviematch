@@ -11,9 +11,20 @@ export class Matches {
       _ => _.movie.guid === match.movie.guid
     )
 
-    if (existingIndex) {
+    if (existingIndex !== -1) {
       this.matches.splice(existingIndex, 1)
     }
+
+    this.matchesCountEl.animate(
+      {
+        transform: ['scale(1)', 'scale(1.5)', 'scale(1)'],
+      },
+      {
+        duration: 300,
+        easing: 'ease-in-out',
+        fill: 'both',
+      }
+    )
 
     this.matches.push(match)
     this.matches.sort((a, b) => {

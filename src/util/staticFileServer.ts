@@ -54,7 +54,7 @@ const getContentType = (path: string): string => {
     '.html': 'text/html',
     '.json': 'application/json',
     '.css': 'text/css',
-    '.svg': 'image/xml+svg',
+    '.svg': 'image/svg+xml',
     '.png': 'image/png',
     '.js': 'application/javascript',
   }

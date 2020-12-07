@@ -95,7 +95,6 @@ select {
   box-shadow: -1px 5px 15px 3px rgba(0, 0, 0, 0.28);
   position: relative;
   border: 1px solid var(--color-line);
-  transition: transform 200ms ease-in;
 }
 
 .card img {
@@ -143,6 +142,10 @@ select {
   white-space: nowrap;
 }
 
+.card-stack > .card {
+  transition: transform 150ms ease-in;
+}
+
 .card-stack > .card:nth-of-type(n + 2) {
   position: absolute;
   top: 0;
@@ -160,9 +163,13 @@ select {
   transform: translate(-2%, -2%);
   z-index: 2;
 }
-.card-stack > .card:nth-of-type(n + 4) {
+.card-stack > .card:nth-of-type(4) {
   transform: translate(-3%, -3%);
   z-index: 1;
+}
+
+.card-stack > .card:nth-of-type(n + 5) {
+  display: none;
 }
 
 .rate-controls {
