@@ -1,4 +1,3 @@
-import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
 import { PLEX_TOKEN, PLEX_URL, CACHE_TIME } from '../config.ts'
 import { PlexDirectory, PlexMediaContainer, PlexVideo } from './plex.types.ts'
@@ -49,13 +48,6 @@ export const getAllMovies = (() => {
     assert(req.ok, 'Error loading movies section')
 
     const films: PlexMediaContainer<PlexVideo> = await req.json()
-
-    const encoder = new TextEncoder()
-
-    await Deno.writeFile(
-      Deno.cwd() + '/all-movies.json',
-      encoder.encode(JSON.stringify(films, null, 2))
-    )
 
     cache = films
 
