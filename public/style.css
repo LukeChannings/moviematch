@@ -23,10 +23,7 @@ ol[role='list'] {
 html {
   scroll-behavior: smooth;
 }
-body {
-  text-rendering: optimizeSpeed;
-  line-height: 1.5;
-}
+
 a:not([class]) {
   text-decoration-skip-ink: auto;
 }
@@ -41,6 +38,7 @@ textarea,
 select {
   font: inherit;
 }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -55,24 +53,79 @@ select {
 :root {
   font-family: system-ui;
   touch-action: manipulation;
+
   --s1: 0.5rem;
   --s2: 1rem;
   --s3: 1.5rem;
   --s4: 2rem;
   --s5: 3rem;
   --s6: 4rem;
-
   --color-primary: #333;
   --color-secondary: #fff;
   --color-tertiary: hsl(200, 5%, 30%);
   --color-brand: #e64747;
+  --color-brand-alt: #4747e6;
   --color-line: #dedede;
+  --i18n-no-matches: 'No matches yet... have you tried compromising your clearly impeccable taste?';
+  --i18n-loading: 'Loading movies...';
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    background-position: 0 0, 0 0;
+  }
+  10% {
+    background-position: -5% -10%, 0 0;
+  }
+  20% {
+    background-position: -15% 5%, 0 0;
+  }
+  30% {
+    background-position: 7% -25%, 0 0;
+  }
+  40% {
+    background-position: -5% 25%, 0 0;
+  }
+  50% {
+    background-position: -15% 10%, 0 0;
+  }
+  60% {
+    background-position: 15% 0%, 0 0;
+  }
+  70% {
+    background-position: 0% 15%, 0 0;
+  }
+  80% {
+    background-position: 3% 35%, 0 0;
+  }
+  90% {
+    background-position: -10% 10%, 0 0;
+  }
+}
+
+body {
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+  background-image: url(background-grain.png), url(background.svg);
+  background-size: auto, cover;
+  background-repeat: repeat, no-repeat;
+  background-position: 0 0, 0 0;
+  animation: grain 8s steps(10) infinite;
 }
 
 .app:not([hidden]) {
   display: flex;
   flex-direction: column;
   width: 100vw;
+  min-height: 100vh;
+
+  /* prettier-ignore */
+  padding:
+    env(safe-area-inset-top, 0)
+    env(safe-area-inset-right, 0)
+    env(safe-area-inset-bottom, 0)
+    env(safe-area-inset-left, 0);
 }
 
 .rate-section:not([hidden]) {
@@ -88,6 +141,8 @@ select {
 
 .card {
   --height: min(calc(80vmin * 1.5), 80vh);
+
+  background-color: var(--color-primary);
   width: calc(var(--height) * 0.6666);
   height: var(--height);
   border-radius: 6px;
@@ -97,7 +152,7 @@ select {
   border: 1px solid var(--color-line);
 }
 
-.card img {
+.card .poster {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -113,7 +168,7 @@ select {
     179deg,
     rgba(238, 238, 238, 0) 0%,
     rgba(0, 0, 0, 0.31) 38%,
-    #000000 100%
+    #000 100%
   );
   text-align: left;
   color: var(--color-secondary);
@@ -132,7 +187,7 @@ select {
 }
 
 .card-stack:empty::after {
-  content: 'Loading movies...';
+  content: var(--i18n-loading);
   font-weight: bold;
   color: var(--color-tertiary);
   position: absolute;
@@ -146,10 +201,19 @@ select {
   transition: transform 150ms ease-in;
 }
 
+.card-stack > .card .poster {
+  transition: opacity 150ms ease-in;
+}
+
 .card-stack > .card:nth-of-type(n + 2) {
   position: absolute;
   top: 0;
   left: 0;
+  pointer-events: none;
+}
+
+.card-stack > .card:nth-of-type(n + 2) .poster {
+  opacity: 0.5;
 }
 
 .card-stack > .card:nth-of-type(1) {
@@ -166,6 +230,18 @@ select {
 .card-stack > .card:nth-of-type(4) {
   transform: translate(-3%, -3%);
   z-index: 1;
+}
+
+@media screen and (min-width: 48em) {
+  .card-stack > .card:nth-of-type(2) {
+    transform: translate(-16.6%, -3%);
+  }
+  .card-stack > .card:nth-of-type(3) {
+    transform: translate(-33.3%, -6%);
+  }
+  .card-stack > .card:nth-of-type(4) {
+    transform: translate(-50%, -10%);
+  }
 }
 
 .card-stack > .card:nth-of-type(n + 5) {
@@ -203,7 +279,7 @@ select {
 
 .matches-section hr {
   width: 80vw;
-  border: 1px solid var(--color-line);
+  border: 0.5px solid var(--color-brand-alt);
   border-radius: 2px;
   margin: auto;
 }
@@ -229,7 +305,7 @@ select {
   align-items: center;
   justify-content: center;
   position: relative;
-  top: -1px;
+  top: -3px;
 }
 
 .matches-title .matches-count::before {
@@ -250,8 +326,14 @@ select {
   height: max-content;
   grid-gap: var(--s4);
   overflow: auto;
-  margin: 0 0 var(--s6) 0;
   padding: var(--s4) 0 var(--s3) 10vw;
+  scroll-snap-type: x mandatory;
+}
+
+.matches-list li {
+  scroll-snap-align: start;
+  scroll-margin-left: 10vw;
+  scroll-snap-margin-left: 10vw;
 }
 
 .matches-list::after {
@@ -265,7 +347,7 @@ select {
   min-width: 80vw;
   left: 50%;
   top: 50%;
-  content: 'No matches yet... have you tried compromising your clearly impeccable taste?';
+  content: var(--i18n-no-matches);
   transform: translate(-50%, -50%);
   font-weight: bold;
   color: var(--color-tertiary);
@@ -279,7 +361,7 @@ select {
 }
 
 .login-section .logo {
-  width: clamp(50px, 50%, 200px);
+  width: clamp(4rem, 50%, 15.5rem);
   margin-bottom: var(--s6);
   color: var(--color-brand);
 }
@@ -301,7 +383,7 @@ select {
 
 .login-form input {
   all: unset;
-  border: 1px solid var(--color-line);
+  border: 1px solid var(--color-brand);
   border-radius: 0.3rem;
   padding: var(--s1);
   font-size: 1.2rem;

@@ -18,7 +18,7 @@ export class MovieCard {
     const { title, art, year, guid } = this.movieData
     node.dataset.guid = guid
     node.innerHTML = `
-      <img src="${art}" alt="${title} poster" />
+      <img class="poster" src="${art}" alt="${title} poster" />
       <p>${title} (${year})</p>
     `
     cardList.appendChild(node)
@@ -47,9 +47,13 @@ export class MovieCard {
   }
 
   handleSwipe(startEvent) {
-    if (startEvent.target instanceof HTMLButtonElement) {
+    if (
+      (startEvent.pointerType === 'button' && startEvent.button !== 1) ||
+      startEvent.target instanceof HTMLButtonElement
+    ) {
       return
     }
+
     startEvent.preventDefault()
     this.node.setPointerCapture(startEvent.pointerId)
     const maxX = window.innerWidth

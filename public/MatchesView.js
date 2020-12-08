@@ -28,7 +28,7 @@ export class Matches {
 
     this.matches.push(match)
     this.matches.sort((a, b) => {
-      a.users.length - b.users.length
+      b.users.length - a.users.length
     })
     this.render()
   }
@@ -48,7 +48,7 @@ export class Matches {
         ({ users, movie }) => `
       <li>
         <div class="card">
-          <img src="${movie.art}" alt="${movie.title} poster" />
+          <img class="poster" src="${movie.art}" alt="${movie.title} poster" />
           <p>${this.formatList(users)} want to watch ${movie.title}</p>
         </div>
       </li>
