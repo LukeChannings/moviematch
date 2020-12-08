@@ -105,3 +105,9 @@ export interface PlexVideo {
 type PlexTagList = Array<{
   tag: string
 }>
+
+export interface PlexMediaProviders {
+  MediaContainer: {
+    machineIdentifier: string
+  }
+}

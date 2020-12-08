@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.79.0/http/server.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
-import { PORT } from './config.ts'
+import { getServerId, proxyPoster } from './api/plex.ts'
+import { PLEX_URL, PORT } from './config.ts'
 import { handler } from './moviematch/handler.ts'
 import { serveFile } from './util/staticFileServer.ts'
 import { WebSocketServer } from './util/websocketServer.ts'
@@ -15,5 +16,28 @@ const wss = new WebSocketServer({
 log.info(`Listening on port ${PORT}`)
 
 for await (const req of server) {
-  req.url === '/ws' ? wss.connect(req) : serveFile(req, '/public')
+  if (req.url === '/ws') {
+    wss.connect(req)
+  } else if (req.url.startsWith('/movie/')) {
+    const serverId = await getServerId()
+    const key = req.url.replace('/movie/', '')
+    req.respond({
+      status: 302,
+      headers: new Headers({
+        Location: `${PLEX_URL}/web/index.html#!/server/${serverId}/details?key=${encodeURIComponent(
+          key
+        )}`,
+      }),
+    })
+  } else if (req.url.startsWith('/poster/')) {
+    const [, , sectionId, artId] = req.url.split('/')
+
+    if (/^[0-9]$/.test(sectionId + artId)) {
+      req.respond({ status: 404 })
+    } else {
+      await proxyPoster(req, sectionId, artId)
+    }
+  } else {
+    serveFile(req, '/public')
+  }
 }

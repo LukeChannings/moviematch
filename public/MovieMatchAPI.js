@@ -1,9 +1,7 @@
 export class MovieMatchAPI extends EventTarget {
-  constructor(user) {
+  constructor() {
     super()
-    this.user = user
     this.socket = new WebSocket(`ws://${location.host}/ws`)
-    this.socket.addEventListener('open', () => this.handleOpen())
     this.socket.addEventListener('message', e => this.handleMessage(e))
 
     this._movieList = []
@@ -13,15 +11,25 @@ export class MovieMatchAPI extends EventTarget {
     })
   }
 
-  handleOpen() {
+  async login(user) {
     this.socket.send(
       JSON.stringify({
         type: 'login',
         payload: {
-          name: this.user,
+          name: user,
         },
       })
     )
+
+    return new Promise(resolve => {
+      this.addEventListener('loginResponse', e => {
+        if (e.data.success) {
+          resolve(e.data)
+        } else {
+          alert(`${user} is already logged in.`)
+        }
+      })
+    })
   }
 
   handleMessage(e) {
@@ -36,6 +44,12 @@ export class MovieMatchAPI extends EventTarget {
       case 'match': {
         return this.dispatchEvent(
           new MessageEvent('match', { data: data.payload })
+        )
+      }
+      case 'loginResponse': {
+        this._movieList = data.payload.movies ?? []
+        this.dispatchEvent(
+          new MessageEvent('loginResponse', { data: data.payload })
         )
       }
     }

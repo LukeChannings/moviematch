@@ -1,7 +1,6 @@
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
 import { getRandomMovie } from '../api/plex.ts'
-import { getPosterUrl } from '../api/tmdb.ts'
 import { MOVIE_BATCH_SIZE } from '../config.ts'
 import { WebSocket } from '../util/websocketServer.ts'
 
@@ -35,6 +34,25 @@ interface WebSocketLoginMessage {
   }
 }
 
+interface WebSocketMatchMessage {
+  type: 'match'
+  payload: {
+    movie: Movie
+    users: string[]
+  }
+}
+
+interface WebSocketLoginResponseMessage {
+  type: 'loginResponse'
+  payload:
+    | { success: false }
+    | {
+        success: true
+        matches: Array<WebSocketMatchMessage['payload']>
+        movies: Movie[]
+      }
+}
+
 interface WebSocketResponseMessage {
   type: 'response'
   payload: Response
@@ -60,18 +78,6 @@ class Session {
     this.users.set(user, ws)
 
     ws.addListener('message', (msg: string) => this.handleMessage(user, msg))
-
-    if (this.movieList.length === 0) {
-      const batch = await this.fetchBatch()
-      this.movieList.push(...batch)
-    }
-
-    const ratedGuids = user.responses.map(_ => _.guid)
-
-    this.sendBatch({
-      user,
-      batch: this.movieList.filter(movie => !ratedGuids.includes(movie.guid)),
-    })
   }
 
   remove(ws: WebSocket) {
@@ -94,17 +100,50 @@ class Session {
           const existingUser = [...this.users.keys()].find(
             ({ name }) => name === data.payload.name
           )
+
+          if (
+            existingUser &&
+            this.users.get(existingUser) &&
+            !this.users.get(existingUser)?.isClosed
+          ) {
+            log.info(
+              `${existingUser.name} is already logged in. Try another name!`
+            )
+            let response: WebSocketLoginResponseMessage = {
+              type: 'loginResponse',
+              payload: {
+                success: false,
+              },
+            }
+            ws.send(JSON.stringify(response))
+            return
+          }
+
           const user: User = existingUser ?? {
             name: data.payload.name,
             responses: [],
             movieIndex: 0,
           }
+
           log.debug(
             `${existingUser ? 'Existing user' : 'New user'} ${
               user.name
             } logged in`
           )
           ws.removeListener('message', handler)
+
+          let response: WebSocketLoginResponseMessage = {
+            type: 'loginResponse',
+            payload: {
+              success: true,
+              matches: this.getExistingMatches(user),
+              movies: this.movieList.filter(
+                movie => !user.responses.map(_ => _.guid).includes(movie.guid)
+              ),
+            },
+          }
+          ws.send(JSON.stringify(response))
+
           return resolve(user)
         }
       }
@@ -128,6 +167,15 @@ class Session {
             typeof guid === 'string' && typeof wantsToWatch === 'boolean',
             'Response message was empty'
           )
+          const alreadyResponded = !!user.responses.find(
+            _ => _.guid === decodedMessage.payload.guid
+          )
+          if (alreadyResponded) {
+            log.warning(
+              `User ${user.name} tried to respond to ${decodedMessage.payload.guid} twice!`
+            )
+            return
+          }
           user.responses.push(decodedMessage.payload)
           if (wantsToWatch) {
             const movie = this.movieList.find(_ => _.guid === guid)
@@ -153,16 +201,20 @@ class Session {
     }
   }
 
-  async sendBatch({ user, batch }: { user?: User; batch?: Movie[] }) {
+  async sendBatch({ user, batch }: { user?: User; batch: Movie[] }) {
     // if user is omitted, broadcast the new batch to all users.
-    const wss = !user ? this.users.values() : [this.users.get(user)]
+    const wss = !user
+      ? this.users.entries()
+      : [[user, this.users.get(user)] as const]
 
-    for (const ws of wss) {
+    for (const [user, ws] of wss) {
       if (ws && !ws.isClosed) {
         ws.send(
           JSON.stringify({
             type: 'batch',
-            payload: batch,
+            payload: batch.filter(
+              movie => !user.responses.map(_ => _.guid).includes(movie.guid)
+            ),
           })
         )
       }
@@ -175,10 +227,10 @@ class Session {
         Array.from({ length: Number(MOVIE_BATCH_SIZE) }).map(async () => {
           try {
             const plexMovie = await getRandomMovie()
-            const posterUrl = await getPosterUrl(plexMovie.guid)
+            const [, , , sectionId, , artId] = plexMovie.art.split('/')
             const movie: Movie = {
               title: plexMovie.title,
-              art: posterUrl,
+              art: `/poster/${sectionId}/${artId}`,
               guid: plexMovie.guid,
               key: plexMovie.key,
               summary: plexMovie.summary,
@@ -198,15 +250,24 @@ class Session {
 
   async handleMatch(movie: Movie, users: User[]) {
     for (const ws of this.users.values()) {
+      const match: WebSocketMatchMessage = {
+        type: 'match',
+        payload: {
+          movie,
+          users: users.map(_ => _.name),
+        },
+      }
+
       if (ws && !ws.isClosed) {
-        ws.send(
-          JSON.stringify({
-            type: 'match',
-            payload: { movie, users: users.map(_ => _.name) },
-          })
-        )
+        ws.send(JSON.stringify(match))
       }
     }
+  }
+
+  getExistingMatches(user: User) {
+    return [...this.likedMovies.entries()]
+      .filter(([, users]) => users.includes(user) && users.length > 1)
+      .map(([movie, users]) => ({ movie, users: users.map(_ => _.name) }))
   }
 }
 

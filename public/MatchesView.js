@@ -1,9 +1,10 @@
-export class Matches {
-  constructor() {
-    this.matches = []
+export class MatchesView {
+  constructor(matches = []) {
+    this.matches = matches
     this.node = document.querySelector('.js-matches-section')
     this.matchesCountEl = this.node.querySelector('.js-matches-count')
     this.matchesListEl = this.node.querySelector('.js-matches-list')
+    this.render()
   }
 
   add(match) {
@@ -27,9 +28,6 @@ export class Matches {
     )
 
     this.matches.push(match)
-    this.matches.sort((a, b) => {
-      b.users.length - a.users.length
-    })
     this.render()
   }
 
@@ -46,16 +44,18 @@ export class Matches {
   render() {
     this.matchesCountEl.dataset.count = this.matches.length
 
+    this.matches.sort((a, b) => b.users.length - a.users.length)
+
     this.matchesListEl.innerHTML = this.matches
       .map(
         ({ users, movie }) => `
       <li>
-        <div class="card">
+        <a class="card" href="/movie/${movie.key}" target="_blank">
           <img class="poster" src="${movie.art}" alt="${movie.title} poster" />
           <p>${document.body.dataset.i18nMatchLikersTemplate
             .replace('$USERS', this.formatList(users))
             .replace('$MOVIE', movie.title)}</p>
-        </div>
+        </a>
       </li>
     `
       )

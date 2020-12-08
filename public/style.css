@@ -68,48 +68,12 @@ select {
   --color-line: #dedede;
 }
 
-@keyframes grain {
-  0%,
-  100% {
-    background-position: 0 0, 0 0;
-  }
-  10% {
-    background-position: -5% -10%, 0 0;
-  }
-  20% {
-    background-position: -15% 5%, 0 0;
-  }
-  30% {
-    background-position: 7% -25%, 0 0;
-  }
-  40% {
-    background-position: -5% 25%, 0 0;
-  }
-  50% {
-    background-position: -15% 10%, 0 0;
-  }
-  60% {
-    background-position: 15% 0%, 0 0;
-  }
-  70% {
-    background-position: 0% 15%, 0 0;
-  }
-  80% {
-    background-position: 3% 35%, 0 0;
-  }
-  90% {
-    background-position: -10% 10%, 0 0;
-  }
-}
-
 body {
   text-rendering: optimizeSpeed;
   line-height: 1.5;
   background-image: url(background-grain.png), url(background.svg);
   background-size: auto, cover;
   background-repeat: repeat, no-repeat;
-  background-position: 0 0, 0 0;
-  animation: grain 8s steps(10) infinite;
 }
 
 .app:not([hidden]) {
@@ -140,6 +104,7 @@ body {
 .card {
   --height: min(calc(80vmin * 1.5), 80vh);
 
+  display: inline-block;
   background-color: var(--color-primary);
   width: calc(var(--height) * 0.6666);
   height: var(--height);
@@ -148,6 +113,11 @@ body {
   box-shadow: -1px 5px 15px 3px rgba(0, 0, 0, 0.28);
   position: relative;
   border: 1px solid var(--color-line);
+  transition: box-shadow 150ms ease-in-out;
+}
+
+a.card:hover {
+  box-shadow: 3px 7px 15px 3px rgba(0, 0, 0, 0.58);
 }
 
 .card .poster {
@@ -161,12 +131,13 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: var(--s2);
+  padding: var(--s3) var(--s2) var(--s2);
   background-image: linear-gradient(
     179deg,
     rgba(238, 238, 238, 0) 0%,
-    rgba(0, 0, 0, 0.31) 38%,
-    #000 100%
+    rgba(238, 238, 238, 0) 20%,
+    rgba(0, 0, 0, 0.31) 40%,
+    rgba(0, 0, 0, 0.9) 100%
   );
   text-align: left;
   color: var(--color-secondary);

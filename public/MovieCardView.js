@@ -1,6 +1,6 @@
 const cardList = document.querySelector('.js-card-list')
 
-export class MovieCard {
+export class MovieCardView {
   constructor(movieData, eventTarget) {
     this.movieData = movieData
     this.eventTarget = eventTarget
@@ -59,9 +59,11 @@ export class MovieCard {
     const maxX = window.innerWidth
     const animationDuration = 500
 
-    let animation
     let currentDirection
     let position = 0
+    this.animationFrameRequestId = requestAnimationFrame(() =>
+      this.animationLoop()
+    )
 
     const handleMove = e => {
       const direction = e.x < startEvent.x ? 'left' : 'right'
@@ -71,32 +73,42 @@ export class MovieCard {
           ? Math.abs(delta) / startEvent.x
           : delta / (maxX - startEvent.x)
 
-      if (currentDirection != direction) {
-        currentDirection = direction
-        if (animation) {
-          animation.cancel()
+      if (this.currentDirection != direction) {
+        this.currentDirection = direction
+        if (this.animation) {
+          this.animation.cancel()
         }
-        animation = this.getAnimation(direction, animationDuration)
+        this.animation = this.getAnimation(direction, animationDuration)
 
-        animation.pause()
+        this.animation.pause()
       }
-      animation.currentTime = position * animationDuration
+      this.currentTime = position * animationDuration
     }
     this.node.addEventListener('pointermove', handleMove, { passive: true })
     this.node.addEventListener(
       'lostpointercapture',
       async () => {
         this.node.removeEventListener('pointermove', handleMove)
-        if (animation) {
+        cancelAnimationFrame(this.animationFrameRequestId)
+        if (this.animation) {
           if (position >= 0.5) {
-            animation.play()
+            this.animation.play()
             await this.rate(currentDirection === 'right')
           } else {
-            animation.reverse()
+            this.animation.reverse()
           }
         }
       },
       { once: true }
+    )
+  }
+
+  animationLoop() {
+    if (this.animation) {
+      this.animation.currentTime = this.currentTime
+    }
+    this.animationFrameRequestId = requestAnimationFrame(() =>
+      this.animationLoop()
     )
   }
 

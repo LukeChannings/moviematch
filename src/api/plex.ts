@@ -1,6 +1,12 @@
+import { ServerRequest } from 'https://deno.land/std@0.79.0/http/server.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
-import { PLEX_TOKEN, PLEX_URL, CACHE_TIME } from '../config.ts'
-import { PlexDirectory, PlexMediaContainer, PlexVideo } from './plex.types.ts'
+import { PLEX_TOKEN, PLEX_URL } from '../config.ts'
+import {
+  PlexDirectory,
+  PlexMediaContainer,
+  PlexMediaProviders,
+  PlexVideo,
+} from './plex.types.ts'
 
 assert(typeof PLEX_URL === 'string', 'A PLEX_URL is required')
 assert(typeof PLEX_TOKEN === 'string', 'A PLEX_TOKEN is required')
@@ -22,41 +28,32 @@ export const getSections = async (): Promise<
   }
 }
 
-export const getAllMovies = (() => {
-  let cache: PlexMediaContainer<PlexVideo> | null
+export const allMovies = (async () => {
+  const sections = await getSections()
+  const filmSection = sections.MediaContainer.Directory.find(
+    ({ type }) => type === 'movie'
+  )
 
-  return async () => {
-    if (cache) return cache
+  assert(
+    typeof filmSection !== 'undefined',
+    `Couldn't find a movies section in Plex!`
+  )
 
-    const sections = await getSections()
-    const filmSection = sections.MediaContainer.Directory.find(
-      ({ type }) => type === 'movie'
-    )
+  const req = await fetch(
+    `${PLEX_URL}/library/sections/${filmSection.key}/all?X-Plex-Token=${PLEX_TOKEN}`,
+    {
+      headers: { accept: 'application/json' },
+    }
+  )
 
-    assert(
-      typeof filmSection !== 'undefined',
-      `Couldn't find a movies section in Plex!`
-    )
-
-    const req = await fetch(
-      `${PLEX_URL}/library/sections/${filmSection.key}/all?X-Plex-Token=${PLEX_TOKEN}`,
-      {
-        headers: { accept: 'application/json' },
-      }
-    )
-
-    assert(req.ok, 'Error loading movies section')
-
-    const films: PlexMediaContainer<PlexVideo> = await req.json()
-
-    cache = films
-
-    setTimeout(() => {
-      cache = null
-    }, Number(CACHE_TIME))
-
-    return films
+  assert(req.ok, 'Error loading movies section')
+  if (!req.ok) {
+    console.log(req.ok, req.status, await req.text())
   }
+
+  const films: PlexMediaContainer<PlexVideo> = await req.json()
+
+  return films
 })()
 
 export const getRandomMovie = (() => {
@@ -70,11 +67,44 @@ export const getRandomMovie = (() => {
     return drawnGuids.includes(movie.guid) ? getRandom(movies) : movie
   }
 
+  return async () => getRandom((await allMovies).MediaContainer.Metadata)
+})()
+
+export const getServerId = (() => {
+  let serverId: string
+
   return async () => {
-    const allMovies = await getAllMovies()
+    if (serverId) return serverId
 
-    const movie = getRandom(allMovies.MediaContainer.Metadata)
+    const providersReq = await fetch(
+      `${PLEX_URL}/media/providers?X-Plex-Token=${PLEX_TOKEN}`,
+      {
+        headers: { accept: 'application/json' },
+      }
+    )
 
-    return movie
+    if (providersReq.ok) {
+      const providers: PlexMediaProviders = await providersReq.json()
+      serverId = providers.MediaContainer.machineIdentifier
+      return serverId
+    }
   }
 })()
+
+export const proxyPoster = async (
+  req: ServerRequest,
+  sectionId: string,
+  artId: string
+) => {
+  const posterUrl = encodeURIComponent(
+    `/library/metadata/${sectionId}/thumb/${artId}`
+  )
+  const url = `${PLEX_URL}/photo/:/transcode?X-Plex-Token=${PLEX_TOKEN}&width=480&height=720&minSize=1&upscale=1&url=${posterUrl}`
+  const res = await fetch(url)
+
+  req.respond({
+    status: 200,
+    body: new Uint8Array(await res.arrayBuffer()),
+    headers: new Headers({ 'content-type': 'image/jpeg' }),
+  })
+}

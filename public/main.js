@@ -1,15 +1,17 @@
 import { MovieMatchAPI } from './MovieMatchAPI.js'
-import { MovieCard } from './MovieCardView.js'
-import { Matches } from './MatchesView.js'
+import { MovieCardView } from './MovieCardView.js'
+import { MatchesView } from './MatchesView.js'
 
 const main = async () => {
   const CARD_STACK_SIZE = 4
-  const user = await login()
 
-  let api = new MovieMatchAPI(user)
-  let matches = new Matches()
+  let api = new MovieMatchAPI()
 
-  api.addEventListener('match', e => matches.add(e.data))
+  const { matches } = await login(api)
+
+  let matchesView = new MatchesView(matches)
+
+  api.addEventListener('match', e => matchesView.add(e.data))
 
   const rateControls = document.querySelector('.rate-controls')
 
@@ -49,11 +51,11 @@ const main = async () => {
       api.respond(response)
     }
 
-    new MovieCard(movie, cardStackEventTarget)
+    new MovieCardView(movie, cardStackEventTarget)
   }
 }
 
-export const login = async () => {
+export const login = async api => {
   const loginSection = document.querySelector('.login-section')
   const loginForm = document.querySelector('.js-login-form')
 
@@ -69,15 +71,17 @@ export const login = async () => {
       const formData = new FormData(loginForm)
       const name = formData.get('name')
       if (name) {
-        loginForm.removeEventListener('submit', handleSubmit)
-        loginSection.hidden = true
-        localStorage.setItem('user', name)
-        document
-          .querySelectorAll('.rate-section, .matches-section')
-          .forEach(el => {
-            el.hidden = false
-          })
-        return resolve(name)
+        api.login(name).then(data => {
+          loginForm.removeEventListener('submit', handleSubmit)
+          loginSection.hidden = true
+          localStorage.setItem('user', name)
+          document
+            .querySelectorAll('.rate-section, .matches-section')
+            .forEach(el => {
+              el.hidden = false
+            })
+          resolve({ ...data, user: name })
+        })
       }
     }
 
