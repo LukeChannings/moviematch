@@ -66,8 +66,6 @@ select {
   --color-brand: #e64747;
   --color-brand-alt: #4747e6;
   --color-line: #dedede;
-  --i18n-no-matches: 'No matches yet... have you tried compromising your clearly impeccable taste?';
-  --i18n-loading: 'Loading movies...';
 }
 
 @keyframes grain {
