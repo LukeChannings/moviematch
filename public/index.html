@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${LANG}">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -85,20 +85,25 @@
       sizes="16x16"
       href="/icons/favicon-16x16.png"
     />
-    <title>MovieMatch</title>
+    <title translate="no">MovieMatch</title>
     <link rel="stylesheet" href="style.css" />
     <script src="main.js" type="module" defer></script>
   </head>
-  <body>
+  <body
+    style="
+      --i18n-no-matches: '${MATCHES_SECTION_NO_MATCHES}';
+      --i18n-loading: '${RATE_SECTION_LOADING}';
+    "
+  >
     <main class="app">
       <section class="login-section">
         <img class="logo" src="/logo.svg" alt="MovieMatch Logo" />
         <form class="login-form js-login-form" name="login">
-          <label for="name">Name</label>
+          <label for="name">${LOGIN_NAME}</label>
           <input type="text" name="name" autocomplete="given-name" required />
-          <label for="room-code">Room Code</label>
+          <label for="room-code">${LOGIN_ROOM_CODE}</label>
           <input type="text" name="roomCode" />
-          <button type="submit">Engage</button>
+          <button type="submit">${LOGIN_SUBMIT}</button>
         </form>
       </section>
       <section class="rate-section" hidden>
@@ -112,7 +117,7 @@
         <hr />
         <p class="matches-title">
           <span class="matches-count js-matches-count" data-count="0"></span>
-          Matches
+          ${MATCHES_SECTION_TITLE}
         </p>
         <ul class="matches-list js-matches-list"></ul>
       </section>

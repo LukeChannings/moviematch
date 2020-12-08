@@ -1,0 +1,10 @@
+{
+  "LANG": "de",
+  "LOGIN_NAME": "Name",
+  "LOGIN_ROOM_CODE": "Zimmercode",
+  "LOGIN_SUBMIT": "Abschicken",
+  "RATE_SECTION_LOADING": "Holend Filme...",
+  "MATCHES_SECTION_TITLE": "passen",
+  "MATCHES_SECTION_NO_MATCHES": "Niemand ist damit einverstanden, einen Film anzusehen!",
+  "MATCHES_SECTION_CARD_LIKERS": "$USERS want to watch $MOVIE"
+}

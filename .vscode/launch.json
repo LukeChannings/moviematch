@@ -8,7 +8,7 @@
       "program": "src/index.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
-      "runtimeArgs": ["run", "--inspect-brk", "--allow-all"],
+      "runtimeArgs": ["run", "--inspect", "--allow-all"],
       "attachSimplePort": 9229
     }
   ]
