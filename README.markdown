@@ -1,4 +1,4 @@
-# <img src="public/logo.svg" height="40px" />
+# <img src="public/logo.svg" height="40px" alt="MovieMatch" />
 
 ## What is this?
 
