@@ -71,7 +71,8 @@ export const login = async api => {
       const formData = new FormData(loginForm)
       const name = formData.get('name')
       if (name) {
-        api.login(name).then(data => {
+        try {
+          const data = await api.login(name)
           loginForm.removeEventListener('submit', handleSubmit)
           loginSection.hidden = true
           localStorage.setItem('user', name)
@@ -81,7 +82,9 @@ export const login = async api => {
               el.hidden = false
             })
           resolve({ ...data, user: name })
-        })
+        } catch (err) {
+          alert(err.message)
+        }
       }
     }
 

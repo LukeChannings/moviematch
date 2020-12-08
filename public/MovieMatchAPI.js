@@ -21,14 +21,18 @@ export class MovieMatchAPI extends EventTarget {
       })
     )
 
-    return new Promise(resolve => {
-      this.addEventListener('loginResponse', e => {
-        if (e.data.success) {
-          resolve(e.data)
-        } else {
-          alert(`${user} is already logged in.`)
-        }
-      })
+    return new Promise((resolve, reject) => {
+      this.addEventListener(
+        'loginResponse',
+        e => {
+          if (e.data.success) {
+            resolve(e.data)
+          } else {
+            reject(new Error(`${user} is already logged in.`))
+          }
+        },
+        { once: true }
+      )
     })
   }
 
