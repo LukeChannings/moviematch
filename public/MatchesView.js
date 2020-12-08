@@ -38,18 +38,23 @@ export class Matches {
 
     const items = [...users]
     const last = items.splice(-1)
-    return `${items.join(', ')}, and ${last}`
+    return `${items.join(', ')}, ${
+      document.body.dataset.i18nListConjunction
+    } ${last}`
   }
 
   render() {
     this.matchesCountEl.dataset.count = this.matches.length
+
     this.matchesListEl.innerHTML = this.matches
       .map(
         ({ users, movie }) => `
       <li>
         <div class="card">
           <img class="poster" src="${movie.art}" alt="${movie.title} poster" />
-          <p>${this.formatList(users)} want to watch ${movie.title}</p>
+          <p>${document.body.dataset.i18nMatchLikersTemplate
+            .replace('$USERS', this.formatList(users))
+            .replace('$MOVIE', movie.title)}</p>
         </div>
       </li>
     `

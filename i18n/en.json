@@ -6,5 +6,6 @@
   "RATE_SECTION_LOADING": "Loading movies...",
   "MATCHES_SECTION_TITLE": "Matches",
   "MATCHES_SECTION_NO_MATCHES": "No matches yet... have you tried compromising your clearly impeccable taste?",
-  "MATCHES_SECTION_CARD_LIKERS": "$USERS want to watch $MOVIE"
+  "MATCHES_SECTION_CARD_LIKERS": "$USERS want to watch $MOVIE",
+  "LIST_CONJUNCTION": "and"
 }

@@ -381,7 +381,7 @@ body {
 
 .login-form input {
   all: unset;
-  border: 1px solid var(--color-brand);
+  border: 2px solid var(--color-brand);
   border-radius: 0.3rem;
   padding: var(--s1);
   font-size: 1.2rem;

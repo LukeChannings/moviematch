@@ -5,6 +5,7 @@
   "LOGIN_SUBMIT": "Abschicken",
   "RATE_SECTION_LOADING": "Holend Filme...",
   "MATCHES_SECTION_TITLE": "passen",
-  "MATCHES_SECTION_NO_MATCHES": "Niemand ist damit einverstanden, einen Film anzusehen!",
-  "MATCHES_SECTION_CARD_LIKERS": "$USERS want to watch $MOVIE"
+  "MATCHES_SECTION_NO_MATCHES": "Niemand wil met jou een film kijken ... nog niet.",
+  "MATCHES_SECTION_CARD_LIKERS": "$USERS wollen $MOVIE sehen",
+  "LIST_CONJUNCTION": "und"
 }

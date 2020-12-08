@@ -1,0 +1,11 @@
+{
+  "LANG": "nl",
+  "LOGIN_NAME": "Naam",
+  "LOGIN_ROOM_CODE": "Kamercode",
+  "LOGIN_SUBMIT": "Voorleggen",
+  "RATE_SECTION_LOADING": "Films laden...",
+  "MATCHES_SECTION_TITLE": "Gelijken",
+  "MATCHES_SECTION_NO_MATCHES": "No matches yet... have you tried compromising your clearly impeccable taste?",
+  "MATCHES_SECTION_CARD_LIKERS": "$USERS willen $MOVIE kijken",
+  "LIST_CONJUNCTION": "en"
+}
