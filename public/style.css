@@ -64,7 +64,7 @@ select {
   --color-secondary: #fff;
   --color-tertiary: hsl(200, 5%, 30%);
   --color-brand: #e64747;
-  --color-brand-alt: #4747e6;
+  --color-brand-alt: #4747e65f;
   --color-line: #dedede;
 }
 
@@ -168,6 +168,7 @@ a.card:hover {
 
 .card-stack > .card {
   transition: transform 150ms ease-in;
+  touch-action: manipulation;
 }
 
 .card-stack > .card .poster {

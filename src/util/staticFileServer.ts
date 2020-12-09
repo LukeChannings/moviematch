@@ -5,7 +5,6 @@ import {
   normalize,
 } from 'https://deno.land/std@0.79.0/path/posix.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
-import { Accepts } from 'https://deno.land/x/accepts@2.1.0/mod.ts'
 import { translateHTML } from '../i18n.ts'
 
 function normalizeURL(url: string): string {
@@ -42,9 +41,7 @@ export const serveFile = async (req: ServerRequest, basePath = '/public') => {
     let body: Uint8Array | string = await Deno.readFile(normalizedPath)
 
     if (extname(normalizedPath) === '.html') {
-      const accept = new Accepts(req.headers)
-      const lang = accept.languages(['en', 'de'])
-      body = await translateHTML(body, lang)
+      body = await translateHTML(body, req.headers)
     }
 
     return req.respond({

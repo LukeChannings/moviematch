@@ -1,8 +1,8 @@
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
-import { getRandomMovie } from '../api/plex.ts'
-import { MOVIE_BATCH_SIZE } from '../config.ts'
-import { WebSocket } from '../util/websocketServer.ts'
+import { getRandomMovie } from './api/plex.ts'
+import { MOVIE_BATCH_SIZE } from './config.ts'
+import { WebSocket } from './util/websocketServer.ts'
 
 interface Response {
   guid: string
@@ -91,7 +91,7 @@ class Session {
     }
   }
 
-  async handleLogin(ws: WebSocket): Promise<User> {
+  handleLogin(ws: WebSocket): Promise<User> {
     return new Promise(resolve => {
       const handler = (msg: string) => {
         const data: WebSocketMessage = JSON.parse(msg)
@@ -109,7 +109,7 @@ class Session {
             log.info(
               `${existingUser.name} is already logged in. Try another name!`
             )
-            let response: WebSocketLoginResponseMessage = {
+            const response: WebSocketLoginResponseMessage = {
               type: 'loginResponse',
               payload: {
                 success: false,
@@ -132,7 +132,7 @@ class Session {
           )
           ws.removeListener('message', handler)
 
-          let response: WebSocketLoginResponseMessage = {
+          const response: WebSocketLoginResponseMessage = {
             type: 'loginResponse',
             payload: {
               success: true,
@@ -201,7 +201,7 @@ class Session {
     }
   }
 
-  async sendBatch({ user, batch }: { user?: User; batch: Movie[] }) {
+  sendBatch({ user, batch }: { user?: User; batch: Movie[] }) {
     // if user is omitted, broadcast the new batch to all users.
     const wss = !user
       ? this.users.entries()
@@ -248,7 +248,7 @@ class Session {
     ).flat()
   }
 
-  async handleMatch(movie: Movie, users: User[]) {
+  handleMatch(movie: Movie, users: User[]) {
     for (const ws of this.users.values()) {
       const match: WebSocketMatchMessage = {
         type: 'match',

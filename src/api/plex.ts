@@ -1,6 +1,6 @@
 import { ServerRequest } from 'https://deno.land/std@0.79.0/http/server.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
-import { PLEX_TOKEN, PLEX_URL } from '../config.ts'
+import { PLEX_TOKEN, PLEX_URL, SECTION_TYPE_FILTER } from '../config.ts'
 import {
   PlexDirectory,
   PlexMediaContainer,
@@ -31,7 +31,7 @@ export const getSections = async (): Promise<
 export const allMovies = (async () => {
   const sections = await getSections()
   const filmSection = sections.MediaContainer.Directory.find(
-    ({ type }) => type === 'movie'
+    ({ type }) => type === SECTION_TYPE_FILTER
   )
 
   assert(
@@ -57,7 +57,7 @@ export const allMovies = (async () => {
 })()
 
 export const getRandomMovie = (() => {
-  let drawnGuids: Array<string> = []
+  const drawnGuids: Array<string> = []
 
   const getRandom = (
     movies: PlexVideo['Metadata']
@@ -96,10 +96,21 @@ export const proxyPoster = async (
   sectionId: string,
   artId: string
 ) => {
+  const [, search] = req.url.split('?')
+  const searchParams = new URLSearchParams(search)
+
+  const width = searchParams.has('w') ? Number(searchParams.get('w')) : 500
+
+  if (Number.isNaN(width)) {
+    return req.respond({ status: 404 })
+  }
+
+  const height = width * 1.5
+
   const posterUrl = encodeURIComponent(
     `/library/metadata/${sectionId}/thumb/${artId}`
   )
-  const url = `${PLEX_URL}/photo/:/transcode?X-Plex-Token=${PLEX_TOKEN}&width=480&height=720&minSize=1&upscale=1&url=${posterUrl}`
+  const url = `${PLEX_URL}/photo/:/transcode?X-Plex-Token=${PLEX_TOKEN}&width=${width}&height=${height}&minSize=1&upscale=1&url=${posterUrl}`
   const res = await fetch(url)
 
   req.respond({

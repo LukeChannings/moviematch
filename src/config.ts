@@ -7,6 +7,8 @@ export const {
   PORT = Deno.env.get('PORT') ?? '8000',
   LOG_LEVEL = Deno.env.get('LOG_LEVEL') ?? 'INFO',
   MOVIE_BATCH_SIZE = Deno.env.get('MOVIE_BATCH_SIZE') ?? '25',
+  LINK_TYPE = Deno.env.get('LINK_TYPE') ?? 'app',
+  SECTION_TYPE_FILTER = Deno.env.get('SECTION_TYPE_FILTER') ?? 'movie',
 } = config()
 
 function getLogLevel(): keyof typeof log.LogLevels {

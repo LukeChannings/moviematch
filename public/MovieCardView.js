@@ -4,6 +4,7 @@ export class MovieCardView {
   constructor(movieData, eventTarget) {
     this.movieData = movieData
     this.eventTarget = eventTarget
+    this.animationDuration = 500
     this.render()
   }
 
@@ -11,28 +12,38 @@ export class MovieCardView {
     const node = document.createElement('div')
     this.node = node
     node.classList.add('card')
-    node.addEventListener('pointerdown', e => this.handleSwipe(e))
+    node.addEventListener('pointerdown', this.handleSwipe)
     node.addEventListener('touchstart', e => e.preventDefault())
-    node.addEventListener('rate', e => this.rate(e.data, true))
+    node.addEventListener('rate', e =>
+      this.rate(e.data, this.getAnimation(e.data ? 'right' : 'left'))
+    )
 
     const { title, art, year, guid } = this.movieData
     node.dataset.guid = guid
+
+    const srcSet = [
+      `${art}?w=300`,
+      `${art}?w=450 1.5x`,
+      `${art}?w=600 2x`,
+      `${art}?w=900 3x`,
+    ]
+
     node.innerHTML = `
-      <img class="poster" src="${art}" alt="${title} poster" />
+      <img class="poster" src="${art}" srcset="${srcSet.join(
+      ', '
+    )}" alt="${title} poster" />
       <p>${title} (${year})</p>
     `
     cardList.appendChild(node)
   }
 
-  async rate(wantsToWatch, animateOut = false) {
-    if (animateOut) {
-      await new Promise(resolve => {
-        const animation = this.getAnimation(
-          wantsToWatch ? 'right' : 'left',
-          150
-        )
-        animation.onfinish = resolve
-      })
+  async rate(wantsToWatch, animation) {
+    this.eventTarget.dispatchEvent(new Event('newTopCard'))
+
+    if (animation.playState !== 'finished') {
+      animation.playbackRate = 3
+      animation.play()
+      await animation.finished
     }
 
     this.eventTarget.dispatchEvent(
@@ -46,9 +57,9 @@ export class MovieCardView {
     this.destroy()
   }
 
-  handleSwipe(startEvent) {
+  handleSwipe = startEvent => {
     if (
-      (startEvent.pointerType === 'button' && startEvent.button !== 1) ||
+      (startEvent.pointerType === 'mouse' && startEvent.button !== 0) ||
       startEvent.target instanceof HTMLButtonElement
     ) {
       return
@@ -57,7 +68,6 @@ export class MovieCardView {
     startEvent.preventDefault()
     this.node.setPointerCapture(startEvent.pointerId)
     const maxX = window.innerWidth
-    const animationDuration = 500
 
     let currentDirection
     let position = 0
@@ -68,21 +78,22 @@ export class MovieCardView {
     const handleMove = e => {
       const direction = e.x < startEvent.x ? 'left' : 'right'
       const delta = e.x - startEvent.x
+
       position =
         direction === 'left'
           ? Math.abs(delta) / startEvent.x
           : delta / (maxX - startEvent.x)
 
-      if (this.currentDirection != direction) {
-        this.currentDirection = direction
+      if (currentDirection != direction) {
+        currentDirection = direction
         if (this.animation) {
           this.animation.cancel()
         }
-        this.animation = this.getAnimation(direction, animationDuration)
+        this.animation = this.getAnimation(direction)
 
         this.animation.pause()
       }
-      this.currentTime = position * animationDuration
+      this.currentTime = position * this.animationDuration
     }
     this.node.addEventListener('pointermove', handleMove, { passive: true })
     this.node.addEventListener(
@@ -92,11 +103,13 @@ export class MovieCardView {
         cancelAnimationFrame(this.animationFrameRequestId)
         if (this.animation) {
           if (position >= 0.5) {
-            this.animation.play()
-            await this.rate(currentDirection === 'right')
+            await this.rate(currentDirection === 'right', this.animation)
           } else {
             this.animation.reverse()
           }
+
+          this.animation = null
+          currentDirection = null
         }
       },
       { once: true }
@@ -112,7 +125,7 @@ export class MovieCardView {
     )
   }
 
-  getAnimation(direction, animationDuration) {
+  getAnimation(direction) {
     return this.node.animate(
       {
         transform: [
@@ -124,7 +137,7 @@ export class MovieCardView {
         opacity: ['1', '0'],
       },
       {
-        duration: animationDuration,
+        duration: this.animationDuration,
         easing: 'ease-in-out',
         fill: 'both',
       }

@@ -2,14 +2,21 @@ import { serve } from 'https://deno.land/std@0.79.0/http/server.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { getServerId, proxyPoster } from './api/plex.ts'
 import { PLEX_URL, PORT } from './config.ts'
-import { handler } from './moviematch/handler.ts'
+import { getLinkTypeForRequest } from './i18n.ts'
+import { defaultSession } from './session.ts'
 import { serveFile } from './util/staticFileServer.ts'
-import { WebSocketServer } from './util/websocketServer.ts'
+import { WebSocketServer, WebSocket } from './util/websocketServer.ts'
 
 const server = serve({ port: Number(PORT) })
 
 const wss = new WebSocketServer({
-  onConnection: handler,
+  onConnection: (ws: WebSocket) => {
+    defaultSession.add(ws)
+
+    ws.addListener('close', () => {
+      defaultSession.remove(ws)
+    })
+  },
   onError: err => log.error(err),
 })
 
@@ -20,13 +27,24 @@ for await (const req of server) {
     wss.connect(req)
   } else if (req.url.startsWith('/movie/')) {
     const serverId = await getServerId()
-    const key = req.url.replace('/movie/', '')
+    const key = req.url.replace('/movie', '')
+
+    let location: string
+
+    if (getLinkTypeForRequest(req.headers) === 'app') {
+      location = `plex://preplay/?metadataKey=${encodeURIComponent(
+        key
+      )}&metadataType=1&server=${serverId}`
+    } else {
+      location = `${PLEX_URL}/web/index.html#!/server/${serverId}/details?key=${encodeURIComponent(
+        key
+      )}`
+    }
+
     req.respond({
       status: 302,
       headers: new Headers({
-        Location: `${PLEX_URL}/web/index.html#!/server/${serverId}/details?key=${encodeURIComponent(
-          key
-        )}`,
+        Location: location,
       }),
     })
   } else if (req.url.startsWith('/poster/')) {

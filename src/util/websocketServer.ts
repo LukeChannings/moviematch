@@ -50,7 +50,8 @@ export class WebSocketServer {
       await req.respond({ status: 400 })
     }
   }
-  async close() {
+
+  close() {
     this.clients.clear()
   }
 }
@@ -95,29 +96,34 @@ export class WebSocket extends EventEmitter {
       }
     }
   }
-  async ping(message?: string | Uint8Array) {
+
+  ping(message?: string | Uint8Array) {
     if (this.state === WebSocketState.CONNECTING) {
       throw new WebSocketError('WebSocket is not open: state 0 (CONNECTING)')
     }
     return this.webSocket!.ping(message)
   }
-  async send(message: string | Uint8Array) {
+
+  send(message: string | Uint8Array) {
     if (this.state === WebSocketState.CONNECTING) {
       throw new WebSocketError('WebSocket is not open: state 0 (CONNECTING)')
     }
     return this.webSocket!.send(message)
   }
-  async close(code = 1000, reason?: string): Promise<void> {
+
+  close(code = 1000, reason?: string): Promise<void> {
     if (
       this.state === WebSocketState.CLOSING ||
       this.state === WebSocketState.CLOSED
     ) {
-      return
+      return Promise.resolve()
     }
+
     this.state = WebSocketState.CLOSING
     return this.webSocket!.close(code, reason!)
   }
-  async closeForce() {
+
+  closeForce() {
     if (
       this.state === WebSocketState.CLOSING ||
       this.state === WebSocketState.CLOSED
@@ -127,6 +133,7 @@ export class WebSocket extends EventEmitter {
     this.state = WebSocketState.CLOSING
     return this.webSocket!.closeForce()
   }
+
   get isClosed(): boolean | undefined {
     return this.webSocket!.isClosed
   }

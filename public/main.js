@@ -10,6 +10,7 @@ const main = async () => {
   const { matches } = await login(api)
 
   let matchesView = new MatchesView(matches)
+  let topCardEl
 
   api.addEventListener('match', e => matchesView.add(e.data))
 
@@ -25,12 +26,16 @@ const main = async () => {
       return
     }
 
-    document
-      .querySelector('.js-card-list :first-child')
-      .dispatchEvent(new MessageEvent('rate', { data: wantsToWatch }))
+    if (topCardEl) {
+      topCardEl.dispatchEvent(new MessageEvent('rate', { data: wantsToWatch }))
+    }
   })
 
   const cardStackEventTarget = new EventTarget()
+
+  cardStackEventTarget.addEventListener('newTopCard', () => {
+    topCardEl = topCardEl.nextSibling
+  })
 
   // here we're iterating an infinite (well, based on the size of your collection)
   // list of movies. The first CARD_STACK_SIZE cards will be rendered directly,
@@ -49,6 +54,8 @@ const main = async () => {
         )
       })
       api.respond(response)
+    } else if (i === CARD_STACK_SIZE) {
+      topCardEl = document.querySelector('.js-card-list > :first-child')
     }
 
     new MovieCardView(movie, cardStackEventTarget)
