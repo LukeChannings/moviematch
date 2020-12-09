@@ -1,6 +1,10 @@
 # <img src="public/logo.svg" height="40px" alt="MovieMatch" />
 
-<video src="docs/demo.mp4" width="400px" autoplay loop muted playsinline></video>
+<div>
+  <a href="screenshots/join.png"><img src="screenshots/join.png" alt="Join a room" width="25%" /></a>
+  <a href="screenshots/rate.png"><img src="screenshots/rate.png" alt="Swipe on the movie" width="25%" /></a>
+  <a href="screenshots/match.png"><img src="screenshots/match.png" alt="Look at what you agree on" width="25%" /></a>
+</div>
 
 ## What is this?
 
