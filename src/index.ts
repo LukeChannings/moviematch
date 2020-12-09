@@ -3,20 +3,14 @@ import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { getServerId, proxyPoster } from './api/plex.ts'
 import { PLEX_URL, PORT } from './config.ts'
 import { getLinkTypeForRequest } from './i18n.ts'
-import { defaultSession } from './session.ts'
+import { handleLogin } from './session.ts'
 import { serveFile } from './util/staticFileServer.ts'
-import { WebSocketServer, WebSocket } from './util/websocketServer.ts'
+import { WebSocketServer } from './util/websocketServer.ts'
 
 const server = serve({ port: Number(PORT) })
 
 const wss = new WebSocketServer({
-  onConnection: (ws: WebSocket) => {
-    defaultSession.add(ws)
-
-    ws.addListener('close', () => {
-      defaultSession.remove(ws)
-    })
-  },
+  onConnection: handleLogin,
   onError: err => log.error(err),
 })
 

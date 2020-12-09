@@ -1,5 +1,7 @@
 # <img src="public/logo.svg" height="40px" alt="MovieMatch" />
 
+<video src="docs/demo.mp4" width="400px" autoplay loop muted playsinline></video>
+
 ## What is this?
 
 Have you ever spent longer deciding on a movie than it'd take to just watch a random movie? This is an app that helps you and your friends pick a movie to watch from a [Plex](https://www.plex.tv) server.

@@ -12,8 +12,6 @@ interface Response {
 interface User {
   name: string
   responses: Response[]
-  // tracks the position the user is in the session's movie list
-  movieIndex: number
 }
 
 interface Movie {
@@ -31,6 +29,7 @@ interface WebSocketLoginMessage {
   type: 'login'
   payload: {
     name: string
+    roomCode: string
   }
 }
 
@@ -68,97 +67,39 @@ type WebSocketMessage =
   | WebSocketNextBatchMessage
 
 class Session {
-  private users: Map<User, WebSocket | null> = new Map()
-  private movieList: Movie[] = []
-  private likedMovies: Map<Movie, User[]> = new Map()
+  users: Map<User, WebSocket | null> = new Map()
+  roomCode: string
+  movieList: Movie[] = []
+  likedMovies: Map<Movie, User[]> = new Map()
 
-  async add(ws: WebSocket) {
-    const user: User = await this.handleLogin(ws)
-
-    this.users.set(user, ws)
-
-    ws.addListener('message', (msg: string) => this.handleMessage(user, msg))
+  constructor(roomCode: string) {
+    this.roomCode = roomCode
   }
 
-  remove(ws: WebSocket) {
-    const [user] = [...this.users.entries()].find(([, _ws]) => ws === _ws) ?? []
-    if (user) {
-      log.debug(`User ${user?.name} was removed`)
-      ws.removeAllListeners()
-      this.users.set(user, null)
-    } else {
-      log.debug(`An unregistered user was disconnected`)
+  add = (user: User, ws: WebSocket) => {
+    this.users.set(user, ws)
+
+    ws.addListener('message', msg => this.handleMessage(user, msg))
+    ws.addListener('close', () => this.remove(user, ws))
+  }
+
+  remove = (user: User, ws: WebSocket) => {
+    log.debug(`User ${user?.name} was removed`)
+    ws.removeAllListeners()
+    this.users.delete(user)
+
+    if (this.users.size === 0) {
+      this.destroy()
     }
   }
 
-  handleLogin(ws: WebSocket): Promise<User> {
-    return new Promise(resolve => {
-      const handler = (msg: string) => {
-        const data: WebSocketMessage = JSON.parse(msg)
-
-        if (data.type === 'login') {
-          const existingUser = [...this.users.keys()].find(
-            ({ name }) => name === data.payload.name
-          )
-
-          if (
-            existingUser &&
-            this.users.get(existingUser) &&
-            !this.users.get(existingUser)?.isClosed
-          ) {
-            log.info(
-              `${existingUser.name} is already logged in. Try another name!`
-            )
-            const response: WebSocketLoginResponseMessage = {
-              type: 'loginResponse',
-              payload: {
-                success: false,
-              },
-            }
-            ws.send(JSON.stringify(response))
-            return
-          }
-
-          const user: User = existingUser ?? {
-            name: data.payload.name,
-            responses: [],
-            movieIndex: 0,
-          }
-
-          log.debug(
-            `${existingUser ? 'Existing user' : 'New user'} ${
-              user.name
-            } logged in`
-          )
-          ws.removeListener('message', handler)
-
-          const response: WebSocketLoginResponseMessage = {
-            type: 'loginResponse',
-            payload: {
-              success: true,
-              matches: this.getExistingMatches(user),
-              movies: this.movieList.filter(
-                movie => !user.responses.map(_ => _.guid).includes(movie.guid)
-              ),
-            },
-          }
-          ws.send(JSON.stringify(response))
-
-          return resolve(user)
-        }
-      }
-      ws.addListener('message', handler)
-    })
-  }
-
-  async handleMessage(user: User, msg: string) {
+  handleMessage = async (user: User, msg: string) => {
     try {
       const decodedMessage: WebSocketMessage = JSON.parse(msg)
       switch (decodedMessage.type) {
         case 'nextBatch': {
-          const batch = await this.fetchBatch()
-          this.movieList.push(...batch)
-          await this.sendBatch({ batch })
+          log.debug(`${user.name} asked for the next batch of movies`)
+          await this.sendNextBatch()
           break
         }
         case 'response': {
@@ -175,6 +116,12 @@ class Session {
               `User ${user.name} tried to respond to ${decodedMessage.payload.guid} twice!`
             )
             return
+          } else {
+            log.debug(
+              `${user.name} ${
+                wantsToWatch ? 'wants to watch' : 'does not want to watch'
+              } ${decodedMessage.payload.guid}`
+            )
           }
           user.responses.push(decodedMessage.payload)
           if (wantsToWatch) {
@@ -197,32 +144,12 @@ class Session {
         }
       }
     } catch (err) {
-      log.error(err, msg)
+      log.error(err, JSON.stringify(msg))
     }
   }
 
-  sendBatch({ user, batch }: { user?: User; batch: Movie[] }) {
-    // if user is omitted, broadcast the new batch to all users.
-    const wss = !user
-      ? this.users.entries()
-      : [[user, this.users.get(user)] as const]
-
-    for (const [user, ws] of wss) {
-      if (ws && !ws.isClosed) {
-        ws.send(
-          JSON.stringify({
-            type: 'batch',
-            payload: batch.filter(
-              movie => !user.responses.map(_ => _.guid).includes(movie.guid)
-            ),
-          })
-        )
-      }
-    }
-  }
-
-  async fetchBatch() {
-    return (
+  async sendNextBatch() {
+    const batch = (
       await Promise.all(
         Array.from({ length: Number(MOVIE_BATCH_SIZE) }).map(async () => {
           try {
@@ -246,6 +173,21 @@ class Session {
         })
       )
     ).flat()
+
+    this.movieList.push(...batch)
+
+    for (const [user, ws] of this.users.entries()) {
+      if (ws && !ws.isClosed) {
+        ws.send(
+          JSON.stringify({
+            type: 'batch',
+            payload: batch.filter(
+              movie => !user.responses.map(_ => _.guid).includes(movie.guid)
+            ),
+          })
+        )
+      }
+    }
   }
 
   handleMatch(movie: Movie, users: User[]) {
@@ -269,6 +211,93 @@ class Session {
       .filter(([, users]) => users.includes(user) && users.length > 1)
       .map(([movie, users]) => ({ movie, users: users.map(_ => _.name) }))
   }
+
+  destroy() {
+    log.info(`Session ${this.roomCode} has no users and has been removed.`)
+    activeSessions.delete(this.roomCode)
+  }
 }
 
-export const defaultSession = new Session()
+let activeSessions: Map<string, Session> = new Map()
+
+export const getSession = (roomCode: string, ws: WebSocket): Session => {
+  if (activeSessions.has(roomCode)) {
+    return activeSessions.get(roomCode)!
+  }
+
+  const session = new Session(roomCode)
+
+  activeSessions.set(roomCode, session)
+
+  log.debug(
+    `New session created. Active session ids are: ${[
+      ...activeSessions.keys(),
+    ].join(', ')}`
+  )
+
+  return session
+}
+
+export const handleLogin = (ws: WebSocket): Promise<User> => {
+  return new Promise(resolve => {
+    const handler = (msg: string) => {
+      const data: WebSocketMessage = JSON.parse(msg)
+
+      if (data.type === 'login') {
+        log.info(`Got a login: ${JSON.stringify(data.payload)}`)
+        const session = getSession(data.payload.roomCode, ws)
+
+        const existingUser = [...session.users.keys()].find(
+          ({ name }) => name === data.payload.name
+        )
+
+        if (
+          existingUser &&
+          session.users.get(existingUser) &&
+          !session.users.get(existingUser)?.isClosed
+        ) {
+          log.info(
+            `${existingUser.name} is already logged in. Try another name!`
+          )
+          const response: WebSocketLoginResponseMessage = {
+            type: 'loginResponse',
+            payload: {
+              success: false,
+            },
+          }
+          ws.send(JSON.stringify(response))
+          return
+        }
+
+        const user: User = existingUser ?? {
+          name: data.payload.name,
+          responses: [],
+        }
+
+        log.debug(
+          `${existingUser ? 'Existing user' : 'New user'} ${
+            user.name
+          } logged in`
+        )
+
+        ws.removeListener('message', handler)
+        session.add(user, ws)
+
+        const response: WebSocketLoginResponseMessage = {
+          type: 'loginResponse',
+          payload: {
+            success: true,
+            matches: session.getExistingMatches(user),
+            movies: session.movieList.filter(
+              movie => !user.responses.map(_ => _.guid).includes(movie.guid)
+            ),
+          },
+        }
+        ws.send(JSON.stringify(response))
+
+        return resolve(user)
+      }
+    }
+    ws.addListener('message', handler)
+  })
+}

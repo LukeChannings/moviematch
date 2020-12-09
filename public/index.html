@@ -104,8 +104,19 @@
           <label for="name">${LOGIN_NAME}</label>
           <input type="text" name="name" autocomplete="given-name" required />
           <label for="room-code">${LOGIN_ROOM_CODE}</label>
-          <input type="text" name="roomCode" />
-          <button type="submit">${LOGIN_SUBMIT}</button>
+          <div class="room-code-container">
+            <input type="text" name="roomCode" required pattern="[0-9A-Z]{4}" />
+            <button type="button" class="generate-button js-generate-room-code">
+              <abbr title="Generate a new room code">Generate</abbr>
+            </button>
+          </div>
+          <p class="input-description">
+            <em
+              >Everyone you want to pick a movie with should use the same room
+              code</em
+            >
+          </p>
+          <button type="submit" class="submit-button">${LOGIN_SUBMIT}</button>
         </form>
       </section>
       <section class="rate-section" hidden>
@@ -120,7 +131,7 @@
         hidden
         data-target-type="${CONFIG_MATCHES_TARGET_TYPE}"
       >
-        <hr />
+        <hr class="js-room-code-line" />
         <p class="matches-title">
           <span class="matches-count js-matches-count" data-count="0"></span>
           ${MATCHES_SECTION_TITLE}

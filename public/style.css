@@ -64,7 +64,7 @@ select {
   --color-secondary: #fff;
   --color-tertiary: hsl(200, 5%, 30%);
   --color-brand: #e64747;
-  --color-brand-alt: #4747e65f;
+  --color-brand-alt: hsl(240, 50%, 70%);
   --color-line: #dedede;
 }
 
@@ -252,6 +252,24 @@ a.card:hover {
   border: 0.5px solid var(--color-brand-alt);
   border-radius: 2px;
   margin: auto;
+  position: relative;
+  overflow: visible;
+}
+
+.matches-section hr::before {
+  content: attr(data-room-code);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  font-size: 0.7rem;
+  background: var(--color-brand-alt);
+  color: var(--color-secondary);
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  border-radius: 0 1rem 1rem 0;
+  box-shadow: -1px 1px 10px 3px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  transform: translate(-90%, 50%);
 }
 
 .matches-title {
@@ -349,17 +367,55 @@ a.card:hover {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: calc(var(--s1) * -1);
+  align-self: center;
 }
 
 .login-form input {
-  all: unset;
+  background: transparent;
   border: 2px solid var(--color-brand);
   border-radius: 0.3rem;
   padding: var(--s1);
   font-size: 1.2rem;
+  flex-grow: 1;
+  margin: 0;
+  width: 100%;
 }
 
-.login-form button {
+.login-form .room-code-container {
+  display: flex;
+  max-width: 100%;
+}
+
+.login-form .room-code-container input {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.login-form .room-code-container .generate-button {
+  appearance: none;
+  border: none;
+  background: var(--color-brand);
+  color: var(--color-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  overflow: visible;
+  grid-column: 2;
+  border-radius: 0 0.3rem 0.3rem 0;
+}
+
+.login-form .generate-button abbr {
+  padding: 0 0.5rem;
+  text-decoration: none;
+}
+
+.login-form .input-description {
+  font-weight: bold;
+}
+
+.login-form .submit-button {
   border: none;
   grid-column: 1 / -1;
   margin-top: var(--s6);
@@ -379,8 +435,13 @@ a.card:hover {
     max-width: 35rem;
   }
 
-  .login-form button {
-    min-width: 12rem;
+  .login-form .input-description {
+    grid-column: 2;
+  }
+
+  .login-form .submit-button {
     justify-self: end;
+    width: 200px;
+    grid-column: 2;
   }
 }

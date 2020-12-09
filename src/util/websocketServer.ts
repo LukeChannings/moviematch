@@ -64,6 +64,7 @@ export class WebSocket extends EventEmitter {
     this.webSocket = sock
     this.state = WebSocketState.OPEN
     this.emit('open')
+    this.heartbeat()
     try {
       for await (const ev of sock) {
         if (typeof ev === 'string') {
@@ -94,6 +95,17 @@ export class WebSocket extends EventEmitter {
           throw new WebSocketError(e)
         })
       }
+    }
+  }
+
+  async heartbeat() {
+    while (this.state === WebSocketState.OPEN) {
+      if (this.isClosed) {
+        this.emit('close', 1001)
+        break
+      }
+
+      await new Promise(resolve => setTimeout(() => resolve, 2_000))
     }
   }
 

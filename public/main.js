@@ -65,24 +65,45 @@ const main = async () => {
 export const login = async api => {
   const loginSection = document.querySelector('.login-section')
   const loginForm = document.querySelector('.js-login-form')
+  const generateRoomCodeButton = document.querySelector(
+    '.js-generate-room-code'
+  )
+  const roomCodeLine = document.querySelector('.js-room-code-line')
 
   let user = localStorage.getItem('user')
+  let roomCode = localStorage.getItem('roomCode')
 
   if (user) {
     loginForm.elements.name.value = user
   }
+
+  if (roomCode) {
+    loginForm.elements.roomCode.value = roomCode
+  }
+
+  generateRoomCodeButton.addEventListener('click', () => {
+    const charMap = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    const roomCode = Array.from({ length: 4 })
+      .map(_ => charMap[Math.floor(Math.random() * charMap.length)])
+      .join('')
+    loginForm.elements.roomCode.value = roomCode
+  })
 
   return new Promise(resolve => {
     const handleSubmit = async e => {
       e.preventDefault()
       const formData = new FormData(loginForm)
       const name = formData.get('name')
-      if (name) {
+      const roomCode = formData.get('roomCode')
+      if (name && roomCode) {
         try {
-          const data = await api.login(name)
+          const data = await api.login(name, roomCode)
           loginForm.removeEventListener('submit', handleSubmit)
           loginSection.hidden = true
           localStorage.setItem('user', name)
+          localStorage.setItem('roomCode', roomCode)
+
+          roomCodeLine.dataset.roomCode = roomCode
           document
             .querySelectorAll('.rate-section, .matches-section')
             .forEach(el => {

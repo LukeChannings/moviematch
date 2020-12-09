@@ -1,5 +1,6 @@
 import { ServerRequest } from 'https://deno.land/std@0.79.0/http/server.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
+import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { PLEX_TOKEN, PLEX_URL, SECTION_TYPE_FILTER } from '../config.ts'
 import {
   PlexDirectory,
@@ -111,11 +112,15 @@ export const proxyPoster = async (
     `/library/metadata/${sectionId}/thumb/${artId}`
   )
   const url = `${PLEX_URL}/photo/:/transcode?X-Plex-Token=${PLEX_TOKEN}&width=${width}&height=${height}&minSize=1&upscale=1&url=${posterUrl}`
-  const res = await fetch(url)
+  try {
+    const res = await fetch(url)
 
-  req.respond({
-    status: 200,
-    body: new Uint8Array(await res.arrayBuffer()),
-    headers: new Headers({ 'content-type': 'image/jpeg' }),
-  })
+    req.respond({
+      status: 200,
+      body: new Uint8Array(await res.arrayBuffer()),
+      headers: new Headers({ 'content-type': 'image/jpeg' }),
+    })
+  } catch (err) {
+    log.error(`Failed to load ${url}. ${err}`)
+  }
 }
