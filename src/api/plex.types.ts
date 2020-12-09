@@ -94,11 +94,11 @@ export interface PlexVideo {
         videoProfile: string
       }>
     }>
-    Genre: PlexTagList
-    Director: PlexTagList
-    Writer: PlexTagList
-    Country: PlexTagList
-    Role: PlexTagList
+    Genre?: PlexTagList
+    Director?: PlexTagList
+    Writer?: PlexTagList
+    Country?: PlexTagList
+    Role?: PlexTagList
   }>
 }
 

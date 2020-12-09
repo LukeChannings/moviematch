@@ -20,7 +20,7 @@ interface Movie {
   summary: string
   year: string
   art: string
-  director: string
+  director?: string
   rating: string
   key: string
 }
@@ -156,6 +156,7 @@ class Session {
           try {
             const plexMovie = await getRandomMovie()
             const [, , , sectionId, , artId] = plexMovie.art.split('/')
+
             const movie: Movie = {
               title: plexMovie.title,
               art: `/poster/${sectionId}/${artId}`,
@@ -163,7 +164,7 @@ class Session {
               key: plexMovie.key,
               summary: plexMovie.summary,
               year: plexMovie.year,
-              director: plexMovie.Director[0].tag,
+              director: (plexMovie.Director ?? [{ tag: undefined }])[0].tag,
               rating: plexMovie.rating,
             }
             return movie
