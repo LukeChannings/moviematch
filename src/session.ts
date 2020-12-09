@@ -86,9 +86,10 @@ class Session {
   remove = (user: User, ws: WebSocket) => {
     log.debug(`User ${user?.name} was removed`)
     ws.removeAllListeners()
-    this.users.delete(user)
+    this.users.set(user, null)
 
-    if (this.users.size === 0) {
+    const activeUsers = [...this.users.values()].filter(ws => !ws?.isClosed)
+    if (activeUsers.length === 0) {
       this.destroy()
     }
   }
