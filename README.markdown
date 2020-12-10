@@ -39,7 +39,7 @@ The following variables are supported via a `.env` file or environment variables
 | PLEX_URL                    | A URL for the Plex server                                                                                                                                        | Yes      | null                                                                               |
 | PLEX_TOKEN                  | An authorization token for access to the Plex API. [How to find yours](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/) | Yes      | null                                                                               |
 | PORT                        | The port the server will run on                                                                                                                                  | No       | 8000                                                                               |
-| LIBRARY_FILTER              | A list of libraries to be included in the cards, comma delimited. e.g. 'Films', or 'Films,Television', or 'Films,Workout Videos'                                 | No       | The first library that has the type of DEFAULT_SECTION_TYPE_FILTER                 |
+| LIBRARY_FILTER              | A list of libraries to be included in the cards, comma delimited. e.g. `Films`, or `Films,Television`, or `Films,Workout Videos`                                 | No       | The first library that has the type of `DEFAULT_SECTION_TYPE_FILTER`                 |
 | DEFAULT_SECTION_TYPE_FILTER | The first library with this type will be chosen as a default library                                                                                             | No       | `movie`, (can be `movie`, `artist`, `photo`, or `show`)                            |
 | LINK_TYPE                   | The method to use for opening match links                                                                                                                        | No       | `app` (`app` or `http`)                                                            |
 | LOG_LEVEL                   | How much the server should log                                                                                                                                   | No       | `INFO` (supported options are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`) |
@@ -55,7 +55,7 @@ Furthermore, only a subset of the Plex response is given to the client to minimi
 
 ### Can it do TV shows too?
 
-You can try setting `SECTION_TYPE_FILTER=show`, but I cannot guarantee it'll work.
+Yes, you can include a TV library in your `LIBRARY_FILTER` list.
 
 ### Do you gather any data?
 
