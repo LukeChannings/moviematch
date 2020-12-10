@@ -1,5 +1,5 @@
 import { Accepts } from 'https://deno.land/x/accepts@2.1.0/mod.ts'
-import { LINK_TYPE } from './config.ts'
+import { getVersion, LINK_TYPE } from './config.ts'
 
 const translations: Map<string, Record<string, string>> = new Map()
 
@@ -74,6 +74,7 @@ export const translateHTML = async (
 
   const context = {
     ...translationContext,
+    VERSION: await getVersion(),
     CONFIG_MATCHES_TARGET_TYPE:
       getLinkTypeForRequest(headers) === 'app' ? '_self' : '_blank',
   }

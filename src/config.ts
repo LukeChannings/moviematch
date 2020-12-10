@@ -13,6 +13,12 @@ export const {
   LIBRARY_FILTER = Deno.env.get('LIBRARY_FILTER') ?? '',
 } = config()
 
+export const getVersion = async () => {
+  const pkgText = await Deno.readTextFile(Deno.cwd() + '/package.json')
+  const pkg: { version: string } = JSON.parse(pkgText)
+  return pkg.version
+}
+
 function getLogLevel(): keyof typeof log.LogLevels {
   if (LOG_LEVEL in log.LogLevels) {
     return LOG_LEVEL as keyof typeof log.LogLevels
