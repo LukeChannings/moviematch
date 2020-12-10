@@ -63,8 +63,16 @@ export const getRandomMovie = (() => {
   const getRandom = (
     movies: PlexVideo['Metadata']
   ): PlexVideo['Metadata'][number] => {
-    const randomIndex = Math.round(Math.random() * movies.length)
+    assert(movies.length !== 0, 'allMovies was empty')
+
+    const randomIndex = Math.floor(Math.random() * movies.length)
     const movie = movies[randomIndex]
+
+    assert(
+      !!movie,
+      `Failed to pick a movie. There are ${movies.length} movies and the random index is ${randomIndex}`
+    )
+
     return drawnGuids.includes(movie.guid) ? getRandom(movies) : movie
   }
 
