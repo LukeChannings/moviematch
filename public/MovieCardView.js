@@ -42,7 +42,7 @@ export class MovieCardView {
 
     if (animation.playState !== 'finished') {
       animation.playbackRate = 3
-      animation.play()
+      animation.finish()
       await animation.finished
     }
 
@@ -93,7 +93,9 @@ export class MovieCardView {
 
         this.animation.pause()
       }
-      this.currentTime = position * this.animationDuration
+
+      this.currentTime =
+        Math.max(0, Math.min(1, position)) * this.animationDuration
     }
     this.node.addEventListener('pointermove', handleMove, { passive: true })
     this.node.addEventListener(
