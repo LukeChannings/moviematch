@@ -4,6 +4,7 @@
   "LOGIN_ROOM_CODE": "Room Code",
   "LOGIN_SUBMIT": "Engage",
   "RATE_SECTION_LOADING": "Loading movies...",
+  "RATE_SECTION_EXHAUSTED_CARDS": "That\\'s all folks ✌️",
   "MATCHES_SECTION_TITLE": "Matches",
   "MATCHES_SECTION_NO_MATCHES": "No matches yet... have you tried compromising your clearly impeccable taste?",
   "MATCHES_SECTION_CARD_LIKERS": "$USERS want to watch $MOVIE",

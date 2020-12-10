@@ -147,6 +147,7 @@ a.card:hover {
 }
 
 .card-stack {
+  --empty-text: var(--i18n-loading);
   position: relative;
 }
 
@@ -156,7 +157,7 @@ a.card:hover {
 }
 
 .card-stack:empty::after {
-  content: var(--i18n-loading);
+  content: var(--empty-text);
   font-weight: bold;
   color: var(--color-tertiary);
   position: absolute;
@@ -233,12 +234,16 @@ a.card:hover {
   transition: transform 200ms linear;
 }
 
+.rate-controls[disabled] button {
+  opacity: 0.5;
+}
+
 @media screen and (hover: hover) {
-  .rate-controls .rate-thumbs-up:hover {
+  .rate-controls:not([disabled]) .rate-thumbs-up:hover {
     transform: scale(1.2) rotate(-20deg) translate(0, -1rem);
   }
 
-  .rate-controls .rate-thumbs-down:hover {
+  .rate-controls:not([disabled]) .rate-thumbs-down:hover {
     transform: scale(1.2) rotate(20deg) translate(0, 1rem);
   }
 }

@@ -48,12 +48,13 @@ for await (const req of server) {
       }),
     })
   } else if (req.url.startsWith('/poster/')) {
-    const [, , sectionId, artId] = req.url.split('/')
+    const [, key] =
+      req.url.match(/\/poster\/([0-9]+\/(art|thumb)\/[0-9]+)/) ?? []
 
-    if (/^[0-9]$/.test(sectionId + artId)) {
+    if (!key) {
       req.respond({ status: 404 })
     } else {
-      await proxyPoster(req, sectionId, artId)
+      await proxyPoster(req, key)
     }
   } else {
     serveFile(req, '/public')

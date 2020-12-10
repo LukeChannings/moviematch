@@ -1,5 +1,5 @@
 import { MovieMatchAPI } from './MovieMatchAPI.js'
-import { MovieCardView } from './MovieCardView.js'
+import { CardView } from './CardView.js'
 import { MatchesView } from './MatchesView.js'
 
 const main = async () => {
@@ -31,16 +31,32 @@ const main = async () => {
     }
   })
 
+  document.addEventListener('keydown', e => {
+    const wantsToWatch =
+      e.key === 'ArrowLeft' ? false : e.key === 'ArrowRight' ? true : null
+    if (wantsToWatch === null) {
+      return
+    }
+    if (topCardEl) {
+      topCardEl.dispatchEvent(new MessageEvent('rate', { data: wantsToWatch }))
+    }
+  })
+
   const cardStackEventTarget = new EventTarget()
 
   cardStackEventTarget.addEventListener('newTopCard', () => {
     topCardEl = topCardEl.nextSibling
+
+    if (!topCardEl) {
+      document
+        .querySelector('.js-card-stack')
+        ?.style.setProperty('--empty-text', `var(--i18n-exhausted-cards)`)
+
+      rateControls.setAttribute('disabled', '')
+    }
   })
 
-  // here we're iterating an infinite (well, based on the size of your collection)
-  // list of movies. The first CARD_STACK_SIZE cards will be rendered directly,
-  // but for every card rendered after that we need a card to be dismissed.
-  for await (let [movie, i] of api.getMovieListIterable()) {
+  for await (let [movie, i] of api) {
     if (i > CARD_STACK_SIZE) {
       const response = await new Promise(resolve => {
         cardStackEventTarget.addEventListener(
@@ -55,10 +71,10 @@ const main = async () => {
       })
       api.respond(response)
     } else if (i === CARD_STACK_SIZE) {
-      topCardEl = document.querySelector('.js-card-list > :first-child')
+      topCardEl = document.querySelector('.js-card-stack > :first-child')
     }
 
-    new MovieCardView(movie, cardStackEventTarget)
+    new CardView(movie, cardStackEventTarget)
   }
 }
 

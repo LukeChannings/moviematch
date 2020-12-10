@@ -1,6 +1,6 @@
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
-import { getRandomMovie } from './api/plex.ts'
+import { allMovies, getRandomMovie, NoMoreMoviesError } from './api/plex.ts'
 import { MOVIE_BATCH_SIZE } from './config.ts'
 import { WebSocket } from './util/websocketServer.ts'
 
@@ -14,7 +14,7 @@ interface User {
   responses: Response[]
 }
 
-interface Movie {
+interface MediaItem {
   guid: string
   title: string
   summary: string
@@ -23,6 +23,7 @@ interface Movie {
   director?: string
   rating: string
   key: string
+  type: 'movie' | 'artist' | 'photo' | 'show'
 }
 
 interface WebSocketLoginMessage {
@@ -36,7 +37,7 @@ interface WebSocketLoginMessage {
 interface WebSocketMatchMessage {
   type: 'match'
   payload: {
-    movie: Movie
+    movie: MediaItem
     users: string[]
   }
 }
@@ -48,7 +49,7 @@ interface WebSocketLoginResponseMessage {
     | {
         success: true
         matches: Array<WebSocketMatchMessage['payload']>
-        movies: Movie[]
+        movies: MediaItem[]
       }
 }
 
@@ -69,8 +70,8 @@ type WebSocketMessage =
 class Session {
   users: Map<User, WebSocket | null> = new Map()
   roomCode: string
-  movieList: Movie[] = []
-  likedMovies: Map<Movie, User[]> = new Map()
+  movieList: MediaItem[] = []
+  likedMovies: Map<MediaItem, User[]> = new Map()
 
   constructor(roomCode: string) {
     this.roomCode = roomCode
@@ -150,49 +151,75 @@ class Session {
   }
 
   async sendNextBatch() {
-    const batch = (
-      await Promise.all(
-        Array.from({ length: Number(MOVIE_BATCH_SIZE) }).map(async () => {
-          try {
-            const plexMovie = await getRandomMovie()
-            const [, , , sectionId, , artId] = plexMovie.art.split('/')
-
-            const movie: Movie = {
-              title: plexMovie.title,
-              art: `/poster/${sectionId}/${artId}`,
-              guid: plexMovie.guid,
-              key: plexMovie.key,
-              summary: plexMovie.summary,
-              year: plexMovie.year,
-              director: (plexMovie.Director ?? [{ tag: undefined }])[0].tag,
-              rating: plexMovie.rating,
-            }
-            return movie
-          } catch (err) {
-            log.error(err)
-            return []
-          }
-        })
-      )
-    ).flat()
-
-    this.movieList.push(...batch)
-
-    for (const [user, ws] of this.users.entries()) {
-      if (ws && !ws.isClosed) {
-        ws.send(
-          JSON.stringify({
-            type: 'batch',
-            payload: batch.filter(
-              movie => !user.responses.map(_ => _.guid).includes(movie.guid)
+    try {
+      const batch = (
+        await Promise.all(
+          Array.from({
+            length: Math.min(
+              (await allMovies).length,
+              Number(MOVIE_BATCH_SIZE)
             ),
+          }).map(async () => {
+            try {
+              const plexMovie = await getRandomMovie()
+
+              const movie: MediaItem = {
+                title: plexMovie.title,
+                art: `/poster/${plexMovie.thumb.replace(
+                  '/library/metadata/',
+                  ''
+                )}`,
+                guid: plexMovie.guid,
+                key: plexMovie.key,
+                summary: plexMovie.summary,
+                year: plexMovie.year,
+                director: (plexMovie.Director ?? [{ tag: undefined }])[0].tag,
+                rating: plexMovie.rating,
+                type: plexMovie.type,
+              }
+              return movie
+            } catch (err) {
+              if (err instanceof NoMoreMoviesError) {
+                throw err
+              }
+              log.error(err)
+              return []
+            }
           })
         )
+      ).flat()
+
+      this.movieList.push(...batch)
+
+      for (const [user, ws] of this.users.entries()) {
+        if (ws && !ws.isClosed) {
+          ws.send(
+            JSON.stringify({
+              type: 'batch',
+              payload: batch.filter(
+                movie => !user.responses.map(_ => _.guid).includes(movie.guid)
+              ),
+            })
+          )
+        }
+      }
+    } catch (err) {
+      if (err instanceof NoMoreMoviesError) {
+        for (const ws of this.users.values()) {
+          if (ws && !ws.isClosed) {
+            ws.send(
+              JSON.stringify({
+                type: 'batch',
+                payload: [],
+              })
+            )
+          }
+        }
       }
     }
   }
 
-  handleMatch(movie: Movie, users: User[]) {
+  handleMatch(movie: MediaItem, users: User[]) {
     for (const ws of this.users.values()) {
       const match: WebSocketMatchMessage = {
         type: 'match',

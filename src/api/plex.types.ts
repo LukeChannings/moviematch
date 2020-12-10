@@ -50,7 +50,7 @@ export interface PlexVideo {
     key: string
     guid: string
     studio: string
-    type: string
+    type: 'movie' | 'artist' | 'photo' | 'show'
     title: string
     contentRating: string
     summary: string
@@ -60,7 +60,7 @@ export interface PlexVideo {
     year: string
     tagline: string
     thumb: string
-    art: string
+    art?: string
     duration: string
     originallyAvailableAt: string
     addedAt: string

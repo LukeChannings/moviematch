@@ -1,6 +1,6 @@
-const cardList = document.querySelector('.js-card-list')
+const cardList = document.querySelector('.js-card-stack')
 
-export class MovieCardView {
+export class CardView {
   constructor(movieData, eventTarget) {
     this.movieData = movieData
     this.eventTarget = eventTarget
@@ -18,7 +18,7 @@ export class MovieCardView {
       this.rate(e.data, this.getAnimation(e.data ? 'right' : 'left'))
     )
 
-    const { title, art, year, guid } = this.movieData
+    const { title, type, art, year, guid } = this.movieData
     node.dataset.guid = guid
 
     const srcSet = [
@@ -32,7 +32,7 @@ export class MovieCardView {
       <img class="poster" src="${art}" srcset="${srcSet.join(
       ', '
     )}" alt="${title} poster" />
-      <p>${title} (${year})</p>
+      <p>${title}${type === 'movie' ? `(${year})` : ''}</p>
     `
     cardList.appendChild(node)
   }

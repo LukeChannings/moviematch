@@ -4,6 +4,7 @@
   "LOGIN_ROOM_CODE": "Zimmercode",
   "LOGIN_SUBMIT": "Abschicken",
   "RATE_SECTION_LOADING": "Holend Filme...",
+  "RATE_SECTION_EXHAUSTED_CARDS": "Wir haben das Ende der Fahrt erreicht 🎢. Bitte achten Sie auf Ihren Kopf auf dem Weg nach draußen.",
   "MATCHES_SECTION_TITLE": "passen",
   "MATCHES_SECTION_NO_MATCHES": "Niemand wil met jou een film kijken ... nog niet.",
   "MATCHES_SECTION_CARD_LIKERS": "$USERS wollen $MOVIE sehen",

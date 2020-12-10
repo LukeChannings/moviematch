@@ -60,7 +60,12 @@ const getSelectedLibraryTitles = (
       ?.split(',')
       .filter(title => availableLibraryNames.includes(title)) ?? []
 
-  assert(libraryTitles.length !== 0, 'libraryTitles was empty')
+  assert(
+    libraryTitles.length !== 0,
+    `${LIBRARY_FILTER} did not match any available library names: ${availableLibraryNames.join(
+      ', '
+    )}`
+  )
 
   return libraryTitles
 }
@@ -113,6 +118,8 @@ export const allMovies = (async () => {
   return movies
 })()
 
+export class NoMoreMoviesError extends Error {}
+
 export const getRandomMovie = (() => {
   const drawnGuids: Set<string> = new Set()
 
@@ -120,6 +127,9 @@ export const getRandomMovie = (() => {
     movies: PlexVideo['Metadata']
   ): PlexVideo['Metadata'][number] => {
     assert(movies.length !== 0, 'allMovies was empty')
+    if (drawnGuids.size === movies.length) {
+      throw new NoMoreMoviesError()
+    }
 
     const randomIndex = Math.floor(Math.random() * movies.length)
     const movie = movies[randomIndex]
@@ -169,11 +179,7 @@ export const getServerId = (() => {
   }
 })()
 
-export const proxyPoster = async (
-  req: ServerRequest,
-  sectionId: string,
-  artId: string
-) => {
+export const proxyPoster = async (req: ServerRequest, key: string) => {
   const [, search] = req.url.split('?')
   const searchParams = new URLSearchParams(search)
 
@@ -185,9 +191,7 @@ export const proxyPoster = async (
 
   const height = width * 1.5
 
-  const posterUrl = encodeURIComponent(
-    `/library/metadata/${sectionId}/thumb/${artId}`
-  )
+  const posterUrl = encodeURIComponent(`/library/metadata/${key}`)
   const url = `${PLEX_URL}/photo/:/transcode?X-Plex-Token=${PLEX_TOKEN}&width=${width}&height=${height}&minSize=1&upscale=1&url=${posterUrl}`
   try {
     const posterReq = await fetch(url)

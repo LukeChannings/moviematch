@@ -28,7 +28,7 @@ If two (or more) people swipe right on the same movie, it'll show up in everyone
 
 - Install [Deno](https://deno.land/manual/getting_started/installation)
 - Create a `.env` file (see [.env-template](./.env-template) for an example)
-- Run `deno run --allow-net --allow-read --allow-env https://raw.githubusercontent.com/lukechannings/moviematch/main/src/index.ts` in your favourite terminal
+- Run `deno run --allow-net --allow-read --allow-env --unstable https://raw.githubusercontent.com/lukechannings/moviematch/main/src/index.ts` in your favourite terminal
 
 Open [localhost:8000](http://localhost:8000)
 

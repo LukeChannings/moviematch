@@ -93,6 +93,7 @@
     style="
       --i18n-no-matches: '${MATCHES_SECTION_NO_MATCHES}';
       --i18n-loading: '${RATE_SECTION_LOADING}';
+      --i18n-exhausted-cards: '${RATE_SECTION_EXHAUSTED_CARDS}';
     "
     data-i18n-list-conjunction="${LIST_CONJUNCTION}"
     data-i18n-match-likers-template="${MATCHES_SECTION_CARD_LIKERS}"
@@ -120,7 +121,7 @@
         </form>
       </section>
       <section class="rate-section" hidden>
-        <div class="card-stack js-card-list"></div>
+        <div class="card-stack js-card-stack"></div>
         <div class="rate-controls">
           <button type="button" class="rate-thumbs-down">👎</button>
           <button type="button" class="rate-thumbs-up">👍</button>

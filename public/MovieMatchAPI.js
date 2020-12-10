@@ -92,7 +92,7 @@ export class MovieMatchAPI extends EventTarget {
       })
     )
     return new Promise(resolve =>
-      this.addEventListener('batch', resolve, { once: true })
+      this.addEventListener('batch', e => resolve(e.data), { once: true })
     )
   }
 
@@ -100,24 +100,25 @@ export class MovieMatchAPI extends EventTarget {
     return this._movieList.find(_ => _.guid === guid)
   }
 
-  getMovieListIterable = () => {
-    const api = this
+  [Symbol.asyncIterator]() {
+    this.movieListIndex = 0
     return {
-      [Symbol.asyncIterator]() {
-        return {
-          i: 0,
-          async next() {
-            if (!api._movieList[this.i]) {
-              await api.requestNextBatch()
-            }
+      next: async () => {
+        if (!this._movieList[this.movieListIndex]) {
+          const batch = await this.requestNextBatch()
+          if (batch.length === 0) {
+            return { done: true }
+          }
+        }
 
-            const value = [api._movieList[this.i], this.i]
-            this.i += 1
-            return {
-              value,
-              done: false,
-            }
-          },
+        const value = [
+          this._movieList[this.movieListIndex],
+          this.movieListIndex,
+        ]
+        this.movieListIndex += 1
+        return {
+          value,
+          done: false,
         }
       },
     }
