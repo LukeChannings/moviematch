@@ -7,7 +7,7 @@
     "start": "deno run --allow-net --allow-read --allow-env src/index.ts",
     "build-docker": "docker build -t lukechannings/moviematch .",
     "start-docker": "docker run -it --env-file .env -p 8000:8000 lukechannings/moviematch",
-    "publish-docker": "npm run build-docker && docker publish lukechannings/moviematch && docker tag lukechannings/moviematch:latest lukechannings/moviematch:$npm_package_version",
+    "publish-docker": "npm run build-docker && docker push lukechannings/moviematch && docker tag lukechannings/moviematch:latest lukechannings/moviematch:$npm_package_version && docker push lukechannings/moviematch:$npm_package_version",
     "postversion": "git push && git push --tags && npm run publish-docker"
   },
   "keywords": [],
