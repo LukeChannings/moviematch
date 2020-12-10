@@ -17,6 +17,9 @@ import {
 assert(typeof PLEX_URL === 'string', 'A PLEX_URL is required')
 assert(typeof PLEX_TOKEN === 'string', 'A PLEX_TOKEN is required')
 
+// thrown when the plex token is invalid
+class PlexTokenError extends Error {}
+
 export const getSections = async (): Promise<
   PlexMediaContainer<PlexDirectory>
 > => {
@@ -29,6 +32,8 @@ export const getSections = async (): Promise<
 
   if (req.ok) {
     return await req.json()
+  } else if (req.status === 401) {
+    throw new PlexTokenError(`Authentication error: ${req.url}`)
   } else {
     throw new Error(await req.text())
   }
@@ -82,7 +87,13 @@ export const allMovies = (async () => {
     assert(req.ok, `Error loading ${movieSection.title} library`)
 
     if (!req.ok) {
-      log.error(req.status, await req.text())
+      if (req.status === 401) {
+        throw new PlexTokenError(`Authentication error: ${req.url}`)
+      } else {
+        throw new Error(
+          `${req.url} returned ${req.status}: ${await req.text()}`
+        )
+      }
     }
 
     const libraryData: PlexMediaContainer<PlexVideo> = await req.json()
@@ -99,7 +110,7 @@ export const allMovies = (async () => {
 })()
 
 export const getRandomMovie = (() => {
-  const drawnGuids: Array<string> = []
+  const drawnGuids: Set<string> = new Set()
 
   const getRandom = (
     movies: PlexVideo['Metadata']
@@ -114,7 +125,7 @@ export const getRandomMovie = (() => {
       `Failed to pick a movie. There are ${movies.length} movies and the random index is ${randomIndex}`
     )
 
-    return drawnGuids.includes(movie.guid) ? getRandom(movies) : movie
+    return drawnGuids.has(movie.guid) ? getRandom(movies) : movie
   }
 
   return async () => getRandom(await allMovies)
@@ -126,18 +137,26 @@ export const getServerId = (() => {
   return async () => {
     if (serverId) return serverId
 
-    const providersReq = await fetch(
+    const req = await fetch(
       `${PLEX_URL}/media/providers?X-Plex-Token=${PLEX_TOKEN}`,
       {
         headers: { accept: 'application/json' },
       }
     )
 
-    if (providersReq.ok) {
-      const providers: PlexMediaProviders = await providersReq.json()
-      serverId = providers.MediaContainer.machineIdentifier
-      return serverId
+    if (!req.ok) {
+      if (req.status === 401) {
+        throw new PlexTokenError(`Authentication error: ${req.url}`)
+      } else {
+        throw new Error(
+          `${req.url} returned ${req.status}: ${await req.text()}`
+        )
+      }
     }
+
+    const providers: PlexMediaProviders = await req.json()
+    serverId = providers.MediaContainer.machineIdentifier
+    return serverId
   }
 })()
 
@@ -162,11 +181,23 @@ export const proxyPoster = async (
   )
   const url = `${PLEX_URL}/photo/:/transcode?X-Plex-Token=${PLEX_TOKEN}&width=${width}&height=${height}&minSize=1&upscale=1&url=${posterUrl}`
   try {
-    const res = await fetch(url)
+    const posterReq = await fetch(url)
+
+    if (!posterReq.ok) {
+      if (posterReq.status === 401) {
+        throw new PlexTokenError(`Authentication error: ${posterReq.url}`)
+      } else {
+        throw new Error(
+          `${posterReq.url} returned ${
+            posterReq.status
+          }: ${await posterReq.text()}`
+        )
+      }
+    }
 
     req.respond({
       status: 200,
-      body: new Uint8Array(await res.arrayBuffer()),
+      body: new Uint8Array(await posterReq.arrayBuffer()),
       headers: new Headers({ 'content-type': 'image/jpeg' }),
     })
   } catch (err) {
