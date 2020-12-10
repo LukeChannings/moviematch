@@ -55,7 +55,7 @@ Furthermore, only a subset of the Plex response is given to the client to minimi
 
 ### Can it do TV shows too?
 
-You can try setting `SECTION_TYPE_FILTER=show`, but I cannot guarantee it'll work.
+Yes, you can include a TV library in your `LIBRARY_FILTER` list.
 
 ### Do you gather any data?
 
