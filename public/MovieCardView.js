@@ -41,8 +41,12 @@ export class MovieCardView {
     this.eventTarget.dispatchEvent(new Event('newTopCard'))
 
     if (animation.playState !== 'finished') {
-      animation.playbackRate = 3
-      animation.finish()
+      if (animation.currentTime === this.animationDuration) {
+        animation.finish()
+      } else {
+        animation.playbackRate = 3
+        animation.play()
+      }
       await animation.finished
     }
 
