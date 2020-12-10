@@ -129,7 +129,12 @@ export const getRandomMovie = (() => {
       `Failed to pick a movie. There are ${movies.length} movies and the random index is ${randomIndex}`
     )
 
-    return drawnGuids.has(movie.guid) ? getRandom(movies) : movie
+    if (drawnGuids.has(movie.guid)) {
+      return getRandom(movies)
+    } else {
+      drawnGuids.add(movie.guid)
+      return movie
+    }
   }
 
   return async () => getRandom(await allMovies)
