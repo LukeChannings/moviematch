@@ -40,7 +40,7 @@ export interface PlexDirectory {
     content: string
     directory: string
     contentChangedAt: string
-    hidden: string
+    hidden: 1 | 0
   }>
 }
 

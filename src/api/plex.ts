@@ -1,7 +1,12 @@
 import { ServerRequest } from 'https://deno.land/std@0.79.0/http/server.ts'
 import { assert } from 'https://deno.land/std@0.79.0/_util/assert.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
-import { PLEX_TOKEN, PLEX_URL, SECTION_TYPE_FILTER } from '../config.ts'
+import {
+  DEFAULT_SECTION_TYPE_FILTER,
+  LIBRARY_FILTER,
+  PLEX_TOKEN,
+  PLEX_URL,
+} from '../config.ts'
 import {
   PlexDirectory,
   PlexMediaContainer,
@@ -29,32 +34,68 @@ export const getSections = async (): Promise<
   }
 }
 
+const getSelectedLibraryTitles = (
+  sections: PlexMediaContainer<PlexDirectory>
+) => {
+  const availableLibraryNames = sections.MediaContainer.Directory.map(
+    _ => _.title
+  )
+  log.debug(`Available libraries: ${availableLibraryNames.join(', ')}`)
+
+  const defaultLibraryName = sections.MediaContainer.Directory.find(
+    ({ hidden, type }) => hidden !== 1 && type === DEFAULT_SECTION_TYPE_FILTER
+  )?.title
+
+  const libraryTitles =
+    (LIBRARY_FILTER === '' ? defaultLibraryName : LIBRARY_FILTER)
+      ?.split(',')
+      .filter(title => availableLibraryNames.includes(title)) ?? []
+
+  assert(libraryTitles.length !== 0, 'libraryTitles was empty')
+
+  return libraryTitles
+}
+
 export const allMovies = (async () => {
   const sections = await getSections()
-  const filmSection = sections.MediaContainer.Directory.find(
-    ({ type }) => type === SECTION_TYPE_FILTER
+
+  const selectedLibraryTitles = getSelectedLibraryTitles(sections)
+
+  log.debug(`selected library titles - ${selectedLibraryTitles.join(', ')}`)
+
+  const movieSections = sections.MediaContainer.Directory.filter(
+    ({ title, hidden }) => hidden !== 1 && selectedLibraryTitles.includes(title)
   )
 
-  assert(
-    typeof filmSection !== 'undefined',
-    `Couldn't find a movies section in Plex!`
-  )
+  assert(movieSections.length !== 0, `Couldn't find a movies section in Plex!`)
 
-  const req = await fetch(
-    `${PLEX_URL}/library/sections/${filmSection.key}/all?X-Plex-Token=${PLEX_TOKEN}`,
-    {
-      headers: { accept: 'application/json' },
+  const movies: PlexVideo['Metadata'] = []
+
+  for (const movieSection of movieSections) {
+    const req = await fetch(
+      `${PLEX_URL}/library/sections/${movieSection.key}/all?X-Plex-Token=${PLEX_TOKEN}`,
+      {
+        headers: { accept: 'application/json' },
+      }
+    )
+
+    assert(req.ok, `Error loading ${movieSection.title} library`)
+
+    if (!req.ok) {
+      log.error(req.status, await req.text())
     }
-  )
 
-  assert(req.ok, 'Error loading movies section')
-  if (!req.ok) {
-    console.log(req.ok, req.status, await req.text())
+    const libraryData: PlexMediaContainer<PlexVideo> = await req.json()
+
+    assert(
+      libraryData.MediaContainer.Metadata.length,
+      `${movieSection.title} doesn't appear to have any movies`
+    )
+
+    movies.push(...libraryData.MediaContainer.Metadata)
   }
 
-  const films: PlexMediaContainer<PlexVideo> = await req.json()
-
-  return films
+  return movies
 })()
 
 export const getRandomMovie = (() => {
@@ -76,7 +117,7 @@ export const getRandomMovie = (() => {
     return drawnGuids.includes(movie.guid) ? getRandom(movies) : movie
   }
 
-  return async () => getRandom((await allMovies).MediaContainer.Metadata)
+  return async () => getRandom(await allMovies)
 })()
 
 export const getServerId = (() => {

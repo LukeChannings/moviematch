@@ -8,7 +8,9 @@ export const {
   LOG_LEVEL = Deno.env.get('LOG_LEVEL') ?? 'INFO',
   MOVIE_BATCH_SIZE = Deno.env.get('MOVIE_BATCH_SIZE') ?? '25',
   LINK_TYPE = Deno.env.get('LINK_TYPE') ?? 'app',
-  SECTION_TYPE_FILTER = Deno.env.get('SECTION_TYPE_FILTER') ?? 'movie',
+  DEFAULT_SECTION_TYPE_FILTER = Deno.env.get('DEFAULT_SECTION_TYPE_FILTER') ??
+    'movie',
+  LIBRARY_FILTER = Deno.env.get('LIBRARY_FILTER') ?? '',
 } = config()
 
 function getLogLevel(): keyof typeof log.LogLevels {
