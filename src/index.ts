@@ -14,6 +14,12 @@ const wss = new WebSocketServer({
   onError: err => log.error(err),
 })
 
+Deno.signal(Deno.Signal.SIGINT).then(() => {
+  log.info('Shutting down')
+  server.close()
+  Deno.exit(0)
+})
+
 log.info(`Listening on port ${PORT}`)
 
 for await (const req of server) {

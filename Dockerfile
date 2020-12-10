@@ -8,6 +8,6 @@ USER deno
 
 ADD . .
 
-RUN deno cache src/index.ts
+RUN deno cache --unstable src/index.ts
 
-CMD ["run", "--allow-net", "--allow-read", "--allow-env", "src/index.ts"]
+CMD ["run", "--allow-net", "--allow-read", "--allow-env", "--unstable", "src/index.ts"]
