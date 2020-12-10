@@ -22,13 +22,14 @@ If two (or more) people swipe right on the same movie, it'll show up in everyone
 
 ### With Docker
 
-`docker run -it -e PLEX_URL=https://plex.example.com -e PLEX_TOKEN=<YOUR_TOKEN> -p 8000:8000 lukechannings/moviematch`
+`docker run -it -e PLEX_URL=<Plex URL> -e PLEX_TOKEN=<Your Token> -p 8000:8000 lukechannings/moviematch`
 
-### Running manually
+### With Deno
 
-- Install [Deno](https://deno.land)
-- Set up a `.env` file (or set env vars directly by prefixing `env PLEX_URL=...` to the following command)
-- Run `deno run --allow-net --allow-read --allow-env src/index.ts`
+- Install [Deno](https://deno.land/manual/getting_started/installation)
+- Run `env PLEX_URL=<Plex URL> PLEX_TOKEN=<Your Token> deno run --allow-net --allow-read --allow-env https://raw.githubusercontent.com/lukechannings/moviematch/main/src/index.ts` in your favourite terminal
+
+Open [localhost:8000](http://localhost:8000)
 
 ## Configuration
 
@@ -39,7 +40,7 @@ The following variables are supported via a `.env` file or environment variables
 | PLEX_URL                    | A URL for the Plex server                                                                                                                                        | Yes      | null                                                                               |
 | PLEX_TOKEN                  | An authorization token for access to the Plex API. [How to find yours](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/) | Yes      | null                                                                               |
 | PORT                        | The port the server will run on                                                                                                                                  | No       | 8000                                                                               |
-| LIBRARY_FILTER              | A list of libraries to be included in the cards, comma delimited. e.g. `Films`, or `Films,Television`, or `Films,Workout Videos`                                 | No       | The first library that has the type of `DEFAULT_SECTION_TYPE_FILTER`                 |
+| LIBRARY_FILTER              | A list of libraries to be included in the cards, comma delimited. e.g. `Films`, or `Films,Television`, or `Films,Workout Videos`                                 | No       | The first library that has the type of `DEFAULT_SECTION_TYPE_FILTER`               |
 | DEFAULT_SECTION_TYPE_FILTER | The first library with this type will be chosen as a default library                                                                                             | No       | `movie`, (can be `movie`, `artist`, `photo`, or `show`)                            |
 | LINK_TYPE                   | The method to use for opening match links                                                                                                                        | No       | `app` (`app` or `http`)                                                            |
 | LOG_LEVEL                   | How much the server should log                                                                                                                                   | No       | `INFO` (supported options are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`) |
