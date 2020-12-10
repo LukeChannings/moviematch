@@ -5,6 +5,7 @@ export class CardView {
     this.movieData = movieData
     this.eventTarget = eventTarget
     this.animationDuration = 500
+    this.basePath = document.body.dataset.basePath
     this.render()
   }
 
@@ -22,16 +23,16 @@ export class CardView {
     node.dataset.guid = guid
 
     const srcSet = [
-      `${art}?w=300`,
-      `${art}?w=450 1.5x`,
-      `${art}?w=600 2x`,
-      `${art}?w=900 3x`,
+      `${this.basePath}${art}?w=300`,
+      `${this.basePath}${art}?w=450 1.5x`,
+      `${this.basePath}${art}?w=600 2x`,
+      `${this.basePath}${art}?w=900 3x`,
     ]
 
     node.innerHTML = `
-      <img class="poster" src="${art}" decode="async" srcset="${srcSet.join(
-      ', '
-    )}" alt="${title} poster" />
+      <img class="poster" src="${
+        srcSet[0]
+      }" decode="async" srcset="${srcSet.join(', ')}" alt="${title} poster" />
       <p>${title}${type === 'movie' ? ` (${year})` : ''}</p>
     `
     cardList.appendChild(node)

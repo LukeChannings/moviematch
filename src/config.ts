@@ -11,6 +11,7 @@ export const {
   DEFAULT_SECTION_TYPE_FILTER = Deno.env.get('DEFAULT_SECTION_TYPE_FILTER') ??
     'movie',
   LIBRARY_FILTER = Deno.env.get('LIBRARY_FILTER') ?? '',
+  ROOT_PATH = Deno.env.get('ROOT_PATH') ?? '',
 } = config()
 
 export const getVersion = async () => {
