@@ -115,16 +115,44 @@ export const login = async api => {
         try {
           const data = await api.login(name, roomCode)
           loginForm.removeEventListener('submit', handleSubmit)
+
+          await loginSection.animate(
+            {
+              opacity: ['1', '0'],
+            },
+            {
+              duration: 250,
+              easing: 'ease-in-out',
+              fill: 'both',
+            }
+          ).finished
+
           loginSection.hidden = true
           localStorage.setItem('user', name)
           localStorage.setItem('roomCode', roomCode)
 
           roomCodeLine.dataset.roomCode = roomCode
-          document
-            .querySelectorAll('.rate-section, .matches-section')
-            .forEach(el => {
-              el.hidden = false
+
+          document.body.scrollIntoView()
+
+          await Promise.all(
+            [
+              ...document.querySelectorAll('.rate-section, .matches-section'),
+            ].map(node => {
+              node.hidden = false
+              return node.animate(
+                {
+                  opacity: ['0', '1'],
+                },
+                {
+                  duration: 250,
+                  easing: 'ease-in-out',
+                  fill: 'both',
+                }
+              ).finished
             })
+          )
+
           resolve({ ...data, user: name })
         } catch (err) {
           alert(err.message)

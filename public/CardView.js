@@ -29,10 +29,10 @@ export class CardView {
     ]
 
     node.innerHTML = `
-      <img class="poster" src="${art}" srcset="${srcSet.join(
+      <img class="poster" src="${art}" decode="async" srcset="${srcSet.join(
       ', '
     )}" alt="${title} poster" />
-      <p>${title}${type === 'movie' ? `(${year})` : ''}</p>
+      <p>${title}${type === 'movie' ? ` (${year})` : ''}</p>
     `
     cardList.appendChild(node)
   }
