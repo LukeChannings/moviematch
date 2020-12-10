@@ -17,7 +17,7 @@ import {
 assert(typeof PLEX_URL === 'string', 'A PLEX_URL is required')
 assert(typeof PLEX_TOKEN === 'string', 'A PLEX_TOKEN is required')
 assert(
-  /^[A-Z-0-9]+$/i.test(PLEX_TOKEN),
+  !PLEX_TOKEN.startsWith('claim-'),
   'Your PLEX_TOKEN does not look right. Please see: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/'
 )
 
