@@ -1,7 +1,14 @@
 export class MovieMatchAPI extends EventTarget {
   constructor() {
     super()
-    this.socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`)
+    const basePath = location.pathname.replace(/\/(index\.html)?$/, '')
+
+    this.socket = new WebSocket(
+      `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
+        location.host
+      }${basePath}/ws`
+    )
+
     this.socket.addEventListener('message', e => this.handleMessage(e))
 
     this._movieList = []
