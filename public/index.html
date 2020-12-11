@@ -17,80 +17,80 @@
     <meta name="msapplication-TileColor" content="#e64747" />
     <meta
       name="msapplication-TileImage"
-      content="${ROOT_PATH}/icons/ms-icon-144x144.png"
+      content="${ROOT_PATH}/assets/icons/ms-icon-144x144.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="57x57"
-      href="${ROOT_PATH}/icons/apple-icon-57x57.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-57x57.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="60x60"
-      href="${ROOT_PATH}/icons/apple-icon-60x60.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-60x60.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="72x72"
-      href="${ROOT_PATH}/icons/apple-icon-72x72.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-72x72.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="76x76"
-      href="${ROOT_PATH}/icons/apple-icon-76x76.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-76x76.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="114x114"
-      href="${ROOT_PATH}/icons/apple-icon-114x114.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-114x114.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="120x120"
-      href="${ROOT_PATH}/icons/apple-icon-120x120.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-120x120.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="144x144"
-      href="${ROOT_PATH}/icons/apple-icon-144x144.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-144x144.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="152x152"
-      href="${ROOT_PATH}/icons/apple-icon-152x152.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-152x152.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="${ROOT_PATH}/icons/apple-icon-180x180.png"
+      href="${ROOT_PATH}/assets/icons/apple-icon-180x180.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="192x192"
-      href="${ROOT_PATH}/icons/android-icon-192x192.png"
+      href="${ROOT_PATH}/assets/icons/android-icon-192x192.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="${ROOT_PATH}/icons/favicon-32x32.png"
+      href="${ROOT_PATH}/assets/icons/favicon-32x32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="96x96"
-      href="${ROOT_PATH}/icons/favicon-96x96.png"
+      href="${ROOT_PATH}/assets/icons/favicon-96x96.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="${ROOT_PATH}/icons/favicon-16x16.png"
+      href="${ROOT_PATH}/assets/icons/favicon-16x16.png"
     />
     <title translate="no">MovieMatch</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="main.js" type="module" defer></script>
+    <script src="js/main.js" type="module" defer></script>
   </head>
   <body
     style="
@@ -104,7 +104,11 @@
   >
     <main class="app">
       <section class="login-section">
-        <img class="logo" src="${ROOT_PATH}/logo.svg" alt="MovieMatch Logo" />
+        <img
+          class="logo"
+          src="${ROOT_PATH}/assets/logo.svg"
+          alt="MovieMatch Logo"
+        />
         <form class="login-form js-login-form" name="login">
           <label for="name">${LOGIN_NAME}</label>
           <input type="text" name="name" autocomplete="given-name" required />
@@ -115,12 +119,6 @@
               <abbr title="Generate a new room code">Generate</abbr>
             </button>
           </div>
-          <p class="input-description">
-            <em
-              >Everyone you want to pick a movie with should use the same room
-              code</em
-            >
-          </p>
           <button type="submit" class="submit-button">${LOGIN_SUBMIT}</button>
         </form>
       </section>

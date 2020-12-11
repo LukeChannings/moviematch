@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 import { MovieMatchAPI } from './MovieMatchAPI.js'
 import { CardView } from './CardView.js'
 import { MatchesView } from './MatchesView.js'

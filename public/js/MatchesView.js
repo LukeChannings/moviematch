@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 export class MatchesView {
   constructor(matches = []) {
     this.matches = matches
@@ -48,11 +50,12 @@ export class MatchesView {
 
     this.matchesListEl.innerHTML = this.matches
       .map(
-        ({ users, movie }) => `
+        ({ users, movie }) =>
+          `
       <li>
         <a class="card" href="/movie${movie.key}" target="${
-          this.node.dataset.targetType
-        }">
+            this.node.dataset.targetType
+          }">
           <img class="poster" src="${movie.art}" alt="${movie.title} poster" />
           <p>${document.body.dataset.i18nMatchLikersTemplate
             .replace('$USERS', this.formatList(users))

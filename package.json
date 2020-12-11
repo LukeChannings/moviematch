@@ -5,6 +5,11 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "deno run --allow-net --allow-read --allow-env --unstable src/index.ts",
+    "lint": "run-p lint:*",
+    "lint:deno": "deno lint --unstable src",
+    "lint:css": "stylelint '**/*.css'",
+    "lint:style": "prettier --ignore-path .gitignore  '**/*.{ts,js,css,json}' --check",
+    "format": "prettier --ignore-path .gitignore  '**/*.{ts,js,css,json}' -w",
     "build-docker": "docker build -t lukechannings/moviematch .",
     "start-docker": "docker run -it --env-file .env -p 8000:8000 lukechannings/moviematch",
     "publish-docker": "npm run build-docker && docker push lukechannings/moviematch && docker tag lukechannings/moviematch:latest lukechannings/moviematch:$npm_package_version && docker push lukechannings/moviematch:$npm_package_version",
@@ -12,10 +17,21 @@
   },
   "keywords": [],
   "author": "Luke Channings",
-  "license": "MIT",
+  "license": "LICENSE",
   "prettier": {
     "semi": false,
     "arrowParens": "avoid",
     "singleQuote": true
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard",
+    "ignoreFiles": [
+      "public/index.html"
+    ]
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "stylelint": "^13.8.0",
+    "stylelint-config-standard": "^20.0.0"
   }
 }

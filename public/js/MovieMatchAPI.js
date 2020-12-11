@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 export class MovieMatchAPI extends EventTarget {
   constructor() {
     super()

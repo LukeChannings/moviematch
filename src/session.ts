@@ -247,7 +247,7 @@ class Session {
   }
 }
 
-let activeSessions: Map<string, Session> = new Map()
+const activeSessions: Map<string, Session> = new Map()
 
 export const getSession = (roomCode: string, ws: WebSocket): Session => {
   if (activeSessions.has(roomCode)) {

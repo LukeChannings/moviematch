@@ -71,3 +71,7 @@ Yes. The server will use your browser's preferred language by default if it's su
 The translations can be found [in the i18n folder](./i18n).
 
 The file names follow [BCP47](https://tools.ietf.org/html/bcp47) naming. Feel free to submit a Pull Request if you'd like your language to be supported.
+
+### Can I run MovieMatch behind a reverse proxy?
+
+Yes, you can read some documentation [here](./docs/reverse-proxy.markdown)

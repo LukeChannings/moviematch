@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 const cardList = document.querySelector('.js-card-stack')
 
 export class CardView {
@@ -91,9 +93,9 @@ export class CardView {
 
       if (currentDirection != direction) {
         currentDirection = direction
-        if (this.animation) {
-          this.animation.cancel()
-        }
+        // if (this.animation) {
+        //   this.animation.finish()
+        // }
         this.animation = this.getAnimation(direction)
 
         this.animation.pause()
@@ -136,12 +138,10 @@ export class CardView {
     return this.node.animate(
       {
         transform: [
-          'translate(0, 0) rotate(0deg)',
-          `translate(${direction === 'left' ? '-50vw' : '50vw'}, 5rem) rotate(${
-            direction === 'left' ? '-10deg' : '10deg'
-          })`,
+          'translate(0, 0)',
+          `translate(${direction === 'left' ? '-50vw' : '50vw'}, 0)`,
         ],
-        opacity: ['1', '0'],
+        opacity: ['1', '0.8', '0'],
       },
       {
         duration: this.animationDuration,

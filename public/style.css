@@ -1,42 +1,16 @@
-/* https://github.com/hankchizljaw/modern-css-reset */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
+
 body,
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote,
-dl,
-dd {
+p {
   margin: 0;
 }
-ul[role='list'],
-ol[role='list'] {
-  list-style: none;
-}
+
 html {
   scroll-behavior: smooth;
-}
-
-a:not([class]) {
-  text-decoration-skip-ink: auto;
-}
-img,
-picture {
-  max-width: 100%;
-  display: block;
-}
-input,
-button,
-textarea,
-select {
-  font: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -51,9 +25,6 @@ select {
 }
 
 :root {
-  font-family: system-ui;
-  touch-action: manipulation;
-
   --s1: 0.5rem;
   --s2: 1rem;
   --s3: 1.5rem;
@@ -66,12 +37,15 @@ select {
   --color-brand: #e64747;
   --color-brand-alt: hsl(240, 50%, 70%);
   --color-line: #dedede;
+
+  font-family: system-ui;
+  touch-action: manipulation;
 }
 
 body {
   text-rendering: optimizeSpeed;
   line-height: 1.5;
-  background-image: url(background-grain.png), url(background.svg);
+  background-image: url(assets/background-grain.png), url(assets/background.svg);
   background-size: auto, cover;
   background-repeat: repeat, no-repeat;
 }
@@ -134,13 +108,16 @@ body {
   left: 0;
   width: 100%;
   padding: var(--s3) var(--s2) var(--s2);
-  background-image: linear-gradient(
-    179deg,
-    rgba(238, 238, 238, 0) 0%,
-    rgba(238, 238, 238, 0) 20%,
-    rgba(0, 0, 0, 0.31) 40%,
-    rgba(0, 0, 0, 0.9) 100%
-  );
+
+  /* prettier-ignore */
+  background-image:
+    linear-gradient(
+      179deg,
+      rgba(238, 238, 238, 0) 0%,
+      rgba(238, 238, 238, 0) 20%,
+      rgba(0, 0, 0, 0.31) 40%,
+      rgba(0, 0, 0, 0.9) 100%
+    );
   text-align: left;
   color: var(--color-secondary);
   font-weight: bold;
@@ -150,6 +127,7 @@ body {
 
 .card-stack {
   --empty-text: var(--i18n-loading);
+
   position: relative;
 }
 
@@ -192,14 +170,17 @@ body {
 .card-stack > .card:nth-of-type(1) {
   z-index: 4;
 }
+
 .card-stack > .card:nth-of-type(2) {
   transform: translate(-1%, -1%);
   z-index: 3;
 }
+
 .card-stack > .card:nth-of-type(3) {
   transform: translate(-2%, -2%);
   z-index: 2;
 }
+
 .card-stack > .card:nth-of-type(4) {
   transform: translate(-3%, -3%);
   z-index: 1;
@@ -209,9 +190,11 @@ body {
   .card-stack > .card:nth-of-type(2) {
     transform: translate(-16.6%, -3%);
   }
+
   .card-stack > .card:nth-of-type(3) {
     transform: translate(-33.3%, -6%);
   }
+
   .card-stack > .card:nth-of-type(4) {
     transform: translate(-50%, -10%);
   }
@@ -416,10 +399,6 @@ body {
 .login-form .generate-button abbr {
   padding: 0 0.5rem;
   text-decoration: none;
-}
-
-.login-form .input-description {
-  font-weight: bold;
 }
 
 .login-form .submit-button {

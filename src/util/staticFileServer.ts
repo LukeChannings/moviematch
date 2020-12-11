@@ -1,7 +1,7 @@
 import { ServerRequest } from 'https://deno.land/std@0.79.0/http/server.ts'
 import {
-  join,
   extname,
+  join,
   normalize,
 } from 'https://deno.land/std@0.79.0/path/posix.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
