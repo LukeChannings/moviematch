@@ -1,0 +1,19 @@
+name: Testing
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: denolib/setup-deno@v2
+      with:
+        deno-version: v1.6.0
+    - run: 'deno lint --unstable src public'

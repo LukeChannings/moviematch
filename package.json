@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "deno run --allow-net --allow-read --allow-env --unstable src/index.ts",
-    "lint": "run-p lint:*",
+    "test": "run-p lint:*",
     "lint:deno": "deno lint --unstable src",
     "lint:css": "stylelint '**/*.css'",
     "lint:style": "prettier --ignore-path .gitignore  '**/*.{ts,js,css,json}' --check",
