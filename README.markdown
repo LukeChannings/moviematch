@@ -48,7 +48,7 @@ The following variables are supported via a `.env` file or environment variables
 | LOG_LEVEL                   | How much the server should log                                                                                                                                        | No       | `INFO` (supported options are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`) |
 | MOVIE_BATCH_SIZE            | How many movies to get from the server initially. Unless you're running out of cards really quickly you should leave this alone.                                      | No       | 25                                                                                 |
 
-## Q&A
+## FAQ
 
 ### Can a user get my Plex Token?
 
