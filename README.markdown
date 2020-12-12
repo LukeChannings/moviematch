@@ -1,4 +1,4 @@
-# <img src="public/logo.svg" height="40px" alt="MovieMatch" />
+# <img src="public/assets/logo.svg" height="40px" alt="MovieMatch" />
 
 <div>
   <a href="screenshots/join.png"><img src="screenshots/join.png" alt="Join a room" width="25%" /></a>
