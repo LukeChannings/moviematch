@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="${LANG}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, width=device-width, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#e64747" />
+    <meta name="apple-mobile-web-app-title" content="MovieMatch" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#e64747" />
+    <meta
+      name="msapplication-TileImage"
+      content="${ROOT_PATH}/static/icons/ms-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="${ROOT_PATH}/static/icons/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="${ROOT_PATH}/static/icons/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="${ROOT_PATH}/static/icons/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="${ROOT_PATH}/static/icons/apple-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="${ROOT_PATH}/static/icons/apple-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="${ROOT_PATH}/static/icons/apple-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="${ROOT_PATH}/static/icons/apple-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="${ROOT_PATH}/static/icons/apple-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="${ROOT_PATH}/static/icons/apple-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="${ROOT_PATH}/static/icons/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="${ROOT_PATH}/static/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="${ROOT_PATH}/static/icons/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="${ROOT_PATH}/static/icons/favicon-16x16.png"
+    />
+    <title translate="no">MovieMatch</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="js/main.js" type="module" defer></script>
+  </head>
+  <body
+    style="
+      --i18n-no-matches: '${MATCHES_SECTION_NO_MATCHES}';
+      --i18n-loading: '${RATE_SECTION_LOADING}';
+      --i18n-exhausted-cards: '${RATE_SECTION_EXHAUSTED_CARDS}';
+    "
+    data-i18n-list-conjunction="${LIST_CONJUNCTION}"
+    data-i18n-match-likers-template="${MATCHES_SECTION_CARD_LIKERS}"
+    data-base-path="${ROOT_PATH}"
+  >
+    <main class="app">
+      <section class="login-section">
+        <img
+          class="logo"
+          src="${ROOT_PATH}/static/logo.svg"
+          alt="MovieMatch Logo"
+        />
+        <form class="login-form js-login-form" name="login">
+          <label for="name">${LOGIN_NAME}</label>
+          <input type="text" name="name" autocomplete="given-name" required />
+          <label for="room-code">${LOGIN_ROOM_CODE}</label>
+          <div class="room-code-container">
+            <input type="text" name="roomCode" required pattern="[0-9A-Z]{4}" />
+            <button type="button" class="generate-button js-generate-room-code">
+              <abbr title="Generate a new room code">Generate</abbr>
+            </button>
+          </div>
+          <button type="submit" class="submit-button js-submit-button" disabled>
+            ${LOGIN_SUBMIT}
+          </button>
+        </form>
+      </section>
+      <section class="rate-section" hidden>
+        <div class="card-stack js-card-stack"></div>
+        <div class="rate-controls">
+          <button type="button" class="rate-thumbs-down">👎</button>
+          <button type="button" class="rate-thumbs-up">👍</button>
+        </div>
+      </section>
+      <section
+        class="matches-section js-matches-section"
+        hidden
+        data-target-type="${CONFIG_MATCHES_TARGET_TYPE}"
+      >
+        <hr class="js-room-code-line" />
+        <p class="matches-title">
+          <span class="matches-count js-matches-count" data-count="0"></span>
+          ${MATCHES_SECTION_TITLE}
+        </p>
+        <ul class="matches-list js-matches-list"></ul>
+      </section>
+    </main>
+    <footer>
+      <p>MovieMatch ${VERSION}</p>
+    </footer>
+  </body>
+</html>

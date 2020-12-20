@@ -1,0 +1,38 @@
+<svg width="375" height="800"
+  xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient cx="100%" cy="100%" fx="100%" fy="100%" r="85.719%" gradientTransform="matrix(0 -.46875 1.16479 0 -.165 1.469)" id="a">
+      <stop stop-color="#7A7AB8" offset="0%"/>
+      <stop stop-color="#E64747" stop-opacity="0" offset="100%"/>
+    </radialGradient>
+    <radialGradient cx="0%" cy="100%" fx="0%" fy="100%" r="85.719%" gradientTransform="matrix(0 -.46875 1.16479 0 -1.165 1)" id="b">
+      <stop stop-color="#7A7AB8" offset="0%"/>
+      <stop stop-color="#7A7AB8" stop-opacity="0" offset="100%"/>
+    </radialGradient>
+    <radialGradient cx="50%" cy="8.456%" fx="50%" fy="8.456%" r="82.003%" gradientTransform="matrix(0 -.46875 .61363 0 .448 .319)" id="c">
+      <stop stop-color="#7A7AB8" offset="0%"/>
+      <stop stop-color="#E64747" stop-opacity="0" offset="100%"/>
+    </radialGradient>
+    <radialGradient cx="0%" cy="0%" fx="0%" fy="0%" r="161.798%" gradientTransform="matrix(.90324 -.20116 .6218 .61349 0 0)" id="d">
+      <stop stop-color="#7A7AB8" offset="0%"/>
+      <stop stop-color="#E64747" stop-opacity="0" offset="100%"/>
+    </radialGradient>
+    <radialGradient cx="0%" cy="50%" fx="0%" fy="50%" r="100%" gradientTransform="matrix(1 0 0 .67921 0 .16)" id="e">
+      <stop stop-color="#7A7AB8" offset="0%"/>
+      <stop stop-color="#E64747" stop-opacity="0" offset="100%"/>
+    </radialGradient>
+    <radialGradient cx="100%" cy="0%" fx="100%" fy="0%" r="235.608%" gradientTransform="matrix(-.42443 .42443 -1.312 -.28828 1.424 -.424)" id="f">
+      <stop stop-color="#4747E6" stop-opacity=".501" offset="0%"/>
+      <stop stop-color="#7A7AB8" stop-opacity="0" offset="100%"/>
+    </radialGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <path fill="#FFF" d="M0 0h375v800H0z"/>
+    <path fill="url(#a)" d="M0 0h375v800H0z"/>
+    <path fill="url(#b)" d="M0 0h375v800H0z"/>
+    <path fill="url(#c)" d="M0 0h375v800H0z"/>
+    <path fill="url(#d)" d="M0 0h375v800H0z"/>
+    <path fill="url(#e)" d="M0 0h375v800H0z"/>
+    <path fill="url(#f)" d="M0 0h375v800H0z"/>
+  </g>
+</svg>

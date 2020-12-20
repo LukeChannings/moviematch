@@ -1,10 +1,10 @@
 {
   "editor.formatOnSave": true,
+  "deno.enable": true,
+  "deno.unstable": true,
+  "deno.lint": false,
+  "deno.import_map": "./import_map.json",
   "deno.import_intellisense_origins": {
     "https://deno.land": true
-  },
-  "deno.unstable": true,
-  "deno.lint": true,
-  "deno.enable": true,
-  "stylelint.enable": true
+  }
 }
