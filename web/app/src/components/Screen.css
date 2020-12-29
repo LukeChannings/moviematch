@@ -1,0 +1,7 @@
+.Screen {
+  padding: var(--s5);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  min-height: calc(var(--vh, 1vh) * 100);
+}

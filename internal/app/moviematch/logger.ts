@@ -1,4 +1,4 @@
-import * as log from "https://deno.land/std@0.79.0/log/mod.ts";
+import * as log from "https://deno.land/std/log/mod.ts";
 
 export const setupLogger = async (logLevel: keyof typeof log.LogLevels) => {
   await log.setup({

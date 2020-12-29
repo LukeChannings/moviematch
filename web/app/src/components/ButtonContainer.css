@@ -1,0 +1,22 @@
+.ButtonContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+.ButtonContainer > .Button:nth-of-type(n + 2) {
+  margin-top: var(--s2);
+}
+
+@media screen and (min-width: 48em) {
+  .ButtonContainer {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+
+  .ButtonContainer > .Button:nth-of-type(n + 2) {
+    margin-top: 0;
+    margin-right: var(--s2);
+  }
+}

@@ -1,0 +1,36 @@
+.Field {
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui;
+  font-size: 1rem;
+}
+
+.Field_Label {
+  color: var(--mm-black);
+  font-weight: bold;
+}
+
+.Field_Input {
+  margin-top: var(--s2);
+  width: 100%;
+  height: 3rem;
+  appearance: none;
+  border: 2px solid var(--mm-black);
+  background-color: transparent;
+  border-radius: var(--s1);
+  padding: var(--s2);
+  box-shadow: none;
+}
+
+.Field_Input:focus {
+  border: 2px solid var(--mm-blue);
+  outline: none;
+}
+
+.Field.--invalid .Field_Input {
+  border: 2px solid var(--mm-dark-red);
+}
+
+.Field_Error {
+  color: var(--mm-dark-red);
+}

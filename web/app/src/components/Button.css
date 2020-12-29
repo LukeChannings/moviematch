@@ -1,0 +1,36 @@
+.Button {
+  --bg-color: var(--mm-blue);
+  appearance: none;
+  font-size: 1.25rem;
+  font-family: system-ui;
+  font-weight: 400;
+  border-radius: var(--s2);
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.Button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.ButtonPrimary {
+  background-color: var(--bg-color);
+  padding: var(--s2) var(--s1);
+  color: var(--mm-white);
+}
+
+.ButtonSecondary {
+  background-color: transparent;
+  border: 2px solid var(--bg-color);
+  padding: var(--s1);
+  color: var(--mm-black);
+}
+
+@media screen and (min-width: 48em) {
+  .Button {
+    min-width: 10rem;
+    padding: var(--s2) var(--s4);
+  }
+}

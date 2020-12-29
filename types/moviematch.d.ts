@@ -2,30 +2,52 @@
  * Shared API interfaces between the frontend and backend
  */
 
-export type Message =
+export type Message = ServerMessage | ClientMessage;
+
+export type ServerMessage =
   | { type: "login"; payload: Login }
+  | { type: "createRoom"; payload: CreateRoomRequest }
+  | { type: "joinRoom"; payload: JoinRoomRequest }
+  | { type: "rate"; payload: Rate };
+
+export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
   | { type: "loginSuccess" }
-  | { type: "createRoom"; payload: CreateRoomRequest }
   | { type: "createRoomError"; payload: CreateRoomError }
   | { type: "createRoomSuccess" }
-  | { type: "joinRoom"; payload: JoinRoomRequest }
   | { type: "joinRoomError"; payload: JoinRoomError }
   | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
-  | { type: "rate"; payload: Rate }
   | { type: "match"; payload: Match }
-  | { type: "media"; payload: Media[] };
+  | { type: "media"; payload: Media[] }
+  | { type: "config"; payload: Config };
+
+// Configure message
+
+export interface Config {
+  translations: Record<string, string>;
+  requirePlexLogin: boolean;
+}
 
 // Login (when login is required to create a new room)
 
 export interface Login {
-  name: string;
-  password: string;
+  userName: string;
+  plexAuth?: {
+    clientId: string;
+    plexToken: string;
+  };
 }
 
 export interface LoginError {
-  name: "UserLoggedIn";
+  name: "MalformedMessage";
   message: string;
+}
+
+export type Permissions = "CanCreateRoom";
+
+export interface LoginSuccess {
+  avatarImage: string;
+  permissions: Permissions[];
 }
 
 // Create Room
@@ -38,16 +60,18 @@ export interface Filter {
   value: string;
 }
 
+export type RoomSort = "random" | "rating";
+
 export interface CreateRoomRequest {
   roomName: string;
   password?: string;
   options?: RoomOption[];
   filters?: Filter[];
-  sort?: "random" | "rating";
+  sort?: RoomSort;
 }
 
 export interface CreateRoomError {
-  name: "RoomExistsError" | "UnauthorizedError";
+  name: "RoomExistsError" | "UnauthorizedError" | "NotLoggedInError";
   message: string;
 }
 
@@ -55,15 +79,16 @@ export interface CreateRoomError {
 
 export interface JoinRoomRequest {
   roomName: string;
-  userName: string;
   password?: string;
 }
 
 export interface JoinRoomError {
   name:
     | "UserAlreadyJoinedError"
-    | "PasswordRequiredError"
-    | "RoomNotFoundError";
+    | "AccessDeniedError"
+    | "RoomNotFoundError"
+    | "NotLoggedInError"
+    | "UnknownError";
   message: string;
 }
 
@@ -75,7 +100,7 @@ export interface JoinRoomSuccess {
 
 export interface Media {
   id: string;
-  type: "movie" | "show";
+  type: "movie" | "show" | "artist" | "photo";
   title: string;
   description: string;
   tagline: string;
