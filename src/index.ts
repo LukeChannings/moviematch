@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.79.0/http/server.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import { getServerId, proxyPoster } from './api/plex.ts'
-import { PLEX_URL, PORT } from './config.ts'
+import { PLEX_URL, PORT, LINK_TYPE } from './config.ts'
 import { getLinkTypeForRequest } from './i18n.ts'
 import { handleLogin } from './session.ts'
 import { serveFile } from './util/staticFileServer.ts'
@@ -35,7 +35,13 @@ for await (const req of server) {
       location = `plex://preplay/?metadataKey=${encodeURIComponent(
         key
       )}&metadataType=1&server=${serverId}`
-    } else {
+    }
+    else if (LINK_TYPE == "plex.tv") {
+      location = `https://app.plex.tv/desktop#!/server/${serverId}/details?key=${encodeURIComponent(
+        key
+      )}`
+    }
+    else {
       location = `${PLEX_URL}/web/index.html#!/server/${serverId}/details?key=${encodeURIComponent(
         key
       )}`
