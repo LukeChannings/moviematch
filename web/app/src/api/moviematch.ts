@@ -1,5 +1,6 @@
 import {
   ClientMessage,
+  CreateRoomRequest,
   JoinRoomRequest,
   JoinRoomSuccess,
   Login,
@@ -15,12 +16,12 @@ const API_URL = (() => {
 
 type FilterClientMessageByType<
   A extends ClientMessage,
-  ClientMessageType extends string
+  ClientMessageType extends string,
 > = A extends { type: ClientMessageType } ? A : never;
 
 export class MovieMatchClient extends EventTarget {
   ws: WebSocket;
-  reconnectionAttempts: number = 0;
+  reconnectionAttempts = 0;
 
   constructor() {
     super();
@@ -30,7 +31,6 @@ export class MovieMatchClient extends EventTarget {
   }
 
   private handleMessage = (e: MessageEvent<string>) => {
-    console.log(e.data);
     try {
       const msg: ClientMessage = JSON.parse(e.data);
       this.dispatchEvent(new MessageEvent(msg.type, { data: msg }));
@@ -39,7 +39,7 @@ export class MovieMatchClient extends EventTarget {
     }
   };
 
-  waitForConnected = async () => {
+  waitForConnected = () => {
     if (this.ws.readyState === WebSocket.OPEN) {
       return true;
     }
@@ -53,8 +53,8 @@ export class MovieMatchClient extends EventTarget {
     console.log(`WebSocket closed!`);
   };
 
-  waitForMessage = async <K extends ClientMessage["type"]>(
-    type: K
+  waitForMessage = <K extends ClientMessage["type"]>(
+    type: K,
   ): Promise<FilterClientMessageByType<ClientMessage, K>> => {
     return new Promise((resolve) => {
       this.addEventListener(
@@ -66,7 +66,7 @@ export class MovieMatchClient extends EventTarget {
         },
         {
           once: true,
-        }
+        },
       );
     });
   };
@@ -84,10 +84,12 @@ export class MovieMatchClient extends EventTarget {
     if (msg.type === "loginError") {
       throw new Error(JSON.stringify(msg.payload));
     }
+
+    return msg.payload;
   };
 
   joinRoom = async (
-    joinRoomRequest: JoinRoomRequest
+    joinRoomRequest: JoinRoomRequest,
   ): Promise<JoinRoomSuccess> => {
     await this.waitForConnected();
 
@@ -103,6 +105,26 @@ export class MovieMatchClient extends EventTarget {
 
     if (msg.type === "joinRoomError") {
       throw new Error(JSON.stringify(msg.payload));
+    }
+
+    return msg.payload;
+  };
+
+  createRoom = async (createRoomRequest: CreateRoomRequest) => {
+    await this.waitForConnected();
+
+    this.sendMessage({
+      type: "createRoom",
+      payload: createRoomRequest,
+    });
+
+    const msg = await Promise.race([
+      this.waitForMessage("createRoomSuccess"),
+      this.waitForMessage("createRoomError"),
+    ]);
+
+    if (msg.type === "createRoomError") {
+      throw new Error(`${msg.payload.name}: ${msg.payload.message}`);
     }
 
     return msg.payload;

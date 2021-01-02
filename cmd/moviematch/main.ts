@@ -1,10 +1,10 @@
-import { assert } from "https://deno.land/std@0.82.0/_util/assert.ts";
-import { serve } from "https://deno.land/std@0.82.0/http/server.ts";
+import { assert } from "https://deno.land/std@0.83.0/_util/assert.ts";
+import { serve } from "https://deno.land/std@0.83.0/http/server.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
-import { setupLogger, getLogger } from "/internal/app/moviematch/logger.ts";
+import { getLogger, setupLogger } from "/internal/app/moviematch/logger.ts";
 import { render } from "/internal/app/moviematch/template.ts";
 import { getAvailableLocales } from "/internal/app/moviematch/i18n.ts";
-import { getAllMedia, isAvailable } from "/internal/app/plex/api.ts";
+import { isAvailable } from "/internal/app/plex/api.ts";
 import {
   isAuthorized,
   respondRequiringAuth,
@@ -12,6 +12,8 @@ import {
 import { serveStatic } from "/internal/util/serveStatic.ts";
 import { upgradeWebSocket } from "/internal/app/moviematch/websocket.ts";
 import { watchAndBuild } from "/internal/app/moviematch/devServer.ts";
+import { proxy } from "/internal/util/proxy.ts";
+import { urlFromReqUrl } from "/internal/util/url.ts";
 
 const config = getConfig();
 const availableLocales = await getAvailableLocales();
@@ -22,13 +24,6 @@ assert(
   await isAvailable(config.plexUrl),
   `Availability of ${config.plexUrl.origin} could not be verified.`
 );
-
-const libs = await getAllMedia(config.plexUrl, ["movie"], {
-  filters: [["year", "IS", "2000"]],
-  sort: ["rating", "DESCENDING"],
-});
-
-Deno.writeTextFile("./movies.json", JSON.stringify(libs, null, 2));
 
 assert(availableLocales.size !== 0, `Could not find any translation files`);
 
@@ -51,7 +46,7 @@ if (config.devMode) {
 
 for await (const req of server) {
   log.debug(`Handling ${req.url}`);
-  const { pathname } = new URL("http://" + config.addr + req.url);
+  const { pathname } = urlFromReqUrl(req.url);
 
   if (config.basicAuth && !isAuthorized(config.basicAuth, req)) {
     log.debug(`Not authorized`);
@@ -68,7 +63,23 @@ for await (const req of server) {
         upgradeWebSocket(req);
         break;
       case "/api/poster":
-        req.respond({ status: 404 });
+        const { searchParams } = urlFromReqUrl(req.url);
+        const key = searchParams.get("key");
+        const width = searchParams.has("w") ? searchParams.get("w")! : "500";
+        if (!key) {
+          req.respond({ status: 404 });
+        } else {
+          const height = String(Number(width) * 1.5);
+
+          proxy(req, "/photo/:/transcode", config.plexUrl, {
+            width,
+            height,
+            minSize: "1",
+            upscale: "1",
+            url: key,
+          });
+        }
+
         break;
       case "/api/plexAuthCallback":
         console.log("Plex Auth callback");

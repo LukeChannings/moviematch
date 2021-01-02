@@ -1,6 +1,5 @@
 import { getAllMedia } from "/internal/app/plex/api.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
-import { getLogger } from "/internal/app/moviematch/logger.ts";
 import {
   CreateRoomRequest,
   Filter,
@@ -9,6 +8,7 @@ import {
   RoomOption,
   RoomSort,
 } from "/types/moviematch.d.ts";
+import { memo } from "/internal/util/memo.ts";
 
 export class Room {
   roomName: string;
@@ -27,27 +27,27 @@ export class Room {
     this.filters = req.filters;
     this.sort = req.sort ?? "random";
 
-    getAllMedia(getConfig().plexUrl)
-      .then((plexVideoItems) => {
-        this.media = plexVideoItems.map((videoItem) => ({
-          id: videoItem.guid,
-          type: videoItem.type,
-          title: videoItem.title,
-          description: videoItem.summary,
-          tagline: videoItem.tagline,
-          year: videoItem.year,
-          posterUrl: videoItem.thumb,
-          linkUrl: "",
-          genres: videoItem.Genre?.map((_) => _.tag) ?? [],
-          duration: Number(videoItem.duration),
-          rating: Number(videoItem.rating),
-          contentRating: videoItem.contentRating,
-        }));
-      })
-      .catch((err) => {
-        getLogger().error(err);
-      });
+    this.getMedia();
   }
+
+  getMedia = memo(async () => {
+    const plexVideoItems = await getAllMedia(getConfig().plexUrl);
+    this.media = plexVideoItems.map((videoItem) => ({
+      id: videoItem.guid,
+      type: videoItem.type,
+      title: videoItem.title,
+      description: videoItem.summary,
+      tagline: videoItem.tagline,
+      year: videoItem.year,
+      posterUrl: `/api/poster?key=${encodeURIComponent(videoItem.thumb)}`,
+      linkUrl: "",
+      genres: videoItem.Genre?.map((_) => _.tag) ?? [],
+      duration: Number(videoItem.duration),
+      rating: Number(videoItem.rating),
+      contentRating: videoItem.contentRating,
+    }));
+    return this.media;
+  });
 }
 
 type RoomName = string;

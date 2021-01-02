@@ -1,5 +1,5 @@
-import { ServerRequest } from "https://deno.land/std@0.82.0/http/server.ts";
-import { acceptWebSocket } from "https://deno.land/std@0.82.0/ws/mod.ts";
+import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
+import { acceptWebSocket } from "https://deno.land/std@0.83.0/ws/mod.ts";
 import { getTranslations } from "/internal/app/moviematch/template.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
 import { getLogger } from "/internal/app/moviematch/logger.ts";

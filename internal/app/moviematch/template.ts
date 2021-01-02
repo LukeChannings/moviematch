@@ -1,4 +1,4 @@
-import { ServerRequest } from "https://deno.land/std@0.82.0/http/server.ts";
+import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
 import { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
 import { memo } from "/internal/util/memo.ts";
 import {

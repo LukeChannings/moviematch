@@ -6,7 +6,7 @@ interface ButtonProps {
   appearance: "primary" | "secondary";
   children: string;
   paddingTop?: Spacing;
-  onPress?(): void;
+  onPress?(e: React.MouseEvent): void;
   disabled?: boolean;
   color?: Color;
 }
@@ -28,6 +28,7 @@ export const Button = ({
       ...(color ? { "--bg-color": `var(--mm-${color})` } : {}),
     }}
     onClick={onPress}
+    type="button"
     disabled={disabled}
   >
     {children}

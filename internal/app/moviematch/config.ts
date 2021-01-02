@@ -35,13 +35,12 @@ export const getConfig = (): Config => {
   assert(typeof PLEX_TOKEN === "string", "A PLEX_TOKEN is required");
   assert(
     isLogLevel(LOG_LEVEL),
-    `LOG_LEVEL must be one of ${Object.keys(LogLevels).join(", ")}`
+    `LOG_LEVEL must be one of ${Object.keys(LogLevels).join(", ")}`,
   );
 
-  const basicAuth =
-    !!AUTH_USER && !!AUTH_PASS
-      ? { user: AUTH_USER, password: AUTH_PASS }
-      : undefined;
+  const basicAuth = !!AUTH_USER && !!AUTH_PASS
+    ? { user: AUTH_USER, password: AUTH_PASS }
+    : undefined;
 
   return {
     addr: `${HOST}:${PORT}`,

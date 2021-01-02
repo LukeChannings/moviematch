@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "typeRoots": ["./types"],
-    "types": ["./types"]
+    "typeRoots": ["./types"]
   }
 }

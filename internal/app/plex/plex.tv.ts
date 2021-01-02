@@ -5,13 +5,33 @@
 
 const APP_NAME = "MovieMatch";
 
+export interface PlexUser {
+  id: string;
+  uuid: string;
+  username: string;
+  title: string;
+  email: string;
+  thumb: string;
+  authToken: string;
+  guest: boolean;
+  restricted: boolean;
+  subscriptionDescription: string;
+  anonymous: null;
+  home: boolean;
+  homeSize: number;
+  homeAdmin: boolean;
+  maxHomeSize: number;
+  certificateVersion: number;
+  rememberExpiresAt: number;
+}
+
 export const getUser = async ({
   clientId,
   plexToken,
 }: {
   clientId: string;
   plexToken: string;
-}) => {
+}): Promise<PlexUser> => {
   const search = new URLSearchParams({
     "X-Plex-Product": APP_NAME,
     "X-Plex-Client-Identifier": clientId,

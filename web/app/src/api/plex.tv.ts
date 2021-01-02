@@ -70,7 +70,7 @@ export const checkPin = async () => {
         headers: {
           accept: "application/json",
         },
-      }
+      },
     );
 
     if (!req.ok) {

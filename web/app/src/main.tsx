@@ -1,52 +1,45 @@
-import React, { createContext } from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { useCallback } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { render } from "https://cdn.skypack.dev/react-dom@17.0.1?dts";
 
 import "./main.css";
 
-import { Spinner } from "./components/Spinner.tsx";
+import "./components/Screen.ts";
 
 import { LoginScreen } from "./screens/Login.tsx";
 import { JoinScreen } from "./screens/Join.tsx";
 import { CreateScreen } from "./screens/Create.tsx";
 import { RateScreen } from "./screens/Rate.tsx";
-import { MovieMatchContext, useStore } from "./state.ts";
+import { MovieMatchContext, Routes, useStore } from "./state.ts";
+import { ScreenProps } from "./components/Screen.ts";
+import { Loading } from "./screens/Loading.tsx";
 
 const MovieMatch = () => {
   const [store, dispatch] = useStore();
-
-  if (!store.config) {
-    return (
-      <section className="Screen">
-        <Spinner />
-      </section>
-    );
-  }
+  const navigate = useCallback(async function navigate(route: Routes) {
+    dispatch({ type: "navigate", payload: route });
+  }, []);
 
   return (
     <MovieMatchContext.Provider value={store}>
       {(() => {
-        switch (store.activeScreen) {
-          case "login":
-            return (
-              <LoginScreen
-                handleDone={() => {
-                  dispatch({ type: "setScreen", payload: "join" });
-                }}
-              />
-            );
-          case "join":
-            return (
-              <JoinScreen
-                handleDone={() => {
-                  dispatch({ type: "setScreen", payload: "rate" });
-                }}
-              />
-            );
-          case "createRoom":
-            return <CreateScreen />;
-          case "rate":
-            return <RateScreen />;
-        }
+        const routes: Record<
+          Routes["path"],
+          (props: ScreenProps<any>) => JSX.Element
+        > = {
+          loading: Loading,
+          login: LoginScreen,
+          join: JoinScreen,
+          createRoom: CreateScreen,
+          rate: RateScreen,
+        };
+        const CurrentComponent = routes[store.route.path];
+        return (
+          <CurrentComponent
+            navigate={navigate}
+            dispatch={dispatch}
+            params={"params" in store.route ? store.route.params : undefined}
+          />
+        );
       })()}
     </MovieMatchContext.Provider>
   );

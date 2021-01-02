@@ -1,4 +1,4 @@
-import { WebSocket } from "https://deno.land/std@0.82.0/ws/mod.ts";
+import { WebSocket } from "https://deno.land/std@0.83.0/ws/mod.ts";
 import {
   ClientMessage,
   CreateRoomRequest,
@@ -6,6 +6,7 @@ import {
   JoinRoomRequest,
   Login,
   LoginError,
+  LoginSuccess,
   Rate,
   ServerMessage,
 } from "/types/moviematch.d.ts";
@@ -20,7 +21,7 @@ import {
   UserAlreadyJoinedError,
 } from "/internal/app/moviematch/room.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
-import { getUser } from "/internal/app/plex/plex.tv.ts";
+import { getUser, PlexUser } from "/internal/app/plex/plex.tv.ts";
 
 const log = getLogger();
 const config = getConfig();
@@ -31,6 +32,7 @@ export class Client {
   userName?: string;
   plexAuth?: Login["plexAuth"];
   translations: Record<string, string>;
+  plexUser?: PlexUser;
 
   constructor(ws: WebSocket, translations: Record<string, string>) {
     this.ws = ws;
@@ -104,20 +106,26 @@ export class Client {
 
     this.userName = login.userName;
 
+    const successMessage: LoginSuccess = {
+      avatarImage: "",
+      permissions: [],
+    };
+
     if (login.plexAuth) {
       try {
-        const user = await getUser(login.plexAuth);
+        const plexUser = await getUser(login.plexAuth);
         this.plexAuth = login.plexAuth;
-        log.info(`USER ${JSON.stringify(user, null, 2)}`);
+        this.plexUser = plexUser;
+        successMessage.avatarImage = plexUser.thumb;
       } catch (err) {
         log.error(`plexAuth invalid! ${JSON.stringify(login.plexAuth)}`, err);
       }
     }
 
-    this.sendMessage({ type: "loginSuccess" });
+    this.sendMessage({ type: "loginSuccess", payload: successMessage });
   }
 
-  handleCreateRoom(createRoomReq: CreateRoomRequest) {
+  async handleCreateRoom(createRoomReq: CreateRoomRequest) {
     log.info(`Handling room creation event: ${JSON.stringify(createRoomReq)}`);
 
     if (!this.userName) {
@@ -134,6 +142,10 @@ export class Client {
       this.room = createRoom(createRoomReq);
       this.sendMessage({
         type: "createRoomSuccess",
+        payload: {
+          previousMatches: [],
+          media: await this.room.getMedia(),
+        },
       });
     } catch (err) {
       if (err instanceof RoomExistsError) {
@@ -148,7 +160,7 @@ export class Client {
     }
   }
 
-  handleJoinRoom(joinRoomReq: JoinRoomRequest) {
+  async handleJoinRoom(joinRoomReq: JoinRoomRequest) {
     if (!this.userName) {
       return this.sendMessage({
         type: "joinRoomError",
@@ -164,6 +176,7 @@ export class Client {
         type: "joinRoomSuccess",
         payload: {
           previousMatches: [],
+          media: await this.room.getMedia(),
         },
       });
     } catch (err) {

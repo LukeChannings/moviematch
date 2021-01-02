@@ -1,0 +1,51 @@
+.CardStack {
+  --rotX: -3deg;
+  --y: -25px;
+  --z: -40px;
+
+  position: relative;
+  perspective: 100vh;
+}
+
+@keyframes rotation {
+  0% {
+    transform: translate3d(
+        0,
+        calc(var(--y) * var(--i)),
+        calc(var(--z) * var(--i))
+      )
+      rotateX(var(--rotX));
+  }
+  100% {
+    transform: translate3d(
+        0,
+        calc(var(--y) * (var(--i) - 1)),
+        calc(var(--z) * (var(--i) - 1))
+      )
+      rotateX(var(--rotX));
+  }
+}
+
+.CardStack > .Card {
+  z-index: 0;
+  animation: rotation 1s linear 0s 1 both paused;
+}
+
+.CardStack > .Card:nth-of-type(n + 2) {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.CardStack > .Card:nth-of-type(2) {
+  z-index: -1;
+}
+.CardStack > .Card:nth-of-type(3) {
+  z-index: -2;
+}
+.CardStack > .Card:nth-of-type(4) {
+  z-index: -3;
+}
+.CardStack > .Card:nth-of-type(5) {
+  z-index: -4;
+}

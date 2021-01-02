@@ -7,12 +7,13 @@ import {
   PlexVideoItem,
 } from "/internal/app/plex/types.d.ts";
 import { updatePath, updateSearch } from "/internal/util/url.ts";
+import { memo } from "/internal/util/memo.ts";
 
 export class AuthenticationError extends Error {}
 export class TimeoutError extends Error {}
 
 export const isAvailable = async (plexUrl: URL): Promise<boolean> => {
-  const req = await fetch(updatePath(plexUrl, "/identity"));
+  const req = await fetch(updatePath(plexUrl, "/identity").href);
   return req.ok;
 };
 
@@ -78,8 +79,8 @@ enum SortDirection {
 
 type Sort = [SortKeyword, keyof typeof SortDirection];
 
-export const getDirectories = async (plexUrl: URL) => {
-  const req = await fetch(updatePath(plexUrl, `/library/sections`), {
+export const getDirectories = memo(async (plexUrl: URL) => {
+  const req = await fetch(updatePath(plexUrl, `/library/sections`).href, {
     headers: { accept: "application/json" },
   });
 
@@ -89,7 +90,7 @@ export const getDirectories = async (plexUrl: URL) => {
 
   const directory: PlexMediaContainer<PlexDirectory> = await req.json();
   return directory.MediaContainer.Directory;
-};
+});
 
 interface PlexMediaView {
   filters?: Filter[];
@@ -121,7 +122,7 @@ export const getMedia = async (
 
   getLogger().debug(queryUrl.href);
 
-  const req = await fetch(queryUrl, {
+  const req = await fetch(queryUrl.href, {
     headers: {
       accept: "application/json",
     },
@@ -164,7 +165,7 @@ export const getMedia = async (
 
 export const getAllMedia = async (
   plexUrl: URL,
-  directoryTypeFilter?: PlexDirectoryType[],
+  directoryTypeFilter: PlexDirectoryType[] = ["movie"],
   mediaView?: PlexMediaView
 ) => {
   const directories = await getDirectories(plexUrl);
@@ -177,7 +178,7 @@ export const getAllMedia = async (
     ({ type }) => directoryTypeFilter?.includes(type) ?? true
   );
 
-  let videos: PlexVideoItem[] = [];
+  const videos: PlexVideoItem[] = [];
 
   for (const directory of filteredDirectories) {
     try {

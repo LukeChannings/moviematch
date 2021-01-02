@@ -12,9 +12,9 @@ export type ServerMessage =
 
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
-  | { type: "loginSuccess" }
+  | { type: "loginSuccess"; payload: LoginSuccess }
   | { type: "createRoomError"; payload: CreateRoomError }
-  | { type: "createRoomSuccess" }
+  | { type: "createRoomSuccess"; payload: JoinRoomSuccess }
   | { type: "joinRoomError"; payload: JoinRoomError }
   | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
   | { type: "match"; payload: Match }
@@ -94,6 +94,7 @@ export interface JoinRoomError {
 
 export interface JoinRoomSuccess {
   previousMatches: Match[];
+  media: Media[];
 }
 
 // In-Room

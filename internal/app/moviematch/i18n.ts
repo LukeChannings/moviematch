@@ -25,5 +25,5 @@ export const loadTranslation = memo1(
     } catch (_) {
       throw new TranslationLoadError(`Failed to load ${translationPath}`);
     }
-  }
+  },
 );

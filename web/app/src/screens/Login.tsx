@@ -3,18 +3,15 @@ import React, {
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import "./Login.css";
-import { Logo } from "../components/Logo.tsx";
 import { Field } from "../components/Field.tsx";
 import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
 import { getPlexCredentials } from "../api/plex.tv.ts";
 import { MovieMatchContext } from "../state.ts";
+import { ScreenProps } from "../components/Screen.ts";
+import { Layout } from "../components/Layout.tsx";
 
-interface LoginScreenProps {
-  handleDone(): void;
-}
-
-export const LoginScreen = ({ handleDone }: LoginScreenProps) => {
+export const LoginScreen = ({ navigate }: ScreenProps) => {
   const { client, config } = useContext(MovieMatchContext);
   const [userName, setUserName] = useState<string | null>(
     localStorage.getItem("userName")
@@ -22,8 +19,7 @@ export const LoginScreen = ({ handleDone }: LoginScreenProps) => {
   const [userNameError, setUserNameError] = useState<string | undefined>();
 
   return (
-    <section className="Screen LoginScreen">
-      <Logo />
+    <Layout>
       <form
         className="LoginScreen_Form"
         onSubmit={(e) => {
@@ -53,7 +49,7 @@ export const LoginScreen = ({ handleDone }: LoginScreenProps) => {
                 await client.login({
                   userName,
                 });
-                handleDone();
+                navigate({ path: "join" });
               }}
             >
               Sign In
@@ -75,7 +71,7 @@ export const LoginScreen = ({ handleDone }: LoginScreenProps) => {
                   plexAuth,
                 });
 
-                handleDone();
+                navigate({ path: "join" });
               }
             }}
           >
@@ -83,6 +79,6 @@ export const LoginScreen = ({ handleDone }: LoginScreenProps) => {
           </Button>
         </ButtonContainer>
       </form>
-    </section>
+    </Layout>
   );
 };
