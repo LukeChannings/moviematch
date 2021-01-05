@@ -5,10 +5,16 @@
       "name": "Launch Deno",
       "request": "launch",
       "type": "pwa-node",
-      "program": "src/index.ts",
+      "program": "cmd/moviematch/main.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
-      "runtimeArgs": ["run", "--inspect", "--allow-all"],
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "--allow-all",
+        "--unstable",
+        "--import-map=./import-map.json"
+      ],
       "attachSimplePort": 9229
     }
   ]
