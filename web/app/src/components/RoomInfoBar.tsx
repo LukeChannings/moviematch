@@ -4,6 +4,7 @@ import React, {
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { MovieMatchContext } from "../store.ts";
 import { ShareIcon } from "./ShareIcon.tsx";
+import { Avatar } from "./Avatar.tsx";
 
 import "./RoomInfoBar.css";
 
@@ -25,14 +26,15 @@ export const RoomInfoBar = () => {
   };
   return (
     <div className="RoomInfoBar">
-      <div className="RoomInfoBar_User">
-        <img
-          className="RoomInfoBar_UserAvatar"
-          src={store.user?.avatar}
-          alt={`${store.user?.userName}'s picture`}
-        />
-        <p className="RoomInfoBar_UserName">{store.user?.userName}</p>
-      </div>
+      {store.user && (
+        <div className="RoomInfoBar_User">
+          <Avatar
+            userName={store.user.userName}
+            avatarUrl={store.user.avatar}
+          />
+          <p className="RoomInfoBar_User_UserName">{store.user.userName}</p>
+        </div>
+      )}
       <div className="RoomInfoBar_MatchCount">
         <p className="RoomInfoBar_MatchCount_Count">
           {(store.room?.matches ?? []).length}

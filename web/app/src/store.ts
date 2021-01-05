@@ -65,7 +65,6 @@ export type Actions =
   | Action<"match", Match>;
 
 function reducer(state: Store, action: Actions): Store {
-  console.log(action);
   switch (action.type) {
     case "navigate":
       return { ...state, route: action.payload };

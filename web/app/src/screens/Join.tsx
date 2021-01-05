@@ -16,6 +16,7 @@ import {
   JoinRoomSuccess,
 } from "../../../../types/moviematch.d.ts";
 import { Layout } from "../components/Layout.tsx";
+import { ErrorMessage } from "../components/ErrorMessage.tsx";
 
 export const JoinScreen = ({
   navigate,
@@ -85,7 +86,7 @@ export const JoinScreen = ({
           e.preventDefault();
         }}
       >
-        {joinError && <p style={{ color: "red" }}>{joinError}</p>}
+        {joinError && <ErrorMessage message={joinError} />}
         <Field
           label="Room Name"
           name="roomName"

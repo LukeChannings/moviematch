@@ -17,13 +17,6 @@
   align-items: center;
 }
 
-.RoomInfoBar_UserAvatar {
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid hsl(var(--mm-red-hue) 76% 60%);
-  border-radius: 100%;
-}
-
 .RoomInfoBar_UserName {
   letter-spacing: 0;
 }

@@ -6,6 +6,7 @@ import React, {
 import { JoinRoomSuccess } from "../../../../types/moviematch.d.ts";
 import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
+import { ErrorMessage } from "../components/ErrorMessage.tsx";
 import { Field } from "../components/Field.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { ScreenProps } from "../components/Screen.ts";
@@ -18,7 +19,7 @@ export const CreateScreen = ({
 }: ScreenProps<{ roomName: string }>) => {
   const state = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState(initialRoomName);
-  const [createRoomError, setCreateRoomError] = useState();
+  const [createRoomError, setCreateRoomError] = useState<string>();
   const createRoom = useCallback(async () => {
     if (roomName) {
       try {
@@ -50,7 +51,7 @@ export const CreateScreen = ({
           e.preventDefault();
         }}
       >
-        {createRoomError && <p style={{ color: "red" }}>{createRoomError}</p>}
+        {createRoomError && <ErrorMessage message={createRoomError} />}
         <Field
           label="Room Name"
           name="roomName"

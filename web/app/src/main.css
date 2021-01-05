@@ -36,4 +36,5 @@ body {
   background-attachment: fixed;
   color: var(--mm-black);
   min-height: calc(var(--vh) * 100);
+  font-family: Helvetica Neue, system-ui, Helvetica, sans-serif;
 }

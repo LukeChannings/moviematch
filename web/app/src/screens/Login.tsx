@@ -11,7 +11,7 @@ import { MovieMatchContext } from "../store.ts";
 import { ScreenProps } from "../components/Screen.ts";
 import { Layout } from "../components/Layout.tsx";
 
-export const LoginScreen = ({ navigate }: ScreenProps) => {
+export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
   const { client, config } = useContext(MovieMatchContext);
   const [userName, setUserName] = useState<string | null>(
     localStorage.getItem("userName")
@@ -46,6 +46,7 @@ export const LoginScreen = ({ navigate }: ScreenProps) => {
                   setUserNameError("A Username is required!");
                   return;
                 }
+                dispatch({ type: "setUser", payload: { userName } });
                 await client.login({
                   userName,
                 });

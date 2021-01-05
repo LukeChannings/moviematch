@@ -1,4 +1,11 @@
 .ErrorMessage {
   background-color: hsl(var(--mm-red-hue) 50% 50%);
   color: var(--mm-white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--s2);
+  border-radius: 0.5rem;
+  font-weight: bold;
+  margin-bottom: var(--s4);
 }

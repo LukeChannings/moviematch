@@ -4,6 +4,7 @@ import React, {
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { Card } from "../components/Card.tsx";
 import { CardStack } from "../components/CardStack.tsx";
+import { ErrorMessage } from "../components/ErrorMessage.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { MatchesList } from "../components/MatchesList.tsx";
 import { RoomInfoBar } from "../components/RoomInfoBar.tsx";
@@ -16,7 +17,7 @@ export const RateScreen = () => {
   const [currentIndex, setIndex] = useState<number>(0);
 
   if (!state.room || !state.room.media) {
-    return <p style={{ color: "red" }}>No Room!</p>;
+    return <ErrorMessage message="No Room!" />;
   }
 
   return (
