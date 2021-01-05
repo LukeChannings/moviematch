@@ -4,21 +4,29 @@ import {
   CreateRoomRequest,
   Filter,
   JoinRoomRequest,
+  Match,
   Media,
+  Rate,
   RoomOption,
   RoomSort,
 } from "/types/moviematch.d.ts";
 import { memo } from "/internal/util/memo.ts";
+import { getLogger } from "/internal/app/moviematch/logger.ts";
+import { Client } from "/internal/app/moviematch/client.ts";
 
 export class Room {
   roomName: string;
   password?: string;
-  users = new Set<string>();
+  users = new Map<string, Client>();
   filters?: Filter[];
   options?: RoomOption[];
   sort: RoomSort;
 
-  media: Media[] = [];
+  media = new Map</*mediaId */ string, Media>();
+  ratings = new Map<
+    /* mediaId */ string,
+    Array<[userName: string, rating: Rate["rating"]]>
+  >();
 
   constructor(req: CreateRoomRequest) {
     this.roomName = req.roomName;
@@ -32,22 +40,85 @@ export class Room {
 
   getMedia = memo(async () => {
     const plexVideoItems = await getAllMedia(getConfig().plexUrl);
-    this.media = plexVideoItems.map((videoItem) => ({
-      id: videoItem.guid,
-      type: videoItem.type,
-      title: videoItem.title,
-      description: videoItem.summary,
-      tagline: videoItem.tagline,
-      year: videoItem.year,
-      posterUrl: `/api/poster?key=${encodeURIComponent(videoItem.thumb)}`,
-      linkUrl: "",
-      genres: videoItem.Genre?.map((_) => _.tag) ?? [],
-      duration: Number(videoItem.duration),
-      rating: Number(videoItem.rating),
-      contentRating: videoItem.contentRating,
-    }));
+
+    this.media = new Map(
+      plexVideoItems.map((videoItem) => [
+        videoItem.guid,
+        {
+          id: videoItem.guid,
+          type: videoItem.type,
+          title: videoItem.title,
+          description: videoItem.summary,
+          tagline: videoItem.tagline,
+          year: videoItem.year,
+          posterUrl: `/api/poster?key=${encodeURIComponent(videoItem.thumb)}`,
+          linkUrl: "",
+          genres: videoItem.Genre?.map((_) => _.tag) ?? [],
+          duration: Number(videoItem.duration),
+          rating: Number(videoItem.rating),
+          contentRating: videoItem.contentRating,
+        },
+      ])
+    );
     return this.media;
   });
+
+  storeRating = (userName: string, rating: Rate) => {
+    const existingRatings = this.ratings.get(rating.mediaId);
+    if (existingRatings) {
+      existingRatings.push([userName, rating.rating]);
+      const likes = existingRatings.filter(([, rating]) => rating === "like");
+      if (likes.length > 1) {
+        const media = this.media.get(rating.mediaId);
+        if (media) {
+          this.notifyMatch({
+            media,
+            users: likes.map(([userName]) => userName),
+          });
+        }
+      }
+    } else {
+      this.ratings.set(rating.mediaId, [[userName, rating.rating]]);
+    }
+  };
+
+  getMatches = (userName: string, allLikes: boolean): Match[] => {
+    const matches: Match[] = [];
+
+    for (const [mediaId, rating] of this.ratings.entries()) {
+      const likes = rating.filter(([, rating]) => rating === "like");
+      if (
+        likes.length &&
+        (allLikes || !!likes.find(([_userName]) => userName === _userName))
+      ) {
+        const media = this.media.get(mediaId);
+        if (media) {
+          matches.push({
+            media,
+            users: likes.map(([userName]) => userName),
+          });
+        } else {
+          getLogger().info(
+            `Tried to rate mediaId: ${mediaId}, but it looks like that media item doesn't exist.`
+          );
+        }
+      }
+    }
+
+    return matches;
+  };
+
+  notifyMatch = (match: Match) => {
+    for (const userName of match.users) {
+      const client = this.users.get(userName);
+      if (client) {
+        client.sendMessage({
+          type: "match",
+          payload: match,
+        });
+      }
+    }
+  };
 }
 
 type RoomName = string;

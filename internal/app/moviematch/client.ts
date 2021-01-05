@@ -143,8 +143,8 @@ export class Client {
       this.sendMessage({
         type: "createRoomSuccess",
         payload: {
-          previousMatches: [],
-          media: await this.room.getMedia(),
+          previousMatches: this.room.getMatches(this.userName!, true),
+          media: [...(await this.room.getMedia()).values()],
         },
       });
     } catch (err) {
@@ -172,11 +172,12 @@ export class Client {
     }
     try {
       this.room = getRoom(this.userName, joinRoomReq);
+      this.room.users.set(this.userName, this);
       this.sendMessage({
         type: "joinRoomSuccess",
         payload: {
-          previousMatches: [],
-          media: await this.room.getMedia(),
+          previousMatches: this.room.getMatches(this.userName!, true),
+          media: [...(await this.room.getMedia()).values()],
         },
       });
     } catch (err) {
@@ -204,13 +205,14 @@ export class Client {
 
   handleRate(rate: Rate) {
     log.info(`Handling rate event: ${JSON.stringify(rate)}`);
+    this.room?.storeRating(this.userName!, rate);
   }
 
   handleClose() {
     log.info(`${this.userName ?? "Unknown user"} left.`);
 
-    if (this.room) {
-      this.room.users.delete(this.userName!);
+    if (this.room && this.userName) {
+      this.room.users.delete(this.userName);
     }
   }
 
