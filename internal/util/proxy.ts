@@ -30,7 +30,7 @@ export const proxy = async (
     req.respond({
       status: 200,
       body: new Uint8Array(await proxyReq.arrayBuffer()),
-      headers: new Headers({ "content-type": "image/jpeg" }),
+      headers: proxyReq.headers,
     });
   } catch (err) {
     getLogger().error(`Failed to load ${url}. ${err}`);
