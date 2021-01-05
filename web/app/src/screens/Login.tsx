@@ -7,7 +7,7 @@ import { Field } from "../components/Field.tsx";
 import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
 import { getPlexCredentials } from "../api/plex.tv.ts";
-import { MovieMatchContext } from "../state.ts";
+import { MovieMatchContext } from "../store.ts";
 import { ScreenProps } from "../components/Screen.ts";
 import { Layout } from "../components/Layout.tsx";
 

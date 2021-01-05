@@ -10,17 +10,26 @@ import { Spinner } from "../components/Spinner.tsx";
 import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
 import { ScreenProps } from "../components/Screen.ts";
-import { MovieMatchContext } from "../state.ts";
-import { JoinRoomSuccess } from "../../../../types/moviematch.d.ts";
+import { MovieMatchContext } from "../store.ts";
+import {
+  JoinRoomError,
+  JoinRoomSuccess,
+} from "../../../../types/moviematch.d.ts";
 import { Layout } from "../components/Layout.tsx";
 
-export const JoinScreen = ({ navigate, dispatch }: ScreenProps) => {
+export const JoinScreen = ({
+  navigate,
+  dispatch,
+  params,
+}: ScreenProps<{ errorMessage?: string } | undefined>) => {
   const store = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState<string | undefined>(
     store.room?.name ?? ""
   );
   const [roomNameError, setRoomNameError] = useState<string | undefined>();
-  const [joinError, setJoinError] = useState<string | undefined>();
+  const [joinError, setJoinError] = useState<string | undefined>(
+    params?.errorMessage
+  );
   const handleJoin = useCallback(async () => {
     if (roomName) {
       navigate({ path: "loading" });
@@ -40,8 +49,14 @@ export const JoinScreen = ({ navigate, dispatch }: ScreenProps) => {
         });
         navigate({ path: "rate" });
       } catch (err) {
-        setJoinError(err.message);
-        navigate({ path: "join" });
+        const joinRoomError: JoinRoomError = JSON.parse(err.message);
+
+        navigate({
+          path: "join",
+          params: {
+            errorMessage: `${joinRoomError.name}: ${joinRoomError.message}`,
+          },
+        });
       }
     } else {
       setRoomNameError(`Room name is required!`);
@@ -49,12 +64,12 @@ export const JoinScreen = ({ navigate, dispatch }: ScreenProps) => {
   }, [roomName]);
 
   useEffect(() => {
-    if (roomName && !roomNameError) {
+    if (roomName && !roomNameError && !joinError) {
       handleJoin();
     }
-  }, [store.room?.name, roomNameError]);
+  }, [store.room?.name, roomNameError, joinError]);
 
-  if (store.room?.name) {
+  if (store.room?.name && !params?.errorMessage) {
     return (
       <Layout>
         <Spinner />

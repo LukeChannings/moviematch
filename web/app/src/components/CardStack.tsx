@@ -18,46 +18,79 @@ interface CardStackProps {
   onRate(rating: Rate["rating"]): void;
 }
 
+const createAnimation = (
+  element: HTMLElement,
+  index: number,
+  x = "0",
+  opacity = "1"
+) => {
+  const effect = new KeyframeEffect(
+    element,
+    [
+      {
+        transform: `translate3d( 0, calc(var(--y) * ${
+          index + 1
+        }), calc(var(--z) * ${index + 1}) ) rotateX(var(--rotX))`,
+        opacity: "1",
+      },
+      {
+        transform: `translate3d( ${x}, calc(var(--y) * ${index}), calc(var(--z) * ${index}) ) rotateX(var(--rotX))`,
+        opacity,
+      },
+    ],
+    {
+      duration: 1_000,
+      fill: "both",
+      composite: "replace",
+      iterationComposite: "replace",
+    }
+  );
+  const animation = new Animation(effect, document.timeline);
+  animation.pause();
+  return animation;
+};
+
 export const CardStack = ({ children, onRate }: CardStackProps) => {
-  const [swipedCards, setSwipedCards] = useState<number>(0);
+  const [topCardIndex, setTopCardIndex] = useState<number>(0);
+  const cardStackEl = useRef<HTMLDivElement>(null);
   const cardEls = useRef(new Map<number, HTMLDivElement>());
   const cardAnimations = useRef<Animation[] | null>(null);
   const topCardAnimation = useRef<Animation | null>(null);
   const animationTime = useRef<number | null>(null);
 
-  useAnimationFrame(() => {
-    if (animationTime.current !== null) {
-      if (cardAnimations.current !== null) {
-        for (const animation of cardAnimations.current) {
-          animation.currentTime = animationTime.current;
+  useAnimationFrame(
+    (() => {
+      let lastTime: number | null = null;
+      return () => {
+        if (
+          animationTime.current !== lastTime &&
+          animationTime.current !== null
+        ) {
+          lastTime = animationTime.current;
+          if (cardAnimations.current !== null) {
+            for (const animation of cardAnimations.current) {
+              animation.currentTime = animationTime.current;
+            }
+          }
+          if (topCardAnimation.current !== null) {
+            topCardAnimation.current.currentTime = animationTime.current;
+          }
         }
-      }
-      if (topCardAnimation.current) {
-        topCardAnimation.current.currentTime = animationTime.current;
-      }
-    }
-  });
+      };
+    })()
+  );
 
   useEffect(
     function setAnimations() {
-      console.log("setting animations", [...cardEls.current.values()]);
-      cardAnimations.current = [...cardEls.current.values()].flatMap((cardEl) =>
-        cardEl.getAnimations()
+      cardAnimations.current = [...cardEls.current.values()].map((cardEl, i) =>
+        createAnimation(cardEl, i)
       );
-      console.log(cardAnimations.current);
-      cardAnimations.current.forEach((animation) => animation.pause());
     },
-    [swipedCards]
+    [topCardIndex]
   );
 
   useEffect(
     function handleSwipe() {
-      const topCardEl = cardEls?.current.get(0);
-      if (!topCardEl) {
-        console.error("no top card!");
-        return;
-      }
-
       const handlePointerDown = (startEvent: PointerEvent) => {
         if (
           (startEvent.pointerType === "mouse" && startEvent.button !== 0) ||
@@ -66,8 +99,10 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
           return;
         }
 
+        const topCardEl = cardEls.current.get(0)!;
+
         startEvent.preventDefault();
-        topCardEl.setPointerCapture(startEvent.pointerId);
+        cardStackEl.current!.setPointerCapture(startEvent.pointerId);
 
         const animationDuration = 1_000;
         const maxX = window.innerWidth;
@@ -89,77 +124,101 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
 
           if (currentDirection != direction) {
             currentDirection = direction;
-            const animation = topCardEl.animate(
-              {
-                transform: [
-                  `translate3d(
-                    0,
-                    calc(var(--y) * var(--i)),
-                    calc(var(--z) * var(--i))
-                  )
-                  rotateX(var(--rotX))`,
-                  `translate3d(
-                    ${direction === "left" ? "-50vw" : "50vw"},
-                    calc(var(--y) * var(--i)),
-                    calc(var(--z) * var(--i))
-                  )
-                  rotateX(var(--rotX))`,
-                ],
-                opacity: ["1", "0.8", "0"],
-              },
-              {
-                duration: animationDuration,
-                easing: "ease-in-out",
-                fill: "both",
-              }
+            topCardAnimation.current = createAnimation(
+              topCardEl,
+              0,
+              `${currentDirection === "left" ? "-50vw" : "50vw"}`,
+              "0"
             );
-
-            animation.pause();
-            topCardAnimation.current = animation;
           }
 
-          // If the number is more precise than 5
           animationTime.current = position * animationDuration;
         };
 
-        topCardEl.addEventListener("pointermove", handleMove, {
+        cardStackEl.current!.addEventListener("pointermove", handleMove, {
           passive: true,
         });
 
-        topCardEl.addEventListener(
+        cardStackEl.current!.addEventListener(
           "lostpointercapture",
           async () => {
-            topCardEl.removeEventListener("pointermove", handleMove);
+            cardStackEl.current!.removeEventListener("pointermove", handleMove);
             animationTime.current = null;
-            cardAnimations.current?.forEach((animation) => {
-              animation.reverse();
-            });
 
-            topCardAnimation.current?.play();
-            await topCardAnimation.current?.finish();
-            onRate("like");
-            setSwipedCards(swipedCards + 1);
-            console.log("rating");
+            if (!topCardAnimation.current || !cardAnimations.current) {
+              console.error(`No top card animation or cardAnimations`);
+              return;
+            }
+
+            const isCompleteSwipe = position > 0.5;
+
+            if (isCompleteSwipe) {
+              // we don't want the user to get a handle on the card as it's animating out
+              cardStackEl.current!.addEventListener(
+                "pointerdown",
+                handlePointerDown
+              );
+            }
+
+            try {
+              await Promise.all(
+                [...cardAnimations.current, topCardAnimation.current].map(
+                  async (animation) => {
+                    if (
+                      animation.playState !== "finished" &&
+                      animation.currentTime !== (isCompleteSwipe ? 1_000 : 0)
+                    ) {
+                      // when playbackRate is negative the animation is played in reverse
+                      animation.playbackRate = isCompleteSwipe ? 3 : -3;
+                      animation.play();
+                      await animation.finished;
+                      animation.pause();
+                      animation.playbackRate = 1;
+                    }
+                  }
+                )
+              );
+            } catch (err) {
+              if (err.name !== "AbortError") {
+                console.error(err);
+              }
+            }
+
+            if (isCompleteSwipe) {
+              onRate(currentDirection === "left" ? "dislike" : "like");
+              setTopCardIndex(topCardIndex + 1);
+            }
           },
           { once: true }
         );
       };
 
-      const handleTouchStart = (e: Event) => e.preventDefault();
+      const handleTouchStart = (e: Event) => {
+        if (e.target instanceof HTMLButtonElement) {
+          return;
+        }
+        e.preventDefault();
+      };
 
-      topCardEl.addEventListener("touchstart", handleTouchStart);
-      topCardEl.addEventListener("pointerdown", handlePointerDown);
+      cardStackEl.current!.addEventListener("touchstart", handleTouchStart);
+      cardStackEl.current!.addEventListener("pointerdown", handlePointerDown);
 
       return () => {
-        topCardEl.removeEventListener("pointerdown", handlePointerDown);
-        topCardEl.removeEventListener("touchstart", handleTouchStart);
+        cardStackEl.current!.removeEventListener(
+          "pointerdown",
+          handlePointerDown
+        );
+        cardStackEl.current!.removeEventListener(
+          "touchstart",
+          handleTouchStart
+        );
       };
     },
-    [swipedCards]
+    [cardStackEl.current, topCardIndex]
   );
 
   return (
-    <div className="CardStack">
+    <div className="CardStack" ref={cardStackEl}>
       {Children.map(children, (child, index) => {
         if (isValidElement(child)) {
           if ((child.type as NamedExoticComponent)?.displayName === "Card") {

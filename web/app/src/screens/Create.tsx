@@ -9,7 +9,7 @@ import { ButtonContainer } from "../components/ButtonContainer.tsx";
 import { Field } from "../components/Field.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { ScreenProps } from "../components/Screen.ts";
-import { MovieMatchContext } from "../state.ts";
+import { MovieMatchContext } from "../store.ts";
 
 export const CreateScreen = ({
   navigate,

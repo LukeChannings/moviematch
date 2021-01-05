@@ -16,7 +16,7 @@
 }
 
 .card-stack:empty {
-  min-height: min(calc(80vmin * 1.5), 80vh);
+  min-height: min(calc(80vmin * 1.5), calc(var(--vh) * 80));
   width: 40vw;
 }
 
@@ -184,7 +184,7 @@
   grid-auto-flow: column;
   list-style: none;
   width: 100vw;
-  min-height: 70vh;
+  min-height: calc(var(--vh) * 70);
   height: max-content;
   grid-gap: var(--s4);
   overflow: auto;

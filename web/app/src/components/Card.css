@@ -1,5 +1,5 @@
 .Card {
-  --height: min(calc(80vmin * 1.5), 80vh);
+  --height: min(calc(80vmin * 1.5), calc(var(--vh) * 80));
 
   background-color: var(--mm-black);
   background-size: cover;
@@ -48,6 +48,7 @@
     rgba(51, 51, 51, 0.9) 100%
   );
   padding: var(--s3);
+  padding-right: 4rem;
 }
 
 .Card_Info_Title {

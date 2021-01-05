@@ -1,0 +1,68 @@
+.RoomInfoBar {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  background-color: hsl(var(--mm-red-hue) 10% 14%);
+  font-family: system-ui;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: hsl(var(--mm-red-hue) 5% 90%);
+  padding: var(--s2) var(--s3);
+}
+
+.RoomInfoBar_User {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--s2);
+  align-items: center;
+}
+
+.RoomInfoBar_UserAvatar {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid hsl(var(--mm-red-hue) 76% 60%);
+  border-radius: 100%;
+}
+
+.RoomInfoBar_UserName {
+  letter-spacing: 0;
+}
+
+.RoomInfoBar_ShareRoomButton {
+  background: transparent;
+  border: none;
+  color: currentColor;
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--s2);
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.RoomInfoBar_ShareRoomButton .ShareIcon {
+  font-size: 1.5rem;
+}
+
+.RoomInfoBar_MatchCount {
+  position: relative;
+  margin: auto;
+}
+
+.RoomInfoBar_MatchCount_Count {
+  position: absolute;
+  width: 3.5rem;
+  background-color: var(--mm-light-red);
+  color: var(--mm-white);
+  top: -100%;
+  border-radius: var(--s3);
+  transform: translateX(-50%);
+  left: 50%;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.RoomInfoBar_MatchCount_Title {
+  position: relative;
+  top: var(--s2);
+}

@@ -9,7 +9,7 @@ import { LoginScreen } from "./screens/Login.tsx";
 import { JoinScreen } from "./screens/Join.tsx";
 import { CreateScreen } from "./screens/Create.tsx";
 import { RateScreen } from "./screens/Rate.tsx";
-import { MovieMatchContext, Routes, useStore } from "./state.ts";
+import { MovieMatchContext, Routes, useStore } from "./store.ts";
 import { ScreenProps } from "./components/Screen.ts";
 import { Loading } from "./screens/Loading.tsx";
 

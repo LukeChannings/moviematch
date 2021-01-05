@@ -4,31 +4,16 @@
   --z: -40px;
 
   position: relative;
-  perspective: 100vh;
-}
-
-@keyframes rotation {
-  0% {
-    transform: translate3d(
-        0,
-        calc(var(--y) * var(--i)),
-        calc(var(--z) * var(--i))
-      )
-      rotateX(var(--rotX));
-  }
-  100% {
-    transform: translate3d(
-        0,
-        calc(var(--y) * (var(--i) - 1)),
-        calc(var(--z) * (var(--i) - 1))
-      )
-      rotateX(var(--rotX));
-  }
+  perspective: calc(var(--vh) * 100);
 }
 
 .CardStack > .Card {
   z-index: 0;
-  animation: rotation 1s linear 0s 1 both paused;
+  touch-action: manipulation;
+  will-change: transform;
+  opacity: 0;
+  user-select: none;
+  cursor: ew-resize;
 }
 
 .CardStack > .Card:nth-of-type(n + 2) {

@@ -26,11 +26,14 @@ html {
 }
 
 body {
+  --vh: 1vh;
   background: linear-gradient(
     135deg,
     hsl(var(--mm-blue-hue) 26% 80%) 0%,
     hsl(var(--mm-blue-hue) 22% 90%) 100%
   );
-  background-size: 100vw 100vh;
+  background-size: 100vw calc(var(--vh) * 100);
+  background-attachment: fixed;
   color: var(--mm-black);
+  min-height: calc(var(--vh) * 100);
 }

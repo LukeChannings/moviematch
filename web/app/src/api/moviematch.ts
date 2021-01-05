@@ -4,6 +4,7 @@ import {
   JoinRoomRequest,
   JoinRoomSuccess,
   Login,
+  Rate,
   ServerMessage,
 } from "../../../../types/moviematch.d.ts";
 
@@ -16,7 +17,7 @@ const API_URL = (() => {
 
 type FilterClientMessageByType<
   A extends ClientMessage,
-  ClientMessageType extends string,
+  ClientMessageType extends string
 > = A extends { type: ClientMessageType } ? A : never;
 
 export class MovieMatchClient extends EventTarget {
@@ -54,7 +55,7 @@ export class MovieMatchClient extends EventTarget {
   };
 
   waitForMessage = <K extends ClientMessage["type"]>(
-    type: K,
+    type: K
   ): Promise<FilterClientMessageByType<ClientMessage, K>> => {
     return new Promise((resolve) => {
       this.addEventListener(
@@ -66,7 +67,7 @@ export class MovieMatchClient extends EventTarget {
         },
         {
           once: true,
-        },
+        }
       );
     });
   };
@@ -89,7 +90,7 @@ export class MovieMatchClient extends EventTarget {
   };
 
   joinRoom = async (
-    joinRoomRequest: JoinRoomRequest,
+    joinRoomRequest: JoinRoomRequest
   ): Promise<JoinRoomSuccess> => {
     await this.waitForConnected();
 
@@ -128,6 +129,13 @@ export class MovieMatchClient extends EventTarget {
     }
 
     return msg.payload;
+  };
+
+  rate = async (rateRequest: Rate) => {
+    this.sendMessage({
+      type: "rate",
+      payload: rateRequest,
+    });
   };
 
   sendMessage(msg: ServerMessage) {

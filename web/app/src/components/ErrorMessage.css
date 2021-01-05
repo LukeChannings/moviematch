@@ -1,0 +1,4 @@
+.ErrorMessage {
+  background-color: hsl(var(--mm-red-hue) 50% 50%);
+  color: var(--mm-white);
+}

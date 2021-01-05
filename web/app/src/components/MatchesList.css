@@ -1,0 +1,25 @@
+.MatchesList {
+  display: grid;
+  position: relative;
+  grid-auto-flow: column;
+  list-style: none;
+  width: 100vw;
+  min-height: 70vh;
+  height: max-content;
+  grid-gap: var(--s4);
+  overflow: auto;
+  padding: var(--s4) 0 var(--s3) 10vw;
+  scroll-snap-type: x mandatory;
+}
+
+.MatchesList_Item {
+  scroll-snap-align: start;
+  scroll-margin-left: 10vw;
+  scroll-snap-margin-left: 10vw;
+}
+
+.MatchesList::after {
+  content: "";
+  width: calc(10vw - var(--s4));
+  display: block;
+}

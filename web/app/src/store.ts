@@ -1,12 +1,12 @@
 import {
   createContext,
+  useEffect,
   useReducer,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { Config, Match, Media } from "../../../types/moviematch.d.ts";
 import { getClient, MovieMatchClient } from "./api/moviematch.ts";
 import { checkPin } from "./api/plex.tv.ts";
 import { useAsyncEffect } from "./hooks/useAsyncEffect.ts";
-import { RateScreen } from "./screens/Rate.tsx";
 
 interface User {
   userName: string;
@@ -20,7 +20,7 @@ interface User {
 export type Routes =
   | { path: "loading" }
   | { path: "login" }
-  | { path: "join" }
+  | { path: "join"; params?: { errorMessage?: string } }
   | { path: "createRoom"; params: { roomName: string } }
   | { path: "rate" };
 
@@ -61,9 +61,11 @@ export type Actions =
   | Action<"setConfig", Config>
   | Action<"setUser", User>
   | Action<"setAvatar", string>
-  | Action<"setRoom", Store["room"]>;
+  | Action<"setRoom", Store["room"]>
+  | Action<"match", Match>;
 
 function reducer(state: Store, action: Actions): Store {
+  console.log(action);
   switch (action.type) {
     case "navigate":
       return { ...state, route: action.payload };
@@ -75,6 +77,14 @@ function reducer(state: Store, action: Actions): Store {
       return { ...state, user: { ...state.user!, avatar: action.payload } };
     case "setRoom":
       return { ...state, room: action.payload };
+    case "match":
+      return {
+        ...state,
+        room: {
+          ...state.room!,
+          matches: [...(state.room?.matches ?? []), action.payload],
+        },
+      };
     default:
       return state;
   }
@@ -98,6 +108,17 @@ const getStoredUser = (): User | null => {
 export const useStore = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  useEffect(() => {
+    const handleMatch = (e: Event) => {
+      if (e instanceof MessageEvent) {
+        dispatch({ type: "match", payload: e.data.payload });
+      }
+    };
+    state.client.addEventListener("match", handleMatch);
+    return () => {
+      state.client.removeEventListener("match", handleMatch);
+    };
+  }, []);
   useAsyncEffect(
     async function getMovieMatchConfigFromServer() {
       const config = await state.client.waitForMessage("config");

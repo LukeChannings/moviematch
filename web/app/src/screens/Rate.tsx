@@ -5,7 +5,9 @@ import React, {
 import { Card } from "../components/Card.tsx";
 import { CardStack } from "../components/CardStack.tsx";
 import { Layout } from "../components/Layout.tsx";
-import { MovieMatchContext } from "../state.ts";
+import { MatchesList } from "../components/MatchesList.tsx";
+import { RoomInfoBar } from "../components/RoomInfoBar.tsx";
+import { MovieMatchContext } from "../store.ts";
 
 import "./Rate.css";
 
@@ -20,16 +22,24 @@ export const RateScreen = () => {
   return (
     <Layout hideLogo>
       <CardStack
-        onRate={() => {
-          setIndex(currentIndex + 1);
+        onRate={(rating) => {
+          const top = state.room?.media![0];
+          if (top) {
+            setIndex(currentIndex + 1);
+            state.client.rate({
+              mediaId: top.id,
+              rating,
+            });
+          }
         }}
       >
-        {state.room.media
-          .slice(currentIndex, currentIndex + 5)
-          .map((media, i) => (
-            <Card media={media} key={media.id} index={i} />
-          ))}
+        {state.room.media.slice(currentIndex, currentIndex + 5).map((media) => (
+          <Card media={media} key={media.id} />
+        ))}
       </CardStack>
+
+      <RoomInfoBar />
+      <MatchesList matches={state.room.matches ?? []} />
     </Layout>
   );
 };
