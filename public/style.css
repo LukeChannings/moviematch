@@ -53,7 +53,7 @@ body {
 .app:not([hidden]) {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
 
   /* prettier-ignore */
@@ -65,7 +65,7 @@ body {
 }
 
 .rate-section:not([hidden]) {
-  width: 100vw;
+  width: 100%;
   padding-top: var(--s4);
   padding-bottom: var(--s2);
   display: flex;
@@ -299,7 +299,7 @@ body {
   position: relative;
   grid-auto-flow: column;
   list-style: none;
-  width: 100vw;
+  width: 100%;
   min-height: 70vh;
   height: max-content;
   grid-gap: var(--s4);

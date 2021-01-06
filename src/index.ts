@@ -14,11 +14,13 @@ const wss = new WebSocketServer({
   onError: err => log.error(err),
 })
 
-Deno.signal(Deno.Signal.SIGINT).then(() => {
-  log.info('Shutting down')
-  server.close()
-  Deno.exit(0)
-})
+if (Deno.build.os !== 'windows') {
+  Deno.signal(Deno.Signal.SIGINT).then(() => {
+    log.info('Shutting down')
+    server.close()
+    Deno.exit(0)
+  })
+}
 
 log.info(`Listening on port ${PORT}`)
 
@@ -35,13 +37,11 @@ for await (const req of server) {
       location = `plex://preplay/?metadataKey=${encodeURIComponent(
         key
       )}&metadataType=1&server=${serverId}`
-    }
-    else if (LINK_TYPE == "plex.tv") {
+    } else if (LINK_TYPE == 'plex.tv') {
       location = `https://app.plex.tv/desktop#!/server/${serverId}/details?key=${encodeURIComponent(
         key
       )}`
-    }
-    else {
+    } else {
       location = `${PLEX_URL}/web/index.html#!/server/${serverId}/details?key=${encodeURIComponent(
         key
       )}`
