@@ -53,10 +53,12 @@ export class MatchesView {
         ({ users, movie }) =>
           `
       <li>
-        <a class="card" href="/movie${movie.key}" target="${
-            this.node.dataset.targetType
-          }">
-          <img class="poster" src="${movie.art}" alt="${movie.title} poster" />
+        <a class="card" href="${document.body.dataset.basePath}/movie${
+            movie.key
+          }" target="${this.node.dataset.targetType}">
+          <img class="poster" src="${document.body.dataset.basePath}${
+            movie.art
+          }" alt="${movie.title} poster" />
           <p>${document.body.dataset.i18nMatchLikersTemplate
             .replace('$USERS', this.formatList(users))
             .replace('$MOVIE', movie.title)}</p>
