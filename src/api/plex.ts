@@ -208,7 +208,7 @@ export const proxyPoster = async (req: ServerRequest, key: string) => {
       }
     }
 
-    req.respond({
+    await req.respond({
       status: 200,
       body: new Uint8Array(await posterReq.arrayBuffer()),
       headers: new Headers({ 'content-type': 'image/jpeg' }),

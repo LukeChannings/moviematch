@@ -25,44 +25,48 @@ if (Deno.build.os !== 'windows') {
 log.info(`Listening on port ${PORT}`)
 
 for await (const req of server) {
-  if (req.url === '/ws') {
-    wss.connect(req)
-  } else if (req.url.startsWith('/movie/')) {
-    const serverId = await getServerId()
-    const key = req.url.replace('/movie', '')
+  try {
+    if (req.url === '/ws') {
+      wss.connect(req)
+    } else if (req.url.startsWith('/movie/')) {
+      const serverId = await getServerId()
+      const key = req.url.replace('/movie', '')
 
-    let location: string
+      let location: string
 
-    if (getLinkTypeForRequest(req.headers) === 'app') {
-      location = `plex://preplay/?metadataKey=${encodeURIComponent(
-        key
-      )}&metadataType=1&server=${serverId}`
-    } else if (LINK_TYPE == 'plex.tv') {
-      location = `https://app.plex.tv/desktop#!/server/${serverId}/details?key=${encodeURIComponent(
-        key
-      )}`
+      if (getLinkTypeForRequest(req.headers) === 'app') {
+        location = `plex://preplay/?metadataKey=${encodeURIComponent(
+          key
+        )}&metadataType=1&server=${serverId}`
+      } else if (LINK_TYPE == 'plex.tv') {
+        location = `https://app.plex.tv/desktop#!/server/${serverId}/details?key=${encodeURIComponent(
+          key
+        )}`
+      } else {
+        location = `${PLEX_URL}/web/index.html#!/server/${serverId}/details?key=${encodeURIComponent(
+          key
+        )}`
+      }
+
+      await req.respond({
+        status: 302,
+        headers: new Headers({
+          Location: location,
+        }),
+      })
+    } else if (req.url.startsWith('/poster/')) {
+      const [, key] =
+        req.url.match(/\/poster\/([0-9]+\/(art|thumb)\/[0-9]+)/) ?? []
+
+      if (!key) {
+        await req.respond({ status: 404 })
+      } else {
+        await proxyPoster(req, key)
+      }
     } else {
-      location = `${PLEX_URL}/web/index.html#!/server/${serverId}/details?key=${encodeURIComponent(
-        key
-      )}`
+      serveFile(req, '/public')
     }
-
-    req.respond({
-      status: 302,
-      headers: new Headers({
-        Location: location,
-      }),
-    })
-  } else if (req.url.startsWith('/poster/')) {
-    const [, key] =
-      req.url.match(/\/poster\/([0-9]+\/(art|thumb)\/[0-9]+)/) ?? []
-
-    if (!key) {
-      req.respond({ status: 404 })
-    } else {
-      await proxyPoster(req, key)
-    }
-  } else {
-    serveFile(req, '/public')
+  } catch (err) {
+    log.error(`Error handling request: ${err.message}`)
   }
 }

@@ -44,14 +44,14 @@ export const serveFile = async (req: ServerRequest, basePath = '/public') => {
       body = await translateHTML(body, req.headers)
     }
 
-    return req.respond({
+    return await req.respond({
       body,
       headers: new Headers({
         'content-type': getContentType(normalizedPath),
       }),
     })
   } catch (_) {
-    return req.respond({ status: 404, body: 'Not Found' })
+    return await req.respond({ status: 404, body: 'Not Found' })
   }
 }
 
