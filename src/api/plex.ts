@@ -86,12 +86,16 @@ export const allMovies = (async () => {
   const movies: PlexVideo['Metadata'] = []
 
   for (const movieSection of movieSections) {
+    log.debug(`Loading movies from ${movieSection.title} library`)
+
     const req = await fetch(
       `${PLEX_URL}/library/sections/${movieSection.key}/all?X-Plex-Token=${PLEX_TOKEN}`,
       {
         headers: { accept: 'application/json' },
       }
     )
+
+    log.debug(`Loaded ${req.url}: ${req.status} ${req.statusText}`)
 
     assert(req.ok, `Error loading ${movieSection.title} library`)
 
@@ -110,6 +114,10 @@ export const allMovies = (async () => {
     assert(
       libraryData.MediaContainer.Metadata.length,
       `${movieSection.title} doesn't appear to have any movies`
+    )
+
+    log.debug(
+      `Loaded ${libraryData.MediaContainer.Metadata.length} items from ${movieSection.title}`
     )
 
     movies.push(...libraryData.MediaContainer.Metadata)

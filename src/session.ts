@@ -159,9 +159,13 @@ class Session {
               (await allMovies).length,
               Number(MOVIE_BATCH_SIZE)
             ),
-          }).map(async () => {
+          }).map(async (_, index) => {
             try {
+              log.debug(`Random movie ${index} - Fetching`)
+
               const plexMovie = await getRandomMovie()
+
+              log.debug(`Random movie ${index} - Done`)
 
               const movie: MediaItem = {
                 title: plexMovie.title,
@@ -177,6 +181,7 @@ class Session {
                 rating: plexMovie.rating,
                 type: plexMovie.type,
               }
+
               return movie
             } catch (err) {
               if (err instanceof NoMoreMoviesError) {
