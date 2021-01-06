@@ -20,11 +20,13 @@ export const RateScreen = () => {
     return <ErrorMessage message="No Room!" />;
   }
 
+  const media = state.room.media.slice(currentIndex, currentIndex + 6);
+
   return (
     <Layout hideLogo>
       <CardStack
         onRate={(rating) => {
-          const top = state.room?.media![0];
+          const [top] = media;
           if (top) {
             setIndex(currentIndex + 1);
             state.client.rate({
@@ -34,13 +36,24 @@ export const RateScreen = () => {
           }
         }}
       >
-        {state.room.media.slice(currentIndex, currentIndex + 5).map((media) => (
+        {media.map((media) => (
           <Card media={media} key={media.id} />
         ))}
       </CardStack>
 
       <RoomInfoBar />
-      <MatchesList matches={state.room.matches ?? []} />
+      <MatchesList>
+        {state.room.matches?.map((match) => (
+          <Card
+            media={match.media}
+            title={
+              <>{`${match.users.join(" & ")} want to watch ${
+                match.media.title
+              }`}</>
+            }
+          />
+        ))}
+      </MatchesList>
     </Layout>
   );
 };

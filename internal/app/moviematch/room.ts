@@ -88,7 +88,7 @@ export class Room {
     for (const [mediaId, rating] of this.ratings.entries()) {
       const likes = rating.filter(([, rating]) => rating === "like");
       if (
-        likes.length &&
+        likes.length > 1 &&
         (allLikes || !!likes.find(([_userName]) => userName === _userName))
       ) {
         const media = this.media.get(mediaId);

@@ -6,6 +6,7 @@ import {
   loadTranslation,
 } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
+import { getLogger } from "/internal/app/moviematch/logger.ts";
 
 type KVP = { [key: string]: string | KVP };
 
@@ -31,24 +32,33 @@ let getTemplate = memo(() =>
 );
 
 export const getTranslations = async (
-  req: ServerRequest
+  headers: Headers
 ): Promise<Record<string, string>> => {
-  const { headers } = req;
   const accept = new Accepts(headers);
+  if (!headers.get("accept-language")) {
+    getLogger().info(
+      `No accept-languages when loading translations. Defaulting to en`
+    );
+    headers.set("accept-language", "en");
+  }
   const availableLocales = await getAvailableLocales();
   const acceptedLanguage = accept.languages([...availableLocales]);
 
-  const language = !acceptedLanguage
-    ? "en"
-    : Array.isArray(acceptedLanguage)
-    ? acceptedLanguage[0]
-    : acceptedLanguage;
+  let language: string;
+
+  if (acceptedLanguage === false) {
+    language = "en";
+  } else if (Array.isArray(acceptedLanguage)) {
+    language = acceptedLanguage[0];
+  } else {
+    language = acceptedLanguage;
+  }
 
   return loadTranslation(language);
 };
 
 export const render = async (req: ServerRequest) => {
-  const translations = await getTranslations(req);
+  const translations = await getTranslations(req.headers);
   const config = getConfig();
   const template = await getTemplate();
 

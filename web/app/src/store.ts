@@ -3,7 +3,14 @@ import {
   useEffect,
   useReducer,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Config, Match, Media } from "../../../types/moviematch.d.ts";
+import {
+  ClientMessage,
+  Config,
+  Match,
+  Media,
+  ServerMessage,
+  Translations,
+} from "../../../types/moviematch.d.ts";
 import { getClient, MovieMatchClient } from "./api/moviematch.ts";
 import { checkPin } from "./api/plex.tv.ts";
 import { useAsyncEffect } from "./hooks/useAsyncEffect.ts";
@@ -27,6 +34,7 @@ export type Routes =
 export interface Store {
   route: Routes;
   client: MovieMatchClient;
+  translations?: Translations;
   config?: Config;
   user?: User;
   room?: {
@@ -62,6 +70,7 @@ export type Actions =
   | Action<"setUser", User>
   | Action<"setAvatar", string>
   | Action<"setRoom", Store["room"]>
+  | Action<"setTranslations", Translations>
   | Action<"match", Match>;
 
 function reducer(state: Store, action: Actions): Store {
@@ -76,6 +85,8 @@ function reducer(state: Store, action: Actions): Store {
       return { ...state, user: { ...state.user!, avatar: action.payload } };
     case "setRoom":
       return { ...state, room: action.payload };
+    case "setTranslations":
+      return { ...state, translations: action.payload };
     case "match":
       return {
         ...state,
@@ -105,25 +116,38 @@ const getStoredUser = (): User | null => {
 };
 
 export const useStore = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [store, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(() => {
-    const handleMatch = (e: Event) => {
-      if (e instanceof MessageEvent) {
-        dispatch({ type: "match", payload: e.data.payload });
+  useEffect(function setServerLocale() {
+    store.client.setLocale({
+      language: navigator.language,
+    });
+  }, []);
+
+  useEffect(function handleServerMessage() {
+    const handleMessage = (e: Event) => {
+      const msg: ClientMessage = (e as MessageEvent).data;
+      switch (msg.type) {
+        case "match":
+          dispatch({ type: "match", payload: msg.payload });
+          break;
+        case "translations":
+          dispatch({ type: "setTranslations", payload: msg.payload });
       }
     };
-    state.client.addEventListener("match", handleMatch);
+    store.client.addEventListener("message", handleMessage);
+
     return () => {
-      state.client.removeEventListener("match", handleMatch);
+      store.client.removeEventListener("message", handleMessage);
     };
   }, []);
+
   useAsyncEffect(
     async function getMovieMatchConfigFromServer() {
-      const config = await state.client.waitForMessage("config");
+      const config = await store.client.waitForMessage("config");
       dispatch({ type: "setConfig", payload: config.payload });
     },
-    [state.client]
+    [store.client]
   );
 
   useAsyncEffect(async function setUserStateWithStoredValue() {
@@ -148,9 +172,9 @@ export const useStore = () => {
 
   useAsyncEffect(
     async function userNameWasSet() {
-      if (state.user?.userName) {
+      if (store.user?.userName) {
         try {
-          const loginSuccess = await state.client.login(state.user);
+          const loginSuccess = await store.client.login(store.user);
           dispatch({ type: "setAvatar", payload: loginSuccess.avatarImage });
           dispatch({ type: "navigate", payload: { path: "join" } });
         } catch (loginError) {
@@ -158,8 +182,8 @@ export const useStore = () => {
         }
       }
     },
-    [state.user?.userName]
+    [store.user?.userName]
   );
 
-  return [state, dispatch] as const;
+  return [store, dispatch] as const;
 };

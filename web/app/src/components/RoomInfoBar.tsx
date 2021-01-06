@@ -7,6 +7,7 @@ import { ShareIcon } from "./ShareIcon.tsx";
 import { Avatar } from "./Avatar.tsx";
 
 import "./RoomInfoBar.css";
+import { Tr } from "./Tr.tsx";
 
 export const RoomInfoBar = () => {
   const store = useContext(MovieMatchContext);
@@ -39,7 +40,9 @@ export const RoomInfoBar = () => {
         <p className="RoomInfoBar_MatchCount_Count">
           {(store.room?.matches ?? []).length}
         </p>
-        <p className="RoomInfoBar_MatchCount_Title">Matches</p>
+        <p className="RoomInfoBar_MatchCount_Title">
+          <Tr name="MATCHES_SECTION_TITLE" />
+        </p>
       </div>
       <button className="RoomInfoBar_ShareRoomButton" onClick={handleShare}>
         {store.room?.name}

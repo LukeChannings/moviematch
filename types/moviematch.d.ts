@@ -8,7 +8,8 @@ export type ServerMessage =
   | { type: "login"; payload: Login }
   | { type: "createRoom"; payload: CreateRoomRequest }
   | { type: "joinRoom"; payload: JoinRoomRequest }
-  | { type: "rate"; payload: Rate };
+  | { type: "rate"; payload: Rate }
+  | { type: "setLocale"; payload: Locale };
 
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
@@ -19,14 +20,35 @@ export type ClientMessage =
   | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
   | { type: "match"; payload: Match }
   | { type: "media"; payload: Media[] }
-  | { type: "config"; payload: Config };
+  | { type: "config"; payload: Config }
+  | { type: "translations"; payload: Translations };
+
+// Translations
+export type TranslationKey =
+  | "LANG"
+  | "LOGIN_NAME"
+  | "LOGIN_ROOM_CODE"
+  | "LOGIN_SUBMIT"
+  | "RATE_SECTION_LOADING"
+  | "RATE_SECTION_EXHAUSTED_CARDS"
+  | "MATCHES_SECTION_TITLE"
+  | "MATCHES_SECTION_NO_MATCHES"
+  | "MATCHES_SECTION_CARD_LIKERS"
+  | "LIST_CONJUNCTION";
 
 // Configure message
 
 export interface Config {
-  translations: Record<string, string>;
   requirePlexLogin: boolean;
 }
+
+// Translations message
+
+export interface Locale {
+  language: string;
+}
+
+export type Translations = Record<TranslationKey, string>;
 
 // Login (when login is required to create a new room)
 

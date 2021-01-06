@@ -4,6 +4,7 @@ import {
   CreateRoomRequest,
   JoinRoomError,
   JoinRoomRequest,
+  Locale,
   Login,
   LoginError,
   LoginSuccess,
@@ -22,6 +23,7 @@ import {
 } from "/internal/app/moviematch/room.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 import { getUser, PlexUser } from "/internal/app/plex/plex.tv.ts";
+import { getTranslations } from "/internal/app/moviematch/template.ts";
 
 const log = getLogger();
 const config = getConfig();
@@ -31,12 +33,11 @@ export class Client {
   room?: Room;
   userName?: string;
   plexAuth?: Login["plexAuth"];
-  translations: Record<string, string>;
   plexUser?: PlexUser;
+  locale?: Locale;
 
-  constructor(ws: WebSocket, translations: Record<string, string>) {
+  constructor(ws: WebSocket) {
     this.ws = ws;
-    this.translations = translations;
     this.listenForMessages();
     this.sendConfig();
   }
@@ -49,7 +50,6 @@ export class Client {
     this.sendMessage({
       type: "config",
       payload: {
-        translations: this.translations,
         requirePlexLogin: config.requirePlexLogin,
       },
     });
@@ -76,6 +76,9 @@ export class Client {
             case "rate":
               this.handleRate(message.payload);
               break;
+            case "setLocale":
+              this.handleSetLocale(message.payload);
+              break;
             default:
               log.info(`Unhandled message: ${messageText}`);
               break;
@@ -85,12 +88,13 @@ export class Client {
         }
       }
     }
+    this.handleClose();
   }
 
   async handleLogin(login: Login) {
     log.info(`Handling login event: ${JSON.stringify(login)}`);
 
-    if (!login?.userName) {
+    if (typeof login?.userName !== "string") {
       const error: LoginError = {
         name: "MalformedMessage",
         message: "The login message was not formed correctly.",
@@ -204,8 +208,23 @@ export class Client {
   }
 
   handleRate(rate: Rate) {
-    log.info(`Handling rate event: ${JSON.stringify(rate)}`);
-    this.room?.storeRating(this.userName!, rate);
+    if (this.userName) {
+      log.info(`Handling rate event: ${this.userName} ${JSON.stringify(rate)}`);
+      this.room?.storeRating(this.userName, rate);
+    }
+  }
+
+  async handleSetLocale(locale: Locale) {
+    this.locale = locale;
+
+    const headers = new Headers({
+      "accept-language": locale.language,
+    });
+
+    this.sendMessage({
+      type: "translations",
+      payload: await getTranslations(headers),
+    });
   }
 
   handleClose() {

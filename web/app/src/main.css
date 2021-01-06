@@ -32,8 +32,7 @@ body {
     hsl(var(--mm-blue-hue) 26% 80%) 0%,
     hsl(var(--mm-blue-hue) 22% 90%) 100%
   );
-  background-size: 100vw calc(var(--vh) * 100);
-  background-attachment: fixed;
+  background-size: 100vw calc(var(--vh) * 300);
   color: var(--mm-black);
   min-height: calc(var(--vh) * 100);
   font-family: Helvetica Neue, system-ui, Helvetica, sans-serif;

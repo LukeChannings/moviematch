@@ -8,6 +8,7 @@
   font-size: 0.9rem;
   color: hsl(var(--mm-red-hue) 5% 90%);
   padding: var(--s2) var(--s3);
+  box-shadow: -1px 5px 15px 3px rgba(0, 0, 0, 0.1);
 }
 
 .RoomInfoBar_User {
@@ -47,7 +48,7 @@
   width: 3.5rem;
   background-color: var(--mm-light-red);
   color: var(--mm-white);
-  top: -100%;
+  top: -125%;
   border-radius: var(--s3);
   transform: translateX(-50%);
   left: 50%;
@@ -58,4 +59,17 @@
 .RoomInfoBar_MatchCount_Title {
   position: relative;
   top: var(--s2);
+}
+
+@media screen and (min-width: 52em) {
+  .RoomInfoBar {
+    width: 52em;
+    border-radius: 0.5rem;
+  }
+
+  .RoomInfoBar_MatchCount_Count {
+    width: 4rem;
+    font-size: 1.4rem;
+    top: -150%;
+  }
 }

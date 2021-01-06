@@ -3,6 +3,7 @@ import {
   CreateRoomRequest,
   JoinRoomRequest,
   JoinRoomSuccess,
+  Locale,
   Login,
   Rate,
   ServerMessage,
@@ -35,6 +36,7 @@ export class MovieMatchClient extends EventTarget {
     try {
       const msg: ClientMessage = JSON.parse(e.data);
       this.dispatchEvent(new MessageEvent(msg.type, { data: msg }));
+      this.dispatchEvent(new MessageEvent("message", { data: msg }));
     } catch (err) {
       console.error(err);
     }
@@ -135,6 +137,15 @@ export class MovieMatchClient extends EventTarget {
     this.sendMessage({
       type: "rate",
       payload: rateRequest,
+    });
+  };
+
+  setLocale = async (locale: Locale) => {
+    await this.waitForConnected();
+
+    this.sendMessage({
+      type: "setLocale",
+      payload: locale,
     });
   };
 
