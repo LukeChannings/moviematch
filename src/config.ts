@@ -1,17 +1,25 @@
 import { config } from 'https://deno.land/x/dotenv@v1.0.1/mod.ts'
 import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 
+const getEnvTrimmed = (name: string) => {
+  const value = Deno.env.get(name)
+  if (typeof value === 'string') {
+    return value.trim()
+  }
+  return undefined
+}
+
 export const {
-  PLEX_URL = Deno.env.get('PLEX_URL'),
-  PLEX_TOKEN = Deno.env.get('PLEX_TOKEN'),
-  PORT = Deno.env.get('PORT') ?? '8000',
-  LOG_LEVEL = Deno.env.get('LOG_LEVEL') ?? 'INFO',
-  MOVIE_BATCH_SIZE = Deno.env.get('MOVIE_BATCH_SIZE') ?? '25',
-  LINK_TYPE = Deno.env.get('LINK_TYPE') ?? 'app',
-  DEFAULT_SECTION_TYPE_FILTER = Deno.env.get('DEFAULT_SECTION_TYPE_FILTER') ??
+  PLEX_URL = getEnvTrimmed('PLEX_URL'),
+  PLEX_TOKEN = getEnvTrimmed('PLEX_TOKEN'),
+  PORT = getEnvTrimmed('PORT') ?? '8000',
+  LOG_LEVEL = getEnvTrimmed('LOG_LEVEL') ?? 'INFO',
+  MOVIE_BATCH_SIZE = getEnvTrimmed('MOVIE_BATCH_SIZE') ?? '25',
+  LINK_TYPE = getEnvTrimmed('LINK_TYPE') ?? 'app',
+  DEFAULT_SECTION_TYPE_FILTER = getEnvTrimmed('DEFAULT_SECTION_TYPE_FILTER') ??
     'movie',
-  LIBRARY_FILTER = Deno.env.get('LIBRARY_FILTER') ?? '',
-  ROOT_PATH = Deno.env.get('ROOT_PATH') ?? '',
+  LIBRARY_FILTER = getEnvTrimmed('LIBRARY_FILTER') ?? '',
+  ROOT_PATH = getEnvTrimmed('ROOT_PATH') ?? '',
 } = config()
 
 export const getVersion = async () => {
