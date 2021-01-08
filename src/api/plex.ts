@@ -27,6 +27,8 @@ class PlexTokenError extends Error {}
 export const getSections = async (): Promise<
   PlexMediaContainer<PlexDirectory>
 > => {
+  log.debug(`getSections: ${PLEX_URL}/library/sections`)
+ 
   const req = await fetch(
     `${PLEX_URL}/library/sections?X-Plex-Token=${PLEX_TOKEN}`,
     {
