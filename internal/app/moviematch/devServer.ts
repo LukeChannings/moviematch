@@ -15,6 +15,7 @@ const build = async () => {
       `--outdir=dist`,
       "--format=esm",
       "--sourcemap=inline",
+      "--target=es2019",
     ],
     cwd: WEB_APP_PATH,
   });
