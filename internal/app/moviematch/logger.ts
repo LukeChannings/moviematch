@@ -9,7 +9,7 @@ export const setupLogger = async (logLevel: keyof typeof log.LogLevels) => {
         formatter: (logRecord: LogRecord) => {
           return defaultHandler
             .format(logRecord)
-            .replace(/x-plex-token=([^$|&]+)/i, (param, token) =>
+            .replace(/x-plex-token=([^$"&]+)/i, (param, token) =>
               param.replace(token, "****")
             );
         },
