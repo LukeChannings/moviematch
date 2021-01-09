@@ -1,3 +1,4 @@
+import { join } from "https://deno.land/std@0.83.0/path/mod.ts";
 import { getLogger } from "/internal/app/moviematch/logger.ts";
 import {
   PlexDirectory,
@@ -8,12 +9,18 @@ import {
 } from "/internal/app/plex/types.d.ts";
 import { updatePath, updateSearch } from "/internal/util/url.ts";
 import { memo } from "/internal/util/memo.ts";
+import { fetch } from "/internal/util/fetch.ts";
+import { getConfig } from "/internal/app/moviematch/config.ts";
 
 export class AuthenticationError extends Error {}
 export class TimeoutError extends Error {}
 
 export const isAvailable = async (plexUrl: URL): Promise<boolean> => {
-  const req = await fetch(updatePath(plexUrl, "/identity").href);
+  if (getConfig().useTestFixtures) {
+    return true;
+  }
+
+  const req = await fetch(updatePath(plexUrl, "/identity").href, {});
   return req.ok;
 };
 
@@ -80,15 +87,24 @@ enum SortDirection {
 type Sort = [SortKeyword, keyof typeof SortDirection];
 
 export const getDirectories = memo(async (plexUrl: URL) => {
-  const req = await fetch(updatePath(plexUrl, `/library/sections`).href, {
+  const directoryUrl = updatePath(plexUrl, `/library/sections`).href;
+  const response = await fetch(directoryUrl, {
     headers: { accept: "application/json" },
   });
 
-  if (!req.ok) {
-    throw new Error(`Request failed with ${req.status} (${req.statusText})`);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch ${directoryUrl}: ${response.status} (${response.statusText})`
+    );
   }
 
-  const directory: PlexMediaContainer<PlexDirectory> = await req.json();
+  const directory: PlexMediaContainer<PlexDirectory> = await response.json();
+  if (directory && getConfig().writeFixtures) {
+    Deno.writeTextFile(
+      join(Deno.cwd(), "/fixtures/library-sections.json"),
+      JSON.stringify(directory, null, 2)
+    );
+  }
   return directory.MediaContainer.Directory;
 });
 
@@ -133,6 +149,14 @@ export const getMedia = async (
   }
 
   const media: PlexMediaContainer<PlexVideo> = await req.json();
+
+  if (media && getConfig().writeFixtures) {
+    Deno.writeTextFile(
+      join(Deno.cwd(), `/fixtures/library-sections-${directoryKey}-all.json`),
+      JSON.stringify(media, null, 2)
+    );
+  }
+
   let videos = media.MediaContainer.Metadata;
 
   const customFilters = filters?.filter(([key]) =>

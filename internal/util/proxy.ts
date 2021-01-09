@@ -1,6 +1,7 @@
 import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
 import { getLogger } from "https://deno.land/std@0.79.0/log/mod.ts";
 import { updatePath, updateSearch } from "/internal/util/url.ts";
+import { fetch } from "/internal/util/fetch.ts";
 
 class AuthenticationError extends Error {}
 
