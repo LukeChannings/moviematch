@@ -24,6 +24,8 @@ If two (or more) people swipe right on the same movie, it'll show up in everyone
 
 `docker run -it -e PLEX_URL=<Plex URL> -e PLEX_TOKEN=<Your Token> -p 8000:8000 lukechannings/moviematch`
 
+**Note**: There is also documentation for **docker-compose** over [here](./docs/docker-compose.markdown) 👈
+
 ### With Deno
 
 - Install [Deno](https://deno.land/manual/getting_started/installation)
