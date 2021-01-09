@@ -1,7 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { useContext } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { MovieMatchContext } from "../store.ts";
 import { ShareIcon } from "./ShareIcon.tsx";
 import { Avatar } from "./Avatar.tsx";
@@ -19,7 +16,7 @@ export const RoomInfoBar = () => {
     shareUrl.searchParams.set("roomName", store.room?.name ?? "");
     try {
       await navigator.share({
-        url: shareUrl.href,
+        text: shareUrl.href,
       });
     } catch (err) {
       console.log(err);
