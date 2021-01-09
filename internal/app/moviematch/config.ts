@@ -8,7 +8,7 @@ export interface BasicAuth {
 }
 
 export interface Config {
-  addr: string;
+  addr: { port: number; hostname: string };
   plexUrl: URL;
   logLevel: keyof typeof LogLevels;
   rootPath: string;
@@ -17,6 +17,7 @@ export interface Config {
   requirePlexLogin: boolean;
   useTestFixtures: boolean;
   writeFixtures: boolean;
+  tlsConfig?: { certFile: string; keyFile: string };
 }
 
 let currentConfig: Config;
@@ -46,8 +47,13 @@ export const getConfig = (): Config => {
     DEV_MODE = getTrimmedEnv("DEV_MODE") ?? "0",
     DEV_USE_TEST_FIXTURES = getTrimmedEnv("DEV_USE_TEST_FIXTURES") ?? "",
     DEV_WRITE_FIXTURES = getTrimmedEnv("DEV_WRITE_FIXTURES") ?? "",
+    TLS_CERT = getTrimmedEnv("TLS_CERT"),
+    TLS_FILE = getTrimmedEnv("TLS_FILE"),
   } = config();
 
+  const port = Number(PORT);
+
+  assert(!Number.isNaN(port), `PORT must be a string`);
   assert(typeof PLEX_URL === "string", "A PLEX_URL is required");
   assert(typeof PLEX_TOKEN === "string", "A PLEX_TOKEN is required");
   assert(
@@ -61,7 +67,7 @@ export const getConfig = (): Config => {
       : undefined;
 
   currentConfig = {
-    addr: `${HOST}:${PORT}`,
+    addr: { port, hostname: HOST },
     plexUrl: new URL(`${PLEX_URL}?X-Plex-Token=${PLEX_TOKEN}`),
     logLevel: LOG_LEVEL,
     rootPath: ROOT_PATH,
@@ -70,6 +76,10 @@ export const getConfig = (): Config => {
     requirePlexLogin: REQUIRE_PLEX_LOGIN === "1",
     useTestFixtures: DEV_USE_TEST_FIXTURES === "1",
     writeFixtures: DEV_WRITE_FIXTURES === "1",
+    tlsConfig:
+      TLS_CERT && TLS_FILE
+        ? { certFile: TLS_CERT, keyFile: TLS_FILE }
+        : undefined,
   };
 
   return currentConfig;

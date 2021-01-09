@@ -1,5 +1,9 @@
 import { assert } from "https://deno.land/std@0.83.0/_util/assert.ts";
-import { serve } from "https://deno.land/std@0.83.0/http/server.ts";
+import {
+  serve,
+  Server,
+  serveTLS,
+} from "https://deno.land/std@0.83.0/http/server.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 import { getLogger, setupLogger } from "/internal/app/moviematch/logger.ts";
 import { render } from "/internal/app/moviematch/template.ts";
@@ -31,9 +35,28 @@ log.debug(`Config: ${JSON.stringify(config)}`);
 
 log.debug(`Available localisations: ${[...availableLocales].join(", ")}`);
 
-const server = serve(config.addr);
+let server: Server;
 
-log.info(`Server listening on: ${config.addr}`);
+try {
+  server = config.tlsConfig
+    ? serveTLS({ ...config.tlsConfig, ...config.addr })
+    : serve(config.addr);
+} catch (err) {
+  log.critical(
+    `Failed to start an HTTP server. ${
+      err.name === "NotFound" && config.tlsConfig
+        ? `Please check that your TLS_CERT and TLS_FILE values are correct.`
+        : ""
+    }`
+  );
+  Deno.exit(1);
+}
+
+log.info(
+  `Server listening on ${config.tlsConfig ? "https" : "http"}://${
+    config.addr.hostname
+  }:${config.addr.port}`
+);
 
 Deno.signal(Deno.Signal.SIGINT).then(() => {
   server.close();
@@ -79,10 +102,6 @@ for await (const req of server) {
             url: key,
           });
         }
-
-        break;
-      case "/api/plexAuthCallback":
-        console.log("Plex Auth callback");
         break;
       default:
         await serveStatic(req, ["/web/static", "/web/app/dist"]);
