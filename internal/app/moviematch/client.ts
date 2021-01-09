@@ -147,8 +147,8 @@ export class Client {
       this.sendMessage({
         type: "createRoomSuccess",
         payload: {
-          previousMatches: this.room.getMatches(this.userName!, true),
-          media: [...(await this.room.getMedia()).values()],
+          previousMatches: await this.room.getMatches(this.userName!, true),
+          media: await this.room.getMediaForUser(this.userName),
         },
       });
     } catch (err) {
@@ -160,6 +160,8 @@ export class Client {
             message: err.message,
           },
         });
+      } else {
+        getLogger().error(err);
       }
     }
   }
@@ -180,8 +182,8 @@ export class Client {
       this.sendMessage({
         type: "joinRoomSuccess",
         payload: {
-          previousMatches: this.room.getMatches(this.userName!, true),
-          media: [...(await this.room.getMedia()).values()],
+          previousMatches: await this.room.getMatches(this.userName!, true),
+          media: await this.room.getMediaForUser(this.userName),
         },
       });
     } catch (err) {

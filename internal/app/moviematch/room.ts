@@ -22,7 +22,7 @@ export class Room {
   options?: RoomOption[];
   sort: RoomSort;
 
-  media = new Map</*mediaId */ string, Media>();
+  media: Promise<Map</*mediaId */ string, Media>>;
   ratings = new Map<
     /* mediaId */ string,
     Array<[userName: string, rating: Rate["rating"]]>
@@ -35,13 +35,13 @@ export class Room {
     this.filters = req.filters;
     this.sort = req.sort ?? "random";
 
-    this.getMedia();
+    this.media = this.getMedia();
   }
 
   getMedia = memo(async () => {
     const plexVideoItems = await getAllMedia(getConfig().plexUrl);
 
-    this.media = new Map(
+    const media = new Map(
       plexVideoItems.map((videoItem) => [
         videoItem.guid,
         {
@@ -60,16 +60,24 @@ export class Room {
         },
       ])
     );
-    return this.media;
+    return media;
   });
 
-  storeRating = (userName: string, rating: Rate) => {
+  getMediaForUser = async (userName: string): Promise<Media[]> => {
+    const media = await this.media;
+    return [...media.values()].filter((media) => {
+      const ratings = this.ratings.get(media.id);
+      return !ratings || !ratings.find(([_userName]) => userName === _userName);
+    });
+  };
+
+  storeRating = async (userName: string, rating: Rate) => {
     const existingRatings = this.ratings.get(rating.mediaId);
     if (existingRatings) {
       existingRatings.push([userName, rating.rating]);
       const likes = existingRatings.filter(([, rating]) => rating === "like");
       if (likes.length > 1) {
-        const media = this.media.get(rating.mediaId);
+        const media = (await this.media).get(rating.mediaId);
         if (media) {
           this.notifyMatch({
             media,
@@ -82,7 +90,10 @@ export class Room {
     }
   };
 
-  getMatches = (userName: string, allLikes: boolean): Match[] => {
+  getMatches = async (
+    userName: string,
+    allLikes: boolean
+  ): Promise<Match[]> => {
     const matches: Match[] = [];
 
     for (const [mediaId, rating] of this.ratings.entries()) {
@@ -91,7 +102,7 @@ export class Room {
         likes.length > 1 &&
         (allLikes || !!likes.find(([_userName]) => userName === _userName))
       ) {
-        const media = this.media.get(mediaId);
+        const media = (await this.media).get(mediaId);
         if (media) {
           matches.push({
             media,
