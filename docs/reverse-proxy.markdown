@@ -66,7 +66,8 @@ backend moviematch-http
 ## Apache2
 
 Make sure to enable Apache2 mods first: a2enmod mod_proxy mod_proxy_wstunnel mod_rewrite
-```
+
+```xml
 <VirtualHost *:80>
   ServerName moviematch.example.com
   ServerAlias moviematch.example.com
