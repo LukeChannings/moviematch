@@ -62,3 +62,18 @@ backend moviematch-http
   option forwardfor
   server localhost:8000
 ```
+
+## Apache2
+
+Make sure to enable Apache2 mods first: a2enmod mod_proxy mod_proxy_wstunnel mod_rewrite
+```
+<VirtualHost *:80>
+  ServerName moviematch.example.com
+  ServerAlias moviematch.example.com
+  ProxyPass / http://localhost:8000/
+  RewriteEngine on
+  RewriteCond %{HTTP:Upgrade} websocket [NC]
+  RewriteCond %{HTTP:Connection} upgrade [NC]
+  RewriteRule ^/?(.*) "ws://localhost:8000/$1" [P,L]
+</VirtualHost>
+```
