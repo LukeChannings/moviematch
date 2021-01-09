@@ -27,14 +27,18 @@ export type ClientMessage =
 export type TranslationKey =
   | "LANG"
   | "LOGIN_NAME"
-  | "LOGIN_ROOM_CODE"
-  | "LOGIN_SUBMIT"
+  | "LOGIN_ROOM_NAME"
+  | "LOGIN_SIGN_IN"
+  | "LOGIN_SIGN_IN_PLEX"
+  | "CREATE_ROOM"
   | "RATE_SECTION_LOADING"
   | "RATE_SECTION_EXHAUSTED_CARDS"
   | "MATCHES_SECTION_TITLE"
   | "MATCHES_SECTION_NO_MATCHES"
   | "MATCHES_SECTION_CARD_LIKERS"
-  | "LIST_CONJUNCTION";
+  | "LIST_CONJUNCTION"
+  | "BACK"
+  | "SHARE_ROOM_TITLE";
 
 // Configure message
 

@@ -10,6 +10,7 @@ import { getPlexCredentials } from "../api/plex.tv.ts";
 import { MovieMatchContext } from "../store.ts";
 import { ScreenProps } from "../components/Screen.ts";
 import { Layout } from "../components/Layout.tsx";
+import { Tr } from "../components/Tr.tsx";
 
 export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
   const { client, config } = useContext(MovieMatchContext);
@@ -27,7 +28,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
         }}
       >
         <Field
-          label="Name"
+          label={<Tr name="LOGIN_NAME" />}
           name="userName"
           value={userName ?? ""}
           onChange={(userName: string) => {
@@ -53,7 +54,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
                 navigate({ path: "join" });
               }}
             >
-              Sign In
+              <Tr name="LOGIN_SIGN_IN" />
             </Button>
           )}
           <Button
@@ -76,7 +77,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
               }
             }}
           >
-            Sign In with Plex
+            <Tr name="LOGIN_SIGN_IN_PLEX" />
           </Button>
         </ButtonContainer>
       </form>

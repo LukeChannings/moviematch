@@ -1,12 +1,16 @@
 {
   "LANG": "en",
   "LOGIN_NAME": "Name",
-  "LOGIN_ROOM_CODE": "Room Code",
-  "LOGIN_SUBMIT": "Engage",
+  "LOGIN_ROOM_NAME": "Room Name",
+  "LOGIN_SIGN_IN": "Sign in",
+  "LOGIN_SIGN_IN_PLEX": "Sign in with Plex",
+  "CREATE_ROOM": "Create",
   "RATE_SECTION_LOADING": "Loading movies...",
   "RATE_SECTION_EXHAUSTED_CARDS": "That\\'s all folks ✌️",
   "MATCHES_SECTION_TITLE": "Matches",
   "MATCHES_SECTION_NO_MATCHES": "No matches yet... have you tried compromising your clearly impeccable taste?",
-  "MATCHES_SECTION_CARD_LIKERS": "$USERS want to watch $MOVIE",
-  "LIST_CONJUNCTION": "and"
+  "MATCHES_SECTION_CARD_LIKERS": "${users} want to watch ${movie}",
+  "LIST_CONJUNCTION": "and",
+  "BACK": "Back",
+  "SHARE_ROOM_TITLE": "Let's pick a movie to watch!"
 }

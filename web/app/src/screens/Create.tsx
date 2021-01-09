@@ -10,6 +10,7 @@ import { ErrorMessage } from "../components/ErrorMessage.tsx";
 import { Field } from "../components/Field.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { ScreenProps } from "../components/Screen.ts";
+import { Tr } from "../components/Tr.tsx";
 import { MovieMatchContext } from "../store.ts";
 
 export const CreateScreen = ({
@@ -53,7 +54,7 @@ export const CreateScreen = ({
       >
         {createRoomError && <ErrorMessage message={createRoomError} />}
         <Field
-          label="Room Name"
+          label={<Tr name="LOGIN_ROOM_NAME" />}
           name="roomName"
           value={roomName}
           onChange={setRoomName}
@@ -64,10 +65,10 @@ export const CreateScreen = ({
             appearance="secondary"
             onPress={() => navigate({ path: "join" })}
           >
-            Back
+            <Tr name="BACK" />
           </Button>
           <Button appearance="secondary" onPress={createRoom}>
-            Create
+            <Tr name="CREATE_ROOM" />
           </Button>
         </ButtonContainer>
       </form>

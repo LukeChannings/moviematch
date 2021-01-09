@@ -8,6 +8,7 @@ import { ErrorMessage } from "../components/ErrorMessage.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { MatchesList } from "../components/MatchesList.tsx";
 import { RoomInfoBar } from "../components/RoomInfoBar.tsx";
+import { Tr } from "../components/Tr.tsx";
 import { MovieMatchContext } from "../store.ts";
 
 import "./Rate.css";
@@ -20,7 +21,7 @@ export const RateScreen = () => {
     return <ErrorMessage message="No Room!" />;
   }
 
-  const media = state.room.media.slice(currentIndex, currentIndex + 6);
+  const media = state.room.media.slice(currentIndex, currentIndex + 5);
 
   return (
     <Layout hideLogo>
@@ -47,9 +48,13 @@ export const RateScreen = () => {
           <Card
             media={match.media}
             title={
-              <>{`${match.users.join(" & ")} want to watch ${
-                match.media.title
-              }`}</>
+              <Tr
+                name="MATCHES_SECTION_CARD_LIKERS"
+                context={{
+                  users: match.users.join(" & "),
+                  movie: match.media.title,
+                }}
+              />
             }
           />
         ))}

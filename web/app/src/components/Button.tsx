@@ -1,10 +1,10 @@
-import React from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { ReactNode } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { Color, Spacing } from "../types.ts";
 import "./Button.css";
 
 interface ButtonProps {
   appearance: "primary" | "secondary";
-  children: string;
+  children: ReactNode;
   paddingTop?: Spacing;
   onPress?(e: React.MouseEvent): void;
   disabled?: boolean;

@@ -1,13 +1,13 @@
-import React from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { ReactNode } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import "./Field.css";
 
 interface FieldProps {
   name: string;
   value?: string;
-  label: string;
+  label: ReactNode;
   paddingTop?: "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
   onChange?(value: string): void;
-  errorMessage?: string;
+  errorMessage?: ReactNode;
 }
 
 export const Field = ({
