@@ -19,18 +19,19 @@
 }
 
 .Spinner,
-.Spinner::after {
+#app:empty::after {
   width: 3rem;
   height: 3rem;
   border-radius: 100%;
   background-color: hsl(var(--mm-blue-hue) 50% 50% / 0.25);
+  animation: 3s linear 0s infinite alternate scale;
 }
 
-.Spinner::after {
-  animation: 3s linear 0s infinite alternate scale;
-  content: "";
+#app:empty::after {
   display: block;
+  content: "";
   position: absolute;
-  top: 0;
-  left: 0;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }

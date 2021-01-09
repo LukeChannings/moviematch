@@ -8,7 +8,7 @@
   font-size: 0.9rem;
   color: hsl(var(--mm-red-hue) 5% 90%);
   padding: var(--s2) var(--s3);
-  box-shadow: -1px 5px 15px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: -1px 3px 8px 1px rgba(33, 33, 33, 0.3);
 }
 
 .RoomInfoBar_User {
@@ -64,7 +64,7 @@
 @media screen and (min-width: 52em) {
   .RoomInfoBar {
     width: 52em;
-    border-radius: 0.5rem;
+    border-radius: 11px;
   }
 
   .RoomInfoBar_MatchCount_Count {

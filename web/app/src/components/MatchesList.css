@@ -15,6 +15,7 @@
   overflow: auto;
   padding: var(--s4) 0 var(--s3) 10vw;
   scroll-snap-type: x mandatory;
+  grid-auto-columns: max-content;
 }
 
 @media screen and (min-width: 52em) {
@@ -38,7 +39,13 @@
 .Matches_NoMatches {
   font-size: 1rem;
   color: #505062;
-  max-width: 50vw;
+  max-width: 80vw;
   text-align: center;
   font-weight: bold;
+}
+
+@media screen and (min-width: 52em) {
+  .Matches_NoMatches {
+    max-width: 50vw;
+  }
 }

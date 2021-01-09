@@ -2,14 +2,25 @@
   --height: var(--card-height, min(calc(80vmin * 1.5), calc(var(--vh) * 80)));
 
   background-color: var(--mm-black);
+  background-image: linear-gradient(
+    to bottom,
+    var(--mm-plex-color) 0%,
+    var(--mm-black) 100%
+  );
   background-size: cover;
   width: calc(var(--height) * 0.6666);
   height: var(--height);
   border-radius: 0.5rem;
   overflow: hidden;
-  box-shadow: -1px 5px 15px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: -1px 3px 8px 1px rgba(33, 33, 33, 0.3);
   position: relative;
   border: 2px solid var(--mm-line-color);
+}
+
+@media screen and (min-width: 48em) {
+  .Card {
+    --height: var(--card-height, calc(var(--vh) * 60));
+  }
 }
 
 .Card_Poster {
