@@ -134,7 +134,7 @@ export class Room {
 
 type RoomName = string;
 
-let rooms = new Map<RoomName, Room>();
+const rooms = new Map<RoomName, Room>();
 
 export class RoomExistsError extends Error {}
 

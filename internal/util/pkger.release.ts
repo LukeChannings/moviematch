@@ -2,14 +2,12 @@ import { pkg } from "/pkg.ts";
 
 export const isRelease = true;
 
-export const fileExists = async (path: string): Promise<boolean> =>
-  pkg.has(path);
+export const fileExists = (path: string): boolean => pkg.has(path);
 
-export const readFile = async (path: string): Promise<Uint8Array> =>
-  pkg.get(path)!;
+export const readFile = (path: string): Uint8Array => pkg.get(path)!;
 
-export const readTextFile = async (path: string): Promise<string> => {
-  const data = await readFile(path);
+export const readTextFile = (path: string): string => {
+  const data = readFile(path);
   const textDecoder = new TextDecoder();
   return textDecoder.decode(data);
 };

@@ -28,7 +28,7 @@ const interpolate = (template: string, context: KVP): string => {
   return template;
 };
 
-let getTemplate = memo(() => readTextFile("/web/template/index.html"));
+const getTemplate = memo(() => readTextFile("/web/template/index.html"));
 
 export const getTranslations = async (
   headers: Headers,

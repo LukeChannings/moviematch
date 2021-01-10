@@ -2,10 +2,11 @@ import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
 import { BasicAuth } from "/internal/app/moviematch/config.ts";
 
 export const isAuthorized = (
-  { user, password }: BasicAuth,
+  basicAuth: BasicAuth,
   req: ServerRequest,
 ): boolean => {
   const auth = req.headers.get("Authorization");
+  const { user, password } = basicAuth;
 
   if (auth === `Basic ${btoa(`${user}:${password}`)}`) {
     return true;

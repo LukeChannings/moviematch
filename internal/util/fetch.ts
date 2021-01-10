@@ -21,14 +21,18 @@ export const fetch = async (
       ".json";
     const fixturePath = join(Deno.cwd(), "/fixtures", fixtureName);
 
+    let response: Response;
+
     try {
       const data = await Deno.readTextFile(fixturePath);
       getLogger().error(`Found fixture for ${fixtureName}`);
-      return new Response(data, { status: 200, statusText: "OK" });
+      response = new Response(data, { status: 200, statusText: "OK" });
     } catch (err) {
       getLogger().error(`No fixture for "${fixtureName}"`);
-      return new Response("", { status: 404, statusText: "Not Found" });
+      response = new Response("", { status: 404, statusText: "Not Found" });
     }
+
+    return response;
   }
 
   return globalThis.fetch(input, init);

@@ -92,13 +92,15 @@ for await (const req of server) {
 
   try {
     switch (pathname) {
-      case "/":
+      case "/": {
         render(req).catch(log.error);
         break;
-      case "/api/ws":
+      }
+      case "/api/ws": {
         upgradeWebSocket(req);
         break;
-      case "/api/poster":
+      }
+      case "/api/poster": {
         const { searchParams } = urlFromReqUrl(req.url);
         const key = searchParams.get("key");
         const width = searchParams.has("w") ? searchParams.get("w")! : "500";
@@ -116,9 +118,11 @@ for await (const req of server) {
           });
         }
         break;
-      default:
+      }
+      default: {
         serveStatic(req, ["/web/static", "/web/app/dist"]).catch(log.error);
         break;
+      }
     }
   } catch (err) {
     log.error(err);
