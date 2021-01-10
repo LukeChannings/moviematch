@@ -1,12 +1,16 @@
 {
   "LANG": "de",
   "LOGIN_NAME": "Name",
-  "LOGIN_ROOM_CODE": "Zimmercode",
-  "LOGIN_SUBMIT": "Abschicken",
+  "LOGIN_ROOM_NAME": "Zimmercode",
+  "LOGIN_SIGN_IN": "Abschicken",
+  "LOGIN_SIGN_IN_PLEX": "Sign in with Plex",
+  "CREATE_ROOM": "Create",
   "RATE_SECTION_LOADING": "Lade Filme...",
   "RATE_SECTION_EXHAUSTED_CARDS": "Wir haben das Ende der Fahrt erreicht 🎢. Bitte achten Sie auf Ihren Kopf auf dem Weg nach draußen.",
   "MATCHES_SECTION_TITLE": "Übereinstimmungen",
   "MATCHES_SECTION_NO_MATCHES": "Niemand will mit dir einen Film schauen ... noch nicht.",
-  "MATCHES_SECTION_CARD_LIKERS": "$USERS wollen $MOVIE sehen",
-  "LIST_CONJUNCTION": "und"
+  "MATCHES_SECTION_CARD_LIKERS": "${users} wollen ${movie} sehen",
+  "LIST_CONJUNCTION": "und",
+  "BACK": "Back",
+  "SHARE_ROOM_TITLE": "Let's pick a movie to watch!"
 }
