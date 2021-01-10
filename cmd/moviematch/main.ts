@@ -36,7 +36,7 @@ log.info(`Starting MovieMatch (${config.version})`);
 
 assert(
   await isAvailable(config.plexUrl),
-  `Availability of ${config.plexUrl.origin} could not be verified.`
+  `Availability of ${config.plexUrl.origin} could not be verified.`,
 );
 
 assert(availableLocales.size !== 0, `Could not find any translation files`);
@@ -57,15 +57,15 @@ try {
       err.name === "NotFound" && config.tlsConfig
         ? `Please check that your TLS_CERT and TLS_FILE values are correct.`
         : ""
-    }`
+    }`,
   );
   Deno.exit(1);
 }
 
 log.info(
-  `Server listening on ${config.tlsConfig ? "https" : "http"}://${
-    config.addr.hostname
-  }:${config.addr.port}`
+  `Server listening on ${
+    config.tlsConfig ? "https" : "http"
+  }://${config.addr.hostname}:${config.addr.port}`,
 );
 
 if (Deno.build.os !== "windows") {

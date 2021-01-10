@@ -212,7 +212,7 @@ export class Client {
   handleRate(rate: Rate) {
     if (this.userName) {
       log.debug(
-        `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`
+        `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`,
       );
       this.room?.storeRating(this.userName, rate);
     }

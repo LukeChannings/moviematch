@@ -16,8 +16,8 @@ const get = (context: KVP, keyPath: string[]): string =>
     keyPath.reduce(
       (subContext: string | KVP, key: string) =>
         typeof subContext === "object" ? subContext[key] ?? "" : subContext,
-      context
-    )
+      context,
+    ),
   );
 
 const interpolate = (template: string, context: KVP): string => {
@@ -31,12 +31,12 @@ const interpolate = (template: string, context: KVP): string => {
 let getTemplate = memo(() => readTextFile("/web/template/index.html"));
 
 export const getTranslations = async (
-  headers: Headers
+  headers: Headers,
 ): Promise<Record<string, string>> => {
   const accept = new Accepts(headers);
   if (!headers.get("accept-language")) {
     getLogger().info(
-      `No accept-languages when loading translations. Defaulting to en`
+      `No accept-languages when loading translations. Defaulting to en`,
     );
     headers.set("accept-language", "en");
   }

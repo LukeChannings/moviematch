@@ -96,7 +96,7 @@ export const getDirectories = memo(async (plexUrl: URL) => {
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch ${directoryUrl}: ${response.status} (${response.statusText})`
+      `Failed to fetch ${directoryUrl}: ${response.status} (${response.statusText})`,
     );
   }
 
@@ -104,7 +104,7 @@ export const getDirectories = memo(async (plexUrl: URL) => {
   if (directory && getConfig().writeFixtures) {
     Deno.writeTextFile(
       join(Deno.cwd(), "/fixtures/library-sections.json"),
-      JSON.stringify(directory, null, 2)
+      JSON.stringify(directory, null, 2),
     );
   }
   return directory.MediaContainer.Directory;
@@ -119,7 +119,7 @@ interface PlexMediaView {
 export const getMedia = async (
   plexUrl: URL,
   directoryKey: string,
-  { filters, sort, limit }: PlexMediaView = {}
+  { filters, sort, limit }: PlexMediaView = {},
 ) => {
   const [sortKeyword, sortDirection] = sort ?? ["titleSort", "ASCENDING"];
 
@@ -131,11 +131,11 @@ export const getMedia = async (
           ...acc,
           [`${key}${FilterOperator[operator]}`]: value,
         }),
-        {}
+        {},
       ),
       sort: sortKeyword + SortDirection[sortDirection],
       limit: String(limit ?? "-1"),
-    }
+    },
   );
 
   getLogger().debug(`Fetching ${queryUrl.href}`);
@@ -155,7 +155,7 @@ export const getMedia = async (
   if (media && getConfig().writeFixtures) {
     Deno.writeTextFile(
       join(Deno.cwd(), `/fixtures/library-sections-${directoryKey}-all.json`),
-      JSON.stringify(media, null, 2)
+      JSON.stringify(media, null, 2),
     );
   }
 
@@ -192,7 +192,7 @@ export const getMedia = async (
 export const getAllMedia = async (
   plexUrl: URL,
   directoryTypeFilter: PlexDirectoryType[] = ["movie"],
-  mediaView?: PlexMediaView
+  mediaView?: PlexMediaView,
 ) => {
   const directories = await getDirectories(plexUrl);
 
@@ -201,7 +201,7 @@ export const getAllMedia = async (
   }
 
   const filteredDirectories = directories?.filter(
-    ({ type }) => directoryTypeFilter?.includes(type) ?? true
+    ({ type }) => directoryTypeFilter?.includes(type) ?? true,
   );
 
   const videos: PlexVideoItem[] = [];
