@@ -58,10 +58,13 @@ log.info(
   }:${config.addr.port}`
 );
 
-Deno.signal(Deno.Signal.SIGINT).then(() => {
-  server.close();
-  Deno.exit(0);
-});
+if (Deno.build.os !== "windows") {
+  Deno.signal(Deno.Signal.SIGINT).then(() => {
+    log.info("Shutting down");
+    server.close();
+    Deno.exit(0);
+  });
+}
 
 if (config.devMode) {
   watchAndBuild();
