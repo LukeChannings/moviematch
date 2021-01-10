@@ -14,7 +14,7 @@ export const memo = <T>(fn: (...args: any[]) => T): ((...args: any[]) => T) => {
 };
 
 export const memo1 = <T>(
-  fn: (key: string, ...args: any[]) => T
+  fn: (key: string, ...args: any[]) => T,
 ): ((key: string, ...args: any[]) => T) => {
   if (getConfig().devMode) {
     return fn;

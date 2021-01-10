@@ -7,6 +7,7 @@ import {
 } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 import { getLogger } from "/internal/app/moviematch/logger.ts";
+import { readTextFile } from "pkger";
 
 type KVP = { [key: string]: string | KVP };
 
@@ -27,9 +28,7 @@ const interpolate = (template: string, context: KVP): string => {
   return template;
 };
 
-let getTemplate = memo(() =>
-  Deno.readTextFile(Deno.cwd() + "/web/template/index.html")
-);
+let getTemplate = memo(() => readTextFile("/web/template/index.html"));
 
 export const getTranslations = async (
   headers: Headers

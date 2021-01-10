@@ -9,7 +9,7 @@ export const proxy = async (
   req: ServerRequest,
   from: string,
   to: URL,
-  params: Record<string, string> = {}
+  params: Record<string, string> = {},
 ) => {
   const url = updateSearch(updatePath(to, from), params);
   getLogger().debug(`Proxying ${from} to ${url}`);
@@ -21,9 +21,8 @@ export const proxy = async (
         throw new AuthenticationError(`Authentication error: ${req.url}`);
       } else {
         throw new Error(
-          `${proxyReq.url} returned ${
-            proxyReq.status
-          }: ${await proxyReq.text()}`
+          `${proxyReq.url} returned ${proxyReq.status}: ${await proxyReq
+            .text()}`,
         );
       }
     }

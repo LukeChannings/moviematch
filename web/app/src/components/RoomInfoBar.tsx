@@ -19,7 +19,7 @@ export const RoomInfoBar = () => {
         text: shareUrl.href,
       });
     } catch (err) {
-      console.log(err);
+      console.log(`Failed to share`, err);
     }
   };
   return (

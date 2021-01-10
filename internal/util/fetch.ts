@@ -5,7 +5,7 @@ import { getConfig } from "/internal/app/moviematch/config.ts";
 // Intercept fetch calls for offline usage and tests.
 export const fetch = async (
   input: string | Request | URL,
-  init?: RequestInit | undefined
+  init?: RequestInit | undefined,
 ): Promise<Response> => {
   if (getConfig().useTestFixtures) {
     let fixtureName: string;
@@ -17,8 +17,8 @@ export const fetch = async (
       fixtureName = new URL(input).pathname;
     }
 
-    fixtureName =
-      fixtureName.replaceAll(/\//g, "-").replace(/^-/, "") + ".json";
+    fixtureName = fixtureName.replaceAll(/\//g, "-").replace(/^-/, "") +
+      ".json";
     const fixturePath = join(Deno.cwd(), "/fixtures", fixtureName);
 
     try {

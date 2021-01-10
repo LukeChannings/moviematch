@@ -18,7 +18,7 @@ const API_URL = (() => {
 
 type FilterClientMessageByType<
   A extends ClientMessage,
-  ClientMessageType extends string
+  ClientMessageType extends string,
 > = A extends { type: ClientMessageType } ? A : never;
 
 export class MovieMatchClient extends EventTarget {
@@ -53,11 +53,11 @@ export class MovieMatchClient extends EventTarget {
   };
 
   private handleClose = () => {
-    console.log(`WebSocket closed!`);
+    throw new Error(`WEBSOCKET CLOSED`);
   };
 
   waitForMessage = <K extends ClientMessage["type"]>(
-    type: K
+    type: K,
   ): Promise<FilterClientMessageByType<ClientMessage, K>> => {
     return new Promise((resolve) => {
       this.addEventListener(
@@ -69,7 +69,7 @@ export class MovieMatchClient extends EventTarget {
         },
         {
           once: true,
-        }
+        },
       );
     });
   };
@@ -92,7 +92,7 @@ export class MovieMatchClient extends EventTarget {
   };
 
   joinRoom = async (
-    joinRoomRequest: JoinRoomRequest
+    joinRoomRequest: JoinRoomRequest,
   ): Promise<JoinRoomSuccess> => {
     await this.waitForConnected();
 

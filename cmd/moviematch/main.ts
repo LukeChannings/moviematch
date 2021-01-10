@@ -18,11 +18,21 @@ import { upgradeWebSocket } from "/internal/app/moviematch/websocket.ts";
 import { watchAndBuild } from "/internal/app/moviematch/devServer.ts";
 import { proxy } from "/internal/util/proxy.ts";
 import { urlFromReqUrl } from "/internal/util/url.ts";
+import { isRelease } from "pkger";
 
 const config = getConfig();
 const availableLocales = await getAvailableLocales();
 await setupLogger(config.logLevel);
 const log = getLogger();
+
+const showVersion = Deno.args.includes("--version") || Deno.args.includes("-v");
+
+if (showVersion) {
+  console.log(config.version);
+  Deno.exit(0);
+}
+
+log.info(`Starting MovieMatch (${config.version})`);
 
 assert(
   await isAvailable(config.plexUrl),
@@ -66,7 +76,7 @@ if (Deno.build.os !== "windows") {
   });
 }
 
-if (config.devMode) {
+if (config.devMode && !isRelease) {
   watchAndBuild();
 }
 
@@ -83,7 +93,7 @@ for await (const req of server) {
   try {
     switch (pathname) {
       case "/":
-        await render(req);
+        render(req).catch(log.error);
         break;
       case "/api/ws":
         upgradeWebSocket(req);
@@ -107,7 +117,7 @@ for await (const req of server) {
         }
         break;
       default:
-        await serveStatic(req, ["/web/static", "/web/app/dist"]);
+        serveStatic(req, ["/web/static", "/web/app/dist"]).catch(log.error);
         break;
     }
   } catch (err) {

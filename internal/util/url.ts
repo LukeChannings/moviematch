@@ -13,7 +13,7 @@ export const updateSearch = (url: URL, search: Record<string, string>): URL => {
     new URLSearchParams({
       ...Object.fromEntries(url.searchParams.entries()),
       ...search,
-    })
+    }),
   );
   return urlCopy;
 };

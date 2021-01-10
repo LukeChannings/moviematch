@@ -1,5 +1,6 @@
 import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
 import { extname } from "https://deno.land/std@0.83.0/path/mod.ts";
+import { fileExists, readFile } from "pkger";
 
 const MIME_TYPES = new Map<string, string>([
   [".svg", "image/svg+xml"],
@@ -14,12 +15,9 @@ const getMimeType = (path: string): string =>
 export const serveStatic = async (req: ServerRequest, basePaths: string[]) => {
   for (const basePath of basePaths) {
     try {
-      const path = Deno.cwd() +
-        new URL(`file://${basePath}${req.url}`).pathname;
-      const stat = await Deno.stat(path);
-      console.log(path);
-      if (stat.isFile) {
-        const file = await Deno.readFile(path);
+      const path = basePath + req.url;
+      if (await fileExists(path)) {
+        const file = await readFile(path);
         return req.respond({
           status: 200,
           body: file,

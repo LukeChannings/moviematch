@@ -47,15 +47,13 @@ export const RateScreen = () => {
         {state.room.matches?.map((match) => (
           <Card
             media={match.media}
-            title={
-              <Tr
-                name="MATCHES_SECTION_CARD_LIKERS"
-                context={{
-                  users: match.users.join(" & "),
-                  movie: match.media.title,
-                }}
-              />
-            }
+            title={<Tr
+              name="MATCHES_SECTION_CARD_LIKERS"
+              context={{
+                users: match.users.join(" & "),
+                movie: match.media.title,
+              }}
+            />}
           />
         ))}
       </MatchesList>

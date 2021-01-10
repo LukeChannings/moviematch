@@ -15,7 +15,7 @@ import { Tr } from "../components/Tr.tsx";
 export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
   const { client, config } = useContext(MovieMatchContext);
   const [userName, setUserName] = useState<string | null>(
-    localStorage.getItem("userName")
+    localStorage.getItem("userName"),
   );
   const [userNameError, setUserNameError] = useState<string | undefined>();
 

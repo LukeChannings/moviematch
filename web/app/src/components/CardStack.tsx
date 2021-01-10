@@ -1,11 +1,11 @@
 import React, {
-  ReactNode,
   Children,
-  useRef,
   cloneElement,
   isValidElement,
-  useEffect,
   NamedExoticComponent,
+  ReactNode,
+  useEffect,
+  useRef,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { Rate } from "../../../../types/moviematch.d.ts";
@@ -22,19 +22,19 @@ const createAnimation = (
   element: HTMLElement,
   index: number,
   x = "0",
-  opacity = "1"
+  opacity = "1",
 ) => {
   const effect = new KeyframeEffect(
     element,
     [
       {
-        transform: `translate3d( 0, calc(var(--y) * ${
-          index + 1
-        }), calc(var(--z) * ${index + 1}) ) rotateX(var(--rotX))`,
+        transform: `translate3d( 0, calc(var(--y) * ${index +
+          1}), calc(var(--z) * ${index + 1}) ) rotateX(var(--rotX))`,
         opacity: "1",
       },
       {
-        transform: `translate3d( ${x}, calc(var(--y) * ${index}), calc(var(--z) * ${index}) ) rotateX(var(--rotX))`,
+        transform:
+          `translate3d( ${x}, calc(var(--y) * ${index}), calc(var(--z) * ${index}) ) rotateX(var(--rotX))`,
         opacity,
       },
     ],
@@ -43,7 +43,7 @@ const createAnimation = (
       fill: "both",
       composite: "replace",
       iterationComposite: "replace",
-    }
+    },
   );
   const animation = new Animation(effect, document.timeline);
   animation.pause();
@@ -77,7 +77,7 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
           }
         }
       };
-    })()
+    })(),
   );
 
   useEffect(
@@ -86,7 +86,7 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
         createAnimation(cardEl, i)
       );
     },
-    [topCardIndex]
+    [topCardIndex],
   );
 
   useEffect(
@@ -118,8 +118,8 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
               1,
               direction === "left"
                 ? Math.abs(delta) / startEvent.clientX
-                : delta / (maxX - startEvent.clientX)
-            )
+                : delta / (maxX - startEvent.clientX),
+            ),
           );
 
           if (currentDirection != direction) {
@@ -128,7 +128,7 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
               topCardEl,
               0,
               `${currentDirection === "left" ? "-50vw" : "50vw"}`,
-              "0"
+              "0",
             );
           }
 
@@ -156,7 +156,7 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
               // we don't want the user to get a handle on the card as it's animating out
               cardStackEl.current!.addEventListener(
                 "pointerdown",
-                handlePointerDown
+                handlePointerDown,
               );
             }
 
@@ -175,8 +175,8 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
                       animation.pause();
                       animation.playbackRate = 1;
                     }
-                  }
-                )
+                  },
+                ),
               );
             } catch (err) {
               if (err.name !== "AbortError") {
@@ -189,7 +189,7 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
               setTopCardIndex(topCardIndex + 1);
             }
           },
-          { once: true }
+          { once: true },
         );
       };
 
@@ -206,15 +206,15 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
       return () => {
         cardStackEl.current!.removeEventListener(
           "pointerdown",
-          handlePointerDown
+          handlePointerDown,
         );
         cardStackEl.current!.removeEventListener(
           "touchstart",
-          handleTouchStart
+          handleTouchStart,
         );
       };
     },
-    [cardStackEl.current, topCardIndex]
+    [cardStackEl.current, topCardIndex],
   );
 
   return (

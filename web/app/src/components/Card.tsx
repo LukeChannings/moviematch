@@ -36,16 +36,18 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           srcSet={srcSet.join(", ")}
           alt={`${media.title} poster`}
         />
-        {showMoreInfo ? (
-          <div className="Card_MoreInfo">
-            <p className="Card_MoreInfo_Title">{mediaTitle}</p>
-            <p className="Card_MoreInfo_Description">{media.description}</p>
-          </div>
-        ) : (
-          <div className="Card_Info">
-            <p className="Card_Info_Title">{title ?? mediaTitle}</p>
-          </div>
-        )}
+        {showMoreInfo
+          ? (
+            <div className="Card_MoreInfo">
+              <p className="Card_MoreInfo_Title">{mediaTitle}</p>
+              <p className="Card_MoreInfo_Description">{media.description}</p>
+            </div>
+          )
+          : (
+            <div className="Card_Info">
+              <p className="Card_Info_Title">{title ?? mediaTitle}</p>
+            </div>
+          )}
         <button
           className="Card_MoreInfoButton"
           onClick={() => setShowMoreInfo(!showMoreInfo)}
@@ -54,7 +56,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         </button>
       </div>
     );
-  }
+  },
 );
 
 Card.displayName = "Card";

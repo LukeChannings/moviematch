@@ -92,6 +92,8 @@ export const getDirectories = memo(async (plexUrl: URL) => {
     headers: { accept: "application/json" },
   });
 
+  getLogger().debug(`Fetching ${directoryUrl}`);
+
   if (!response.ok) {
     throw new Error(
       `Failed to fetch ${directoryUrl}: ${response.status} (${response.statusText})`
@@ -136,7 +138,7 @@ export const getMedia = async (
     }
   );
 
-  getLogger().debug(queryUrl.href);
+  getLogger().debug(`Fetching ${queryUrl.href}`);
 
   const req = await fetch(queryUrl.href, {
     headers: {

@@ -1,3 +1,4 @@
 .env
 .DS_Store
 web/app/dist
+pkg.ts

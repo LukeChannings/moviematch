@@ -1,6 +1,6 @@
 import React, {
-  useContext,
   memo,
+  useContext,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { TranslationKey } from "../../../../types/moviematch.d.ts";
 import { MovieMatchContext, Store } from "../store.ts";

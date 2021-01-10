@@ -58,7 +58,7 @@ export class Room {
           rating: Number(videoItem.rating),
           contentRating: videoItem.contentRating,
         },
-      ])
+      ]),
     );
     return media;
   });
@@ -92,7 +92,7 @@ export class Room {
 
   getMatches = async (
     userName: string,
-    allLikes: boolean
+    allLikes: boolean,
   ): Promise<Match[]> => {
     const matches: Match[] = [];
 
@@ -110,7 +110,7 @@ export class Room {
           });
         } else {
           getLogger().info(
-            `Tried to rate mediaId: ${mediaId}, but it looks like that media item doesn't exist.`
+            `Tried to rate mediaId: ${mediaId}, but it looks like that media item doesn't exist.`,
           );
         }
       }
@@ -154,7 +154,7 @@ export class UserAlreadyJoinedError extends Error {}
 
 export const getRoom = (
   userName: string,
-  { roomName, password }: JoinRoomRequest
+  { roomName, password }: JoinRoomRequest,
 ): Room => {
   const room = rooms.get(roomName);
 
@@ -172,7 +172,7 @@ export const getRoom = (
 
   if (room.users.has(userName)) {
     throw new UserAlreadyJoinedError(
-      `${userName} is already logged into ${room.roomName} room`
+      `${userName} is already logged into ${room.roomName} room`,
     );
   }
 

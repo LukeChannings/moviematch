@@ -92,7 +92,7 @@ export class Client {
   }
 
   async handleLogin(login: Login) {
-    log.info(`Handling login event: ${JSON.stringify(login)}`);
+    log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
     if (typeof login?.userName !== "string") {
       const error: LoginError = {
@@ -104,7 +104,7 @@ export class Client {
     }
 
     if (this.userName && login.userName !== this.userName) {
-      log.info(`Logging out ${this.userName}`);
+      log.debug(`Logging out ${this.userName}`);
       this.room?.users.delete(this.userName);
     }
 
@@ -130,7 +130,7 @@ export class Client {
   }
 
   async handleCreateRoom(createRoomReq: CreateRoomRequest) {
-    log.info(`Handling room creation event: ${JSON.stringify(createRoomReq)}`);
+    log.debug(`Handling room creation event: ${JSON.stringify(createRoomReq)}`);
 
     if (!this.userName) {
       return this.sendMessage({
@@ -206,12 +206,14 @@ export class Client {
         },
       });
     }
-    log.info(`Handling room join event: ${JSON.stringify(joinRoomReq)}`);
+    log.debug(`Handling room join event: ${JSON.stringify(joinRoomReq)}`);
   }
 
   handleRate(rate: Rate) {
     if (this.userName) {
-      log.info(`Handling rate event: ${this.userName} ${JSON.stringify(rate)}`);
+      log.debug(
+        `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`
+      );
       this.room?.storeRating(this.userName, rate);
     }
   }

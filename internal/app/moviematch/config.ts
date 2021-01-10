@@ -1,6 +1,7 @@
 import { LogLevels } from "https://deno.land/std@0.79.0/log/mod.ts";
 import { config } from "https://deno.land/x/dotenv@v1.0.1/mod.ts";
 import { assert } from "https://deno.land/std@0.79.0/_util/assert.ts";
+import { readTextFile } from "pkger";
 
 export interface BasicAuth {
   user: string;
@@ -8,6 +9,7 @@ export interface BasicAuth {
 }
 
 export interface Config {
+  version: string;
   addr: { port: number; hostname: string };
   plexUrl: URL;
   logLevel: keyof typeof LogLevels;
@@ -22,10 +24,18 @@ export interface Config {
 
 let currentConfig: Config;
 
+const VERSION = await readTextFile("/VERSION");
+
+const canReadEnv =
+  Deno.permissions &&
+  (await Deno.permissions.query({ name: "env" })).state === "granted";
+
 const getTrimmedEnv = (key: string): string | undefined => {
-  const value = Deno.env.get(key);
-  if (typeof value === "string") {
-    return value.trim();
+  if (canReadEnv) {
+    const value = Deno.env.get(key);
+    if (typeof value === "string") {
+      return value.trim();
+    }
   }
 };
 
@@ -67,6 +77,7 @@ export const getConfig = (): Config => {
       : undefined;
 
   currentConfig = {
+    version: VERSION,
     addr: { port, hostname: HOST },
     plexUrl: new URL(`${PLEX_URL}?X-Plex-Token=${PLEX_TOKEN}`),
     logLevel: LOG_LEVEL,

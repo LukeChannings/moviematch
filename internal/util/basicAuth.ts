@@ -3,7 +3,7 @@ import { BasicAuth } from "/internal/app/moviematch/config.ts";
 
 export const isAuthorized = (
   { user, password }: BasicAuth,
-  req: ServerRequest
+  req: ServerRequest,
 ): boolean => {
   const auth = req.headers.get("Authorization");
 

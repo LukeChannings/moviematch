@@ -147,7 +147,7 @@ export const useStore = () => {
       const config = await store.client.waitForMessage("config");
       dispatch({ type: "setConfig", payload: config.payload });
     },
-    [store.client]
+    [store.client],
   );
 
   useAsyncEffect(async function setUserStateWithStoredValue() {
@@ -182,7 +182,7 @@ export const useStore = () => {
         }
       }
     },
-    [store.user?.userName]
+    [store.user?.userName],
   );
 
   return [store, dispatch] as const;

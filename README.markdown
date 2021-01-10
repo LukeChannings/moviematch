@@ -22,7 +22,7 @@ If two (or more) people swipe right on the same movie, it'll show up in everyone
 
 - Install [Deno](https://deno.land/manual/getting_started/installation)
 - Download the latest [release](https://github.com/LukeChannings/moviematch/releases/tag/v1.2.0) and extract it, open a terminal in the extracted folder
-- Create a `.env` file (see [.env-template](./.env-template) for an example)
+- Create a `.env` file (see [.env.example](./.env.example) for an example)
 - Run `deno run --allow-net --allow-read --allow-env --unstable src/index.ts` in your favourite terminal
 
 Open [localhost:8000](http://localhost:8000)
@@ -63,7 +63,7 @@ No. The server is entirely local to you and will work offline.
 
 Yes. The server will use your browser's preferred language by default if it's supported. Otherwise it'll fall back to English.
 
-The translations can be found [in the i18n folder](./i18n).
+The translations can be found in [configs/localization](./configs/localization).
 
 The file names follow [BCP47](https://tools.ietf.org/html/bcp47) naming. Feel free to submit a Pull Request if you'd like your language to be supported.
 
