@@ -1,5 +1,7 @@
 # <img src="web/static/logo.svg" height="40px" alt="MovieMatch" />
 
+![Tests](https://github.com/LukeChannings/moviematch/workflows/Tests/badge.svg?branch=dev)
+
 Have you ever spent longer deciding on a movie than it'd take to just watch a random movie? This is an app that helps you and your friends pick a movie to watch from a [Plex](https://www.plex.tv) server.
 
 ## How it works
