@@ -1,8 +1,8 @@
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import { isRelease } from "pkger";
 
 // deno-lint-ignore no-explicit-any
 export const memo = <T>(fn: (...args: any[]) => T): ((...args: any[]) => T) => {
-  if (getConfig().devMode) {
+  if (!isRelease) {
     return fn;
   }
   let cachedResult: T;
@@ -17,10 +17,10 @@ export const memo = <T>(fn: (...args: any[]) => T): ((...args: any[]) => T) => {
 
 export const memo1 = <T>(
   // deno-lint-ignore no-explicit-any
-  fn: (key: string, ...args: any[]) => T,
+  fn: (key: string, ...args: any[]) => T
   // deno-lint-ignore no-explicit-any
 ): ((key: string, ...args: any[]) => T) => {
-  if (getConfig().devMode) {
+  if (!isRelease) {
     return fn;
   }
   const cachedResult = new Map<string, T>();

@@ -3,8 +3,6 @@ import { acceptWebSocket } from "https://deno.land/std@0.83.0/ws/mod.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
 import { getLogger } from "/internal/app/moviematch/logger.ts";
 
-const log = getLogger();
-
 export const upgradeWebSocket = async (req: ServerRequest) => {
   const { conn, r: bufReader, w: bufWriter, headers } = req;
 
@@ -18,7 +16,7 @@ export const upgradeWebSocket = async (req: ServerRequest) => {
 
     new Client(webSocket);
   } catch (err) {
-    log.error(`Failed to upgrade to a WebSocket`, err);
+    getLogger().error(`Failed to upgrade to a WebSocket`, err);
     req.respond({ status: 404 });
   }
 };
