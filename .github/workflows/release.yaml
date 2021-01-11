@@ -3,32 +3,48 @@ name: release
 on:
   push:
     branches: [main]
+    # tags:
+    #   - 'v*'
 
 jobs:
-  path-context:
-    runs-on: ubuntu-latest
+  build:
+    name: ${{ matrix.kind }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        include:
+          - os: macos-10.15
+            kind: build
+          - os: windows-2019
+            kind: build
+          - os: ubuntu-latest
+            kind: build
     steps:
-      -
-        name: Checkout
+      - name: Clone repository
         uses: actions/checkout@v2
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1
+      - name: Install Deno
+        if: |
+          !startsWith(matrix.os, 'windows')
+        run: |-
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+      - name: Install Node
+        uses: actions/setup-node@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
-          push: true
-          tags: lukechannings/moviematch:develop
+          node-version: "14"
+          check-latest: true
+      - name: Install Deno (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |-
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          echo "$HOME/.deno/bin" >> $env:GITHUB_PATH
+      - name: Install esbuild
+        run: npm install -g esbuild
+      - name: Log versions
+        run: |
+          deno --version
+          node --version
+          esbuild --version
+      - name: bundle
+        run: ./scripts/bundle.sh
