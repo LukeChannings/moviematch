@@ -10,5 +10,5 @@ if ! grep __throws "$(deno info --json --unstable | jq -r .modulesCache)/https/d
 fi
 
 rm -f moviematch.js.bak
-deno compile --unstable ./moviematch.js
+deno compile --unstable --allow-read --allow-env --allow-net ./moviematch.js
 rm moviematch.js
