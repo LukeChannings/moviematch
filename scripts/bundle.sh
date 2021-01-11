@@ -9,8 +9,6 @@ if ! grep __throws "$(deno info --json --unstable | jq -r .modulesCache)/https/d
   sed -i.bak 's/throws/__throws/g' "$(deno info --json --unstable | jq -r .modulesCache)/https/deno.land/1577336274658427026b26929397ab8e473848bd13a884c4f0b67194a3326f36"
 fi
 
-cat pkg.ts
-
 rm -f moviematch.js.bak
 deno compile --unstable --allow-read --allow-env --allow-net ./moviematch.js
 rm moviematch.js
