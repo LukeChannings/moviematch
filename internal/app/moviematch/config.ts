@@ -20,6 +20,8 @@ export interface Config {
   useTestFixtures: boolean;
   writeFixtures: boolean;
   tlsConfig?: { certFile: string; keyFile: string };
+  libraryNameFilter?: string[];
+  libraryTypeFilter?: Array<"movie" | "artist" | "photo" | "show">;
 }
 
 let currentConfig: Config;
@@ -53,11 +55,13 @@ export const getConfig = (): Config => {
     AUTH_USER = getTrimmedEnv("AUTH_USER"),
     AUTH_PASS = getTrimmedEnv("AUTH_PASS"),
     REQUIRE_PLEX_LOGIN = getTrimmedEnv("REQUIRE_PLEX_LOGIN") ?? "0",
+    DEFAULT_SECTION_TYPE_FILTER = getTrimmedEnv("DEFAULT_SECTION_TYPE_FILTER"),
+    LIBRARY_FILTER = getTrimmedEnv("LIBRARY_FILTER"),
+    TLS_CERT = getTrimmedEnv("TLS_CERT"),
+    TLS_FILE = getTrimmedEnv("TLS_FILE"),
     DEV_MODE = getTrimmedEnv("DEV_MODE") ?? "0",
     DEV_USE_TEST_FIXTURES = getTrimmedEnv("DEV_USE_TEST_FIXTURES") ?? "",
     DEV_WRITE_FIXTURES = getTrimmedEnv("DEV_WRITE_FIXTURES") ?? "",
-    TLS_CERT = getTrimmedEnv("TLS_CERT"),
-    TLS_FILE = getTrimmedEnv("TLS_FILE"),
   } = config();
 
   const port = Number(PORT);
@@ -85,6 +89,10 @@ export const getConfig = (): Config => {
     requirePlexLogin: REQUIRE_PLEX_LOGIN === "1",
     useTestFixtures: DEV_USE_TEST_FIXTURES === "1",
     writeFixtures: DEV_WRITE_FIXTURES === "1",
+    libraryNameFilter: LIBRARY_FILTER?.split(","),
+    libraryTypeFilter: (DEFAULT_SECTION_TYPE_FILTER?.split(",") as
+      | Config["libraryTypeFilter"]
+      | undefined) ?? ["movie"],
     tlsConfig: TLS_CERT && TLS_FILE
       ? { certFile: TLS_CERT, keyFile: TLS_FILE }
       : undefined,

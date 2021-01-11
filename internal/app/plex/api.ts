@@ -24,6 +24,14 @@ export const isAvailable = async (plexUrl: URL): Promise<boolean> => {
   return req.ok;
 };
 
+interface ViewOptions {
+  directoryType?: PlexDirectoryType[];
+  directoryName?: string[];
+  filters?: Filter[];
+  sort?: Sort;
+  limit?: number;
+}
+
 export enum FilterOperator {
   IS = "",
   IS_NOT = "!",
@@ -110,16 +118,10 @@ export const getDirectories = memo(async (plexUrl: URL) => {
   return directory.MediaContainer.Directory;
 });
 
-interface PlexMediaView {
-  filters?: Filter[];
-  sort?: Sort;
-  limit?: number;
-}
-
 export const getMedia = async (
   plexUrl: URL,
   directoryKey: string,
-  { filters, sort, limit }: PlexMediaView = {},
+  { filters, sort, limit }: ViewOptions,
 ) => {
   const [sortKeyword, sortDirection] = sort ?? ["titleSort", "ASCENDING"];
 
@@ -189,26 +191,41 @@ export const getMedia = async (
   return videos;
 };
 
-export const getAllMedia = async (
-  plexUrl: URL,
-  directoryTypeFilter: PlexDirectoryType[] = ["movie"],
-  mediaView?: PlexMediaView,
-) => {
+export const getAllMedia = async (plexUrl: URL, viewOptions: ViewOptions) => {
+  const { directoryType, directoryName } = viewOptions;
   const directories = await getDirectories(plexUrl);
 
   if (!directories) {
     throw new Error("No directories found!");
   }
 
-  const filteredDirectories = directories?.filter(
-    ({ type }) => directoryTypeFilter?.includes(type) ?? true,
+  let filteredDirectories = directories;
+
+  if (directoryType?.length) {
+    filteredDirectories = filteredDirectories?.filter(({ type }) =>
+      directoryType.includes(type)
+    );
+  }
+
+  if (directoryType?.length) {
+    filteredDirectories = filteredDirectories?.filter(({ title }) =>
+      directoryType.includes(title as PlexDirectoryType)
+    );
+  }
+
+  getLogger().debug(
+    `Selected libraries: ${
+      filteredDirectories.map(
+        (_) => _.title,
+      )
+    } out of ${directories.map((_) => _.title)}`,
   );
 
   const videos: PlexVideoItem[] = [];
 
   for (const directory of filteredDirectories) {
     try {
-      videos.push(...(await getMedia(plexUrl, directory.key, mediaView)));
+      videos.push(...(await getMedia(plexUrl, directory.key, viewOptions)));
     } catch (err) {
       getLogger().error(err);
     }
