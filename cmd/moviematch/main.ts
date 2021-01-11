@@ -4,7 +4,7 @@ import {
   Server,
   serveTLS,
 } from "https://deno.land/std@0.83.0/http/server.ts";
-import { getConfig, VERSION } from "/internal/app/moviematch/config.ts";
+import { getConfig } from "/internal/app/moviematch/config.ts";
 import { getLogger, setupLogger } from "/internal/app/moviematch/logger.ts";
 import { render } from "/internal/app/moviematch/template.ts";
 import { getAvailableLocales } from "/internal/app/moviematch/i18n.ts";
@@ -18,7 +18,9 @@ import { upgradeWebSocket } from "/internal/app/moviematch/websocket.ts";
 import { watchAndBuild } from "/internal/app/moviematch/devServer.ts";
 import { proxy } from "/internal/util/proxy.ts";
 import { urlFromReqUrl } from "/internal/util/url.ts";
-import { isRelease } from "pkger";
+import { isRelease, readTextFile } from "pkger";
+
+const VERSION = await readTextFile("/VERSION");
 
 const showVersion = Deno.args.includes("--version") || Deno.args.includes("-v");
 
@@ -32,7 +34,7 @@ const availableLocales = await getAvailableLocales();
 await setupLogger(config.logLevel);
 const log = getLogger();
 
-log.info(`Starting MovieMatch (${config.version})`);
+log.info(`Starting MovieMatch (${VERSION})`);
 
 assert(
   await isAvailable(config.plexUrl),

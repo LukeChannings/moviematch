@@ -9,7 +9,6 @@ export interface BasicAuth {
 }
 
 export interface Config {
-  version: string;
   addr: { port: number; hostname: string };
   plexUrl: URL;
   logLevel: keyof typeof LogLevels;
@@ -25,8 +24,6 @@ export interface Config {
 }
 
 let currentConfig: Config;
-
-export const VERSION = await readTextFile("/VERSION");
 
 const canReadEnv =
   Deno.permissions &&
@@ -81,7 +78,6 @@ export const getConfig = (): Config => {
       : undefined;
 
   currentConfig = {
-    version: VERSION,
     addr: { port, hostname: HOST },
     plexUrl: new URL(`${PLEX_URL}?X-Plex-Token=${PLEX_TOKEN}`),
     logLevel: LOG_LEVEL,
