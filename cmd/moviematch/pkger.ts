@@ -26,13 +26,15 @@ for (const path of Deno.args) {
   if (stat.isDirectory) {
     for await (const entry of walk(fullPath, { includeDirs: false })) {
       const data = await Deno.readFile(entry.path);
-      pkg.set(entry.path.replace(Deno.cwd(), ""), data);
-      console.log(entry.path.replace(Deno.cwd(), ""));
+      const path = entry.path.replace(Deno.cwd(), "").replace(/\\/g, "/");
+      pkg.set(path, data);
+      console.log(path);
     }
   } else if (stat.isFile) {
     const data = await Deno.readFile(fullPath);
-    pkg.set(fullPath.replace(Deno.cwd(), ""), data);
-    console.log(fullPath.replace(Deno.cwd(), ""));
+    const path = fullPath.replace(Deno.cwd(), "").replace(/\\/g, "/");
+    pkg.set(path, data);
+    console.log(path);
   }
 }
 
