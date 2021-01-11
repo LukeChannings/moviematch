@@ -15,10 +15,6 @@ jobs:
     -
       name: Checkout
       uses: actions/checkout@v2
-    - name: install unzip
-      run: |
-        apt-get update -y
-        apt-get install -y unzip
     - uses: denolib/setup-deno@v2
       with:
         deno-version: v1.6.3
