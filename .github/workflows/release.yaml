@@ -62,12 +62,12 @@ jobs:
         uses: actions/upload-artifact@v2
         if: startsWith(matrix.os, 'windows')
         with:
-          name: moviematch-windows.exe
+          name: moviematch-windows
           path: moviematch.exe
       - name: Upload binary
         uses: actions/upload-artifact@v2
         if: |
           !startsWith(matrix.os, 'windows')
         with:
-          name: moviematch-${{ matrix.os }}
+          name: moviematch-${{ runner.os }}
           path: moviematch
