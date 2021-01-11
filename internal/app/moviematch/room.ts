@@ -39,9 +39,9 @@ export class Room {
   }
 
   getMedia = memo(async () => {
-    const { plexUrl, libraryNameFilter, libraryTypeFilter } = getConfig();
+    const { plexUrl, libraryTitleFilter, libraryTypeFilter } = getConfig();
     const plexVideoItems = await getAllMedia(getConfig().plexUrl, {
-      directoryName: libraryNameFilter,
+      directoryName: libraryTitleFilter,
       directoryType: libraryTypeFilter,
     });
 
