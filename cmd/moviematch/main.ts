@@ -23,7 +23,7 @@ import { isRelease } from "pkger";
 const showVersion = Deno.args.includes("--version") || Deno.args.includes("-v");
 
 if (showVersion) {
-  console.log(VERSION);
+  console.log(`MovieMatch ${VERSION}`);
   Deno.exit(0);
 }
 

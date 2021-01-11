@@ -52,11 +52,7 @@ jobs:
         run: ./scripts/bundle.sh
         shell: bash
       - if: startsWith(matrix.os, 'windows')
-        run: |
-          ls
-          ./moviematch.exe --version
+        run: .\moviematch.exe --version
       - if: |
           !startsWith(matrix.os, 'windows')
-        run: |
-          ls
-          ./moviematch --version
+        run: ./moviematch --version
