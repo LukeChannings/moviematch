@@ -1,13 +1,13 @@
 import { getConfig } from "/internal/app/moviematch/config.ts";
 
-export const memo = <T>(
-  fn: (...args: unknown[]) => T,
-): ((...args: unknown[]) => T) => {
+// deno-lint-ignore no-explicit-any
+export const memo = <T>(fn: (...args: any[]) => T): ((...args: any[]) => T) => {
   if (getConfig().devMode) {
     return fn;
   }
   let cachedResult: T;
-  return (...args: unknown[]) => {
+  // deno-lint-ignore no-explicit-any
+  return (...args: any[]) => {
     if (!cachedResult) {
       cachedResult = fn(...args);
     }
@@ -16,13 +16,16 @@ export const memo = <T>(
 };
 
 export const memo1 = <T>(
-  fn: (key: string, ...args: unknown[]) => T,
-): ((key: string, ...args: unknown[]) => T) => {
+  // deno-lint-ignore no-explicit-any
+  fn: (key: string, ...args: any[]) => T,
+  // deno-lint-ignore no-explicit-any
+): ((key: string, ...args: any[]) => T) => {
   if (getConfig().devMode) {
     return fn;
   }
   const cachedResult = new Map<string, T>();
-  return (key: string, ...args: unknown[]) => {
+  // deno-lint-ignore no-explicit-any
+  return (key: string, ...args: any[]) => {
     if (cachedResult.has(key)) {
       return cachedResult.get(key)!;
     } else {
