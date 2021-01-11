@@ -39,6 +39,8 @@ jobs:
         run: |-
           curl -fsSL https://deno.land/x/install/install.sh | sh
           echo "$HOME/.deno/bin" >> $env:GITHUB_PATH
+      - name: Upgrade Deno to Canary
+        run: deno upgrade --canary
       - name: Install esbuild
         run: npm install -g esbuild
       - name: Log versions
