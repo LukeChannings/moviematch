@@ -31,9 +31,6 @@ jobs:
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
       - name: Install Node
         uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-          check-latest: true
       - name: Install Deno (Windows)
         if: startsWith(matrix.os, 'windows')
         run: |-
@@ -48,3 +45,13 @@ jobs:
           esbuild --version
       - name: bundle
         run: ./scripts/bundle.sh
+        shell: bash
+      - if: startsWith(matrix.os, 'windows')
+        run: |
+          ls
+          ./moviematch.exe --version
+      - if: |
+          !startsWith(matrix.os, 'windows')
+        run: |
+          ls
+          ./moviematch --version
