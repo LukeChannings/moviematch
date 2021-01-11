@@ -4,7 +4,7 @@ import {
   Server,
   serveTLS,
 } from "https://deno.land/std@0.83.0/http/server.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import { getConfig, VERSION } from "/internal/app/moviematch/config.ts";
 import { getLogger, setupLogger } from "/internal/app/moviematch/logger.ts";
 import { render } from "/internal/app/moviematch/template.ts";
 import { getAvailableLocales } from "/internal/app/moviematch/i18n.ts";
@@ -20,23 +20,23 @@ import { proxy } from "/internal/util/proxy.ts";
 import { urlFromReqUrl } from "/internal/util/url.ts";
 import { isRelease } from "pkger";
 
+const showVersion = Deno.args.includes("--version") || Deno.args.includes("-v");
+
+if (showVersion) {
+  console.log(VERSION);
+  Deno.exit(0);
+}
+
 const config = getConfig();
 const availableLocales = await getAvailableLocales();
 await setupLogger(config.logLevel);
 const log = getLogger();
 
-const showVersion = Deno.args.includes("--version") || Deno.args.includes("-v");
-
-if (showVersion) {
-  console.log(config.version);
-  Deno.exit(0);
-}
-
 log.info(`Starting MovieMatch (${config.version})`);
 
 assert(
   await isAvailable(config.plexUrl),
-  `Availability of ${config.plexUrl.origin} could not be verified.`,
+  `Availability of ${config.plexUrl.origin} could not be verified.`
 );
 
 assert(availableLocales.size !== 0, `Could not find any translation files`);
@@ -57,15 +57,15 @@ try {
       err.name === "NotFound" && config.tlsConfig
         ? `Please check that your TLS_CERT and TLS_FILE values are correct.`
         : ""
-    }`,
+    }`
   );
   Deno.exit(1);
 }
 
 log.info(
-  `Server listening on ${
-    config.tlsConfig ? "https" : "http"
-  }://${config.addr.hostname}:${config.addr.port}`,
+  `Server listening on ${config.tlsConfig ? "https" : "http"}://${
+    config.addr.hostname
+  }:${config.addr.port}`
 );
 
 if (Deno.build.os !== "windows") {

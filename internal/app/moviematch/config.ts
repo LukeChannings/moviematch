@@ -26,9 +26,10 @@ export interface Config {
 
 let currentConfig: Config;
 
-const VERSION = await readTextFile("/VERSION");
+export const VERSION = await readTextFile("/VERSION");
 
-const canReadEnv = Deno.permissions &&
+const canReadEnv =
+  Deno.permissions &&
   (await Deno.permissions.query({ name: "env" })).state === "granted";
 
 const getTrimmedEnv = (key: string): string | undefined => {
@@ -71,12 +72,13 @@ export const getConfig = (): Config => {
   assert(typeof PLEX_TOKEN === "string", "A PLEX_TOKEN is required");
   assert(
     isLogLevel(LOG_LEVEL),
-    `LOG_LEVEL must be one of ${Object.keys(LogLevels).join(", ")}`,
+    `LOG_LEVEL must be one of ${Object.keys(LogLevels).join(", ")}`
   );
 
-  const basicAuth = !!AUTH_USER && !!AUTH_PASS
-    ? { user: AUTH_USER, password: AUTH_PASS }
-    : undefined;
+  const basicAuth =
+    !!AUTH_USER && !!AUTH_PASS
+      ? { user: AUTH_USER, password: AUTH_PASS }
+      : undefined;
 
   currentConfig = {
     version: VERSION,
@@ -93,9 +95,10 @@ export const getConfig = (): Config => {
     libraryTypeFilter: (LIBRARY_TYPE_FILTER?.split(",") as
       | Config["libraryTypeFilter"]
       | undefined) ?? ["movie"],
-    tlsConfig: TLS_CERT && TLS_FILE
-      ? { certFile: TLS_CERT, keyFile: TLS_FILE }
-      : undefined,
+    tlsConfig:
+      TLS_CERT && TLS_FILE
+        ? { certFile: TLS_CERT, keyFile: TLS_FILE }
+        : undefined,
   };
 
   return currentConfig;
