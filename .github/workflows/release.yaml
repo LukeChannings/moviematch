@@ -51,8 +51,23 @@ jobs:
       - name: bundle
         run: ./scripts/bundle.sh
         shell: bash
-      - if: startsWith(matrix.os, 'windows')
+      - name: Print MovieMatch version
+        if: startsWith(matrix.os, 'windows')
         run: .\moviematch.exe --version
-      - if: |
+      - name: Print MovieMatch version
+        if: |
           !startsWith(matrix.os, 'windows')
         run: ./moviematch --version
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        if: startsWith(matrix.os, 'windows')
+        with:
+          name: moviematch-${matrix.os}.exe
+          path: moviematch.exe
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        if: |
+          !startsWith(matrix.os, 'windows')
+        with:
+          name: moviematch-${matrix.os}
+          path: moviematch
