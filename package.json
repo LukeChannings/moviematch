@@ -10,7 +10,7 @@
     "lint:css": "stylelint '**/*.css'",
     "lint:style": "prettier --ignore-path .gitignore  '**/*.{ts,js,css,json}' --check",
     "format": "prettier --ignore-path .gitignore  '**/*.{ts,js,css,json}' -w",
-    "build-docker": "docker build -t lukechannings/moviematch .",
+    "build-docker": "docker buildx build --platform linux/amd64,linux/arm64 -t lukechannings/moviematch .",
     "start-docker": "docker run -it --env-file .env -p 8000:8000 lukechannings/moviematch",
     "publish-docker": "npm run build-docker && docker push lukechannings/moviematch && docker tag lukechannings/moviematch:latest lukechannings/moviematch:$npm_package_version && docker push lukechannings/moviematch:$npm_package_version",
     "postversion": "git push && git push --tags && npm run publish-docker"
