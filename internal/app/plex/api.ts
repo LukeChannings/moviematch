@@ -4,6 +4,7 @@ import {
   PlexDirectory,
   PlexDirectoryType,
   PlexMediaContainer,
+  PlexMediaProviders,
   PlexVideo,
   PlexVideoItem,
 } from "/internal/app/plex/types.d.ts";
@@ -235,3 +236,25 @@ export const getAllMedia = async (plexUrl: URL, viewOptions: ViewOptions) => {
 
   return videos;
 };
+
+export const getServerId = memo(async (plexUrl: URL) => {
+  const req = await fetch(
+    updatePath(plexUrl, "/media/providers"),
+    {
+      headers: { accept: "application/json" },
+    },
+  );
+
+  if (!req.ok) {
+    if (req.status === 401) {
+      throw new AuthenticationError(`Authentication error: ${req.url}`);
+    } else {
+      throw new Error(
+        `${req.url} returned ${req.status}: ${await req.text()}`,
+      );
+    }
+  }
+
+  const providers: PlexMediaProviders = await req.json();
+  return providers.MediaContainer.machineIdentifier;
+});

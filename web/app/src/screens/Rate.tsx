@@ -47,7 +47,7 @@ export const RateScreen = () => {
         {state.room.matches?.map((match) => (
           <Card
             media={match.media}
-            href={`/foo`}
+            href={match.media.linkUrl}
             title={
               <Tr
                 name="MATCHES_SECTION_CARD_LIKERS"

@@ -61,7 +61,7 @@ export class Room {
           tagline: videoItem.tagline,
           year: videoItem.year,
           posterUrl: `/api/poster?key=${encodeURIComponent(videoItem.thumb)}`,
-          linkUrl: "",
+          linkUrl: `/movie/${videoItem.key}`,
           genres: videoItem.Genre?.map((_) => _.tag) ?? [],
           duration: Number(videoItem.duration),
           rating: Number(videoItem.rating),

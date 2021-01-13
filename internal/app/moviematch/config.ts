@@ -1,7 +1,7 @@
 import { LogLevels } from "https://deno.land/std@0.79.0/log/mod.ts";
 import { config } from "https://deno.land/x/dotenv@v1.0.1/mod.ts";
 import { assert } from "https://deno.land/std@0.79.0/_util/assert.ts";
-import { readTextFile } from "pkger";
+import { getLogger } from "/internal/app/moviematch/logger.ts";
 
 export interface BasicAuth {
   user: string;
@@ -11,16 +11,26 @@ export interface BasicAuth {
 export interface Config {
   addr: { port: number; hostname: string };
   plexUrl: URL;
-  logLevel: keyof typeof LogLevels;
   rootPath: string;
   basicAuth?: BasicAuth;
+  tlsConfig?: { certFile: string; keyFile: string };
+
+  logLevel: keyof typeof LogLevels;
   devMode: boolean;
-  requirePlexLogin: boolean;
   useTestFixtures: boolean;
   writeFixtures: boolean;
-  tlsConfig?: { certFile: string; keyFile: string };
+
+  requirePlexLogin: boolean;
   libraryTitleFilter?: string[];
   libraryTypeFilter?: Array<"movie" | "artist" | "photo" | "show">;
+
+  // When a match is clicked, we will open the link in the app by default
+  // but if the User Agent is not iOS we'll fall back to opening the Plex Web link
+  //
+  // 'plexApp' - opens in the app and falls back to 'plexLocal'
+  // 'plexTv' - always opens in plex.tv
+  // 'plexLocal' - always opens in the configured plexUrl.
+  movieLinkType: "plexApp" | "plexLocal" | "plexTv";
 }
 
 let currentConfig: Config;
@@ -30,10 +40,20 @@ const canReadEnv = Deno.permissions &&
 
 const getTrimmedEnv = (key: string): string | undefined => {
   if (canReadEnv) {
-    const value = Deno.env.get(key);
+    let value = Deno.env.get(key);
+
     if (typeof value === "string") {
-      return value.trim();
+      value = value.trim();
+
+      // People make mistakes, like putting things in quotes,
+      // or wrapping values in <...> because they read the documentation literally
+      // Let's just avoid those issues by stripping that stuff out...
+      if (/^(".+"|'.+'|<.+>)$/.test(value)) {
+        value = value.slice(1, -1);
+      }
     }
+
+    return value;
   }
 };
 
@@ -59,6 +79,7 @@ export const getConfig = (): Config => {
     DEV_MODE = getTrimmedEnv("DEV_MODE") ?? "0",
     DEV_USE_TEST_FIXTURES = getTrimmedEnv("DEV_USE_TEST_FIXTURES") ?? "",
     DEV_WRITE_FIXTURES = getTrimmedEnv("DEV_WRITE_FIXTURES") ?? "",
+    MOVIE_LINK_TYPE = getTrimmedEnv("MOVIE_LINK_TYPE") ?? "plexApp",
   } = config();
 
   const port = Number(PORT);
@@ -92,6 +113,7 @@ export const getConfig = (): Config => {
     tlsConfig: TLS_CERT && TLS_FILE
       ? { certFile: TLS_CERT, keyFile: TLS_FILE }
       : undefined,
+    movieLinkType: MOVIE_LINK_TYPE as Config["movieLinkType"],
   };
 
   return currentConfig;

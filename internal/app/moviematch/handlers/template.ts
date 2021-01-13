@@ -1,12 +1,7 @@
 import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
 import { memo } from "/internal/util/memo.ts";
-import {
-  getAvailableLocales,
-  getTranslations,
-  loadTranslation,
-} from "/internal/app/moviematch/i18n.ts";
+import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
-import { getLogger } from "/internal/app/moviematch/logger.ts";
 import { readTextFile } from "pkger";
 
 type KVP = { [key: string]: string | KVP };
@@ -43,3 +38,5 @@ export const render = async (req: ServerRequest) => {
     }),
   });
 };
+
+export const route = [/^\/$/, render] as const;

@@ -2,10 +2,11 @@ import { assert } from "https://deno.land/std@0.83.0/_util/assert.ts";
 import {
   serve,
   Server,
+  ServerRequest,
   serveTLS,
 } from "https://deno.land/std@0.83.0/http/server.ts";
 import { acceptWebSocket } from "https://deno.land/std@0.83.0/ws/mod.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import { Config, getConfig } from "/internal/app/moviematch/config.ts";
 import { getLogger, setupLogger } from "/internal/app/moviematch/logger.ts";
 import { getAvailableLocales } from "/internal/app/moviematch/i18n.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
@@ -17,9 +18,10 @@ import {
 import { watchAndBuild } from "/internal/app/moviematch/dev_server.ts";
 import { urlFromReqUrl } from "/internal/util/url.ts";
 import { isRelease, readTextFile } from "pkger";
-import { render } from "/internal/app/moviematch/handlers/template.ts";
 import { serveStatic } from "/internal/app/moviematch/handlers/serve_static.ts";
-import { handlePoster } from "/internal/app/moviematch/handlers/poster_art.ts";
+import { route as templateRoute } from "/internal/app/moviematch/handlers/template.ts";
+import { route as posterRoute } from "/internal/app/moviematch/handlers/poster_art.ts";
+import { route as movieLinkRoute } from "/internal/app/moviematch/handlers/movie_link.ts";
 
 const VERSION = await readTextFile("/VERSION");
 
@@ -83,6 +85,29 @@ if (config.devMode && !isRelease) {
   watchAndBuild();
 }
 
+type Handler = (req: ServerRequest, config: Config) => Promise<void>;
+
+const routes: Array<readonly [RegExp, Handler]> = [
+  templateRoute,
+  posterRoute,
+  movieLinkRoute,
+  [/^\/api\/ws$/, async (req) => {
+    try {
+      const webSocket = await acceptWebSocket({
+        conn: req.conn,
+        bufReader: req.r,
+        bufWriter: req.w,
+        headers: req.headers,
+      });
+
+      new Client(webSocket);
+    } catch (err) {
+      log.error(`Failed to upgrade to a WebSocket`, err);
+      req.respond({ status: 404 });
+    }
+  }],
+];
+
 for await (const req of server) {
   log.debug(`Handling ${req.url}`);
   const { pathname } = urlFromReqUrl(req.url);
@@ -93,39 +118,11 @@ for await (const req of server) {
     continue;
   }
 
-  try {
-    switch (pathname) {
-      case "/": {
-        render(req).catch(log.error);
-        break;
-      }
-      case "/api/ws": {
-        try {
-          const webSocket = await acceptWebSocket({
-            conn: req.conn,
-            bufReader: req.r,
-            bufWriter: req.w,
-            headers: req.headers,
-          });
+  const [, handler] = routes.find(([matcher]) => matcher.test(pathname)) ?? [];
 
-          new Client(webSocket);
-        } catch (err) {
-          log.error(`Failed to upgrade to a WebSocket`, err);
-          req.respond({ status: 404 });
-        }
-        break;
-      }
-      case "/api/poster": {
-        handlePoster(req, config);
-        break;
-      }
-      default: {
-        serveStatic(req, ["/web/static", "/web/app/dist"]).catch(log.error);
-        break;
-      }
-    }
-  } catch (err) {
-    log.error(err);
-    req.respond({ status: 500 });
+  if (handler) {
+    handler(req, config).catch(log.error);
+  } else {
+    serveStatic(req, ["/web/static", "/web/app/dist"]).catch(log.error);
   }
 }

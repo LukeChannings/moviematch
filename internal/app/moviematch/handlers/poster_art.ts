@@ -3,7 +3,9 @@ import type { Config } from "/internal/app/moviematch/config.ts";
 import { proxy } from "/internal/util/proxy.ts";
 import { urlFromReqUrl } from "/internal/util/url.ts";
 
-export const handlePoster = (req: ServerRequest, config: Config) => {
+export const MATCH = /^\/api\/poster$/;
+
+export const handler = async (req: ServerRequest, config: Config) => {
   const { searchParams } = urlFromReqUrl(req.url);
   const key = searchParams.get("key");
   const width = searchParams.has("w") ? searchParams.get("w")! : "500";
@@ -21,3 +23,5 @@ export const handlePoster = (req: ServerRequest, config: Config) => {
     });
   }
 };
+
+export const route = [MATCH, handler] as const;
