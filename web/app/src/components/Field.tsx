@@ -8,6 +8,7 @@ interface FieldProps {
   paddingTop?: "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
   onChange?(value: string): void;
   errorMessage?: ReactNode;
+  autoComplete?: string;
 }
 
 export const Field = ({
@@ -17,6 +18,7 @@ export const Field = ({
   paddingTop,
   onChange,
   errorMessage,
+  autoComplete,
 }: FieldProps) => (
   <div
     className={`Field ${errorMessage ? "--invalid" : ""}`}
@@ -31,6 +33,8 @@ export const Field = ({
       name={name}
       id={`${name}-text-input`}
       value={value}
+      autoComplete={autoComplete ?? "off"}
+      autoCorrect="off"
       onChange={(e) => {
         if (typeof onChange === "function") {
           onChange(e.target.value);

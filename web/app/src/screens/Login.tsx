@@ -15,7 +15,7 @@ import { Tr } from "../components/Tr.tsx";
 export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
   const { client, config } = useContext(MovieMatchContext);
   const [userName, setUserName] = useState<string | null>(
-    localStorage.getItem("userName")
+    localStorage.getItem("userName"),
   );
   const [userNameError, setUserNameError] = useState<string | undefined>();
 
@@ -30,6 +30,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
         <Field
           label={<Tr name="LOGIN_NAME" />}
           name="userName"
+          autoComplete="given-name"
           value={userName ?? ""}
           onChange={(userName: string) => {
             setUserName(userName);

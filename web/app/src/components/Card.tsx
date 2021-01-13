@@ -35,7 +35,14 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
       <Tag
         ref={ref}
         className={`Card ${href ? "--link" : ""}`}
-        {...(href ? { href, target: "_blank" } : {})}
+        {...(href
+          ? {
+            href,
+            target: /(iPhone|iPad)/.test(navigator.userAgent)
+              ? "_self"
+              : "_blank",
+          }
+          : {})}
       >
         <img
           className="Card_Poster"
@@ -43,16 +50,18 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
           srcSet={srcSet.join(", ")}
           alt={`${media.title} poster`}
         />
-        {showMoreInfo ? (
-          <div className="Card_MoreInfo">
-            <p className="Card_MoreInfo_Title">{mediaTitle}</p>
-            <p className="Card_MoreInfo_Description">{media.description}</p>
-          </div>
-        ) : (
-          <div className="Card_Info">
-            <p className="Card_Info_Title">{title ?? mediaTitle}</p>
-          </div>
-        )}
+        {showMoreInfo
+          ? (
+            <div className="Card_MoreInfo">
+              <p className="Card_MoreInfo_Title">{mediaTitle}</p>
+              <p className="Card_MoreInfo_Description">{media.description}</p>
+            </div>
+          )
+          : (
+            <div className="Card_Info">
+              <p className="Card_Info_Title">{title ?? mediaTitle}</p>
+            </div>
+          )}
         <button
           className="Card_MoreInfoButton"
           onClick={(e) => {
@@ -64,7 +73,7 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
         </button>
       </Tag>
     );
-  }
+  },
 );
 
 Card.displayName = "Card";
