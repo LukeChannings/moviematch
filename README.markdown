@@ -53,6 +53,7 @@ The following variables are supported via a `.env` file or environment variables
 ### Can a user get my Plex Token?
 
 No. The client never talks directly to the Plex server and any requests that need the token (e.g. querying movies, getting poster art) are made by the server.
+
 Only a subset of the Plex response is given to the client to minimise the chance of sensitive information leaking out.
 All server logs have both `PLEX_URL` and `PLEX_TOKEN` replaced with `****` to prevent accidental disclosure.
 
