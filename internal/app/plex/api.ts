@@ -205,12 +205,14 @@ export const getAllMedia = async (plexUrl: URL, viewOptions: ViewOptions) => {
     filteredDirectories = filteredDirectories?.filter(({ type }) =>
       directoryType.includes(type)
     );
+    getLogger().debug(filteredDirectories, directoryType);
   }
 
-  if (directoryType?.length) {
+  if (directoryName?.length) {
     filteredDirectories = filteredDirectories?.filter(({ title }) =>
-      directoryType.includes(title as PlexDirectoryType)
+      directoryName.includes(title as PlexDirectoryType)
     );
+    getLogger().debug(filteredDirectories, directoryName);
   }
 
   getLogger().debug(

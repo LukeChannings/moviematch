@@ -121,7 +121,7 @@ export class Client {
       } catch (err) {
         getLogger().error(
           `plexAuth invalid! ${JSON.stringify(login.plexAuth)}`,
-          err
+          err,
         );
       }
     }
@@ -131,7 +131,7 @@ export class Client {
 
   async handleCreateRoom(createRoomReq: CreateRoomRequest) {
     getLogger().debug(
-      `Handling room creation event: ${JSON.stringify(createRoomReq)}`
+      `Handling room creation event: ${JSON.stringify(createRoomReq)}`,
     );
 
     if (!this.userName) {
@@ -209,14 +209,14 @@ export class Client {
       });
     }
     getLogger().debug(
-      `Handling room join event: ${JSON.stringify(joinRoomReq)}`
+      `Handling room join event: ${JSON.stringify(joinRoomReq)}`,
     );
   }
 
   handleRate(rate: Rate) {
     if (this.userName) {
       getLogger().debug(
-        `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`
+        `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`,
       );
       this.room?.storeRating(this.userName, rate);
     }

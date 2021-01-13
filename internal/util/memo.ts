@@ -17,7 +17,7 @@ export const memo = <T>(fn: (...args: any[]) => T): ((...args: any[]) => T) => {
 
 export const memo1 = <T>(
   // deno-lint-ignore no-explicit-any
-  fn: (key: string, ...args: any[]) => T
+  fn: (key: string, ...args: any[]) => T,
   // deno-lint-ignore no-explicit-any
 ): ((key: string, ...args: any[]) => T) => {
   if (!isRelease) {
