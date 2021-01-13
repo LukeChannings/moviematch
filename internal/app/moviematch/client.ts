@@ -25,8 +25,6 @@ import { Config, getConfig } from "/internal/app/moviematch/config.ts";
 import { getUser, PlexUser } from "/internal/app/plex/plex.tv.ts";
 import { getTranslations } from "/internal/app/moviematch/template.ts";
 
-const log = getLogger();
-
 export class Client {
   ws: WebSocket;
   room?: Room;
@@ -79,11 +77,11 @@ export class Client {
               this.handleSetLocale(message.payload);
               break;
             default:
-              log.info(`Unhandled message: ${messageText}`);
+              getLogger().info(`Unhandled message: ${messageText}`);
               break;
           }
         } catch (err) {
-          log.error(`Failed to parse message: ${messageText}`);
+          getLogger().error(`Failed to parse message: ${messageText}`);
         }
       }
     }
@@ -91,7 +89,7 @@ export class Client {
   }
 
   async handleLogin(login: Login) {
-    log.debug(`Handling login event: ${JSON.stringify(login)}`);
+    getLogger().debug(`Handling login event: ${JSON.stringify(login)}`);
 
     if (typeof login?.userName !== "string") {
       const error: LoginError = {
@@ -103,7 +101,7 @@ export class Client {
     }
 
     if (this.userName && login.userName !== this.userName) {
-      log.debug(`Logging out ${this.userName}`);
+      getLogger().debug(`Logging out ${this.userName}`);
       this.room?.users.delete(this.userName);
     }
 
@@ -121,7 +119,10 @@ export class Client {
         this.plexUser = plexUser;
         successMessage.avatarImage = plexUser.thumb;
       } catch (err) {
-        log.error(`plexAuth invalid! ${JSON.stringify(login.plexAuth)}`, err);
+        getLogger().error(
+          `plexAuth invalid! ${JSON.stringify(login.plexAuth)}`,
+          err
+        );
       }
     }
 
@@ -129,7 +130,9 @@ export class Client {
   }
 
   async handleCreateRoom(createRoomReq: CreateRoomRequest) {
-    log.debug(`Handling room creation event: ${JSON.stringify(createRoomReq)}`);
+    getLogger().debug(
+      `Handling room creation event: ${JSON.stringify(createRoomReq)}`
+    );
 
     if (!this.userName) {
       return this.sendMessage({
@@ -205,12 +208,14 @@ export class Client {
         },
       });
     }
-    log.debug(`Handling room join event: ${JSON.stringify(joinRoomReq)}`);
+    getLogger().debug(
+      `Handling room join event: ${JSON.stringify(joinRoomReq)}`
+    );
   }
 
   handleRate(rate: Rate) {
     if (this.userName) {
-      log.debug(
+      getLogger().debug(
         `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`
       );
       this.room?.storeRating(this.userName, rate);
@@ -231,7 +236,7 @@ export class Client {
   }
 
   handleClose() {
-    log.info(`${this.userName ?? "Unknown user"} left.`);
+    getLogger().info(`${this.userName ?? "Unknown user"} left.`);
 
     if (this.room && this.userName) {
       this.room.users.delete(this.userName);
