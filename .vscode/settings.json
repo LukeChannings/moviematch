@@ -6,5 +6,11 @@
   "deno.import_map": "configs/import-map.json",
   "deno.import_intellisense_origins": {
     "https://deno.land": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
   }
 }

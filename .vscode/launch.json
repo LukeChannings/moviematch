@@ -10,10 +10,10 @@
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "run",
-        "--inspect-brk",
+        "--inspect=127.0.0.1:9229",
         "--allow-all",
         "--unstable",
-        "--import-map=./import-map.json"
+        "--import-map=./configs/import-map.json"
       ],
       "attachSimplePort": 9229
     }
