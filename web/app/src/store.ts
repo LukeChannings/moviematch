@@ -12,7 +12,7 @@ import {
   Translations,
 } from "../../../types/moviematch.d.ts";
 import { getClient, MovieMatchClient } from "./api/moviematch.ts";
-import { checkPin } from "./api/plex.tv.ts";
+import { checkPin } from "./api/plex_tv.ts";
 import { useAsyncEffect } from "./hooks/useAsyncEffect.ts";
 
 interface User {

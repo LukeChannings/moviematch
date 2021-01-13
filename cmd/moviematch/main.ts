@@ -4,21 +4,22 @@ import {
   Server,
   serveTLS,
 } from "https://deno.land/std@0.83.0/http/server.ts";
+import { acceptWebSocket } from "https://deno.land/std@0.83.0/ws/mod.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 import { getLogger, setupLogger } from "/internal/app/moviematch/logger.ts";
-import { render } from "/internal/app/moviematch/template.ts";
 import { getAvailableLocales } from "/internal/app/moviematch/i18n.ts";
+import { Client } from "/internal/app/moviematch/client.ts";
 import { isAvailable } from "/internal/app/plex/api.ts";
 import {
   isAuthorized,
   respondRequiringAuth,
-} from "/internal/util/basicAuth.ts";
-import { serveStatic } from "/internal/util/serveStatic.ts";
-import { upgradeWebSocket } from "/internal/app/moviematch/websocket.ts";
-import { watchAndBuild } from "/internal/app/moviematch/devServer.ts";
-import { proxy } from "/internal/util/proxy.ts";
+} from "/internal/util/basic_auth.ts";
+import { watchAndBuild } from "/internal/app/moviematch/dev_server.ts";
 import { urlFromReqUrl } from "/internal/util/url.ts";
 import { isRelease, readTextFile } from "pkger";
+import { render } from "/internal/app/moviematch/handlers/template.ts";
+import { serveStatic } from "/internal/app/moviematch/handlers/serve_static.ts";
+import { handlePoster } from "/internal/app/moviematch/handlers/poster_art.ts";
 
 const VERSION = await readTextFile("/VERSION");
 
@@ -99,26 +100,23 @@ for await (const req of server) {
         break;
       }
       case "/api/ws": {
-        upgradeWebSocket(req);
+        try {
+          const webSocket = await acceptWebSocket({
+            conn: req.conn,
+            bufReader: req.r,
+            bufWriter: req.w,
+            headers: req.headers,
+          });
+
+          new Client(webSocket);
+        } catch (err) {
+          log.error(`Failed to upgrade to a WebSocket`, err);
+          req.respond({ status: 404 });
+        }
         break;
       }
       case "/api/poster": {
-        const { searchParams } = urlFromReqUrl(req.url);
-        const key = searchParams.get("key");
-        const width = searchParams.has("w") ? searchParams.get("w")! : "500";
-        if (!key) {
-          req.respond({ status: 404 });
-        } else {
-          const height = String(Number(width) * 1.5);
-
-          proxy(req, "/photo/:/transcode", config.plexUrl, {
-            width,
-            height,
-            minSize: "1",
-            upscale: "1",
-            url: key,
-          });
-        }
+        handlePoster(req, config);
         break;
       }
       default: {

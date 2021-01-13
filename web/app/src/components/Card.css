@@ -1,6 +1,7 @@
 .Card {
   --height: var(--card-height, min(calc(80vmin * 1.5), calc(var(--vh) * 80)));
 
+  display: block;
   background-color: var(--mm-black);
   background-image: linear-gradient(
     to bottom,
@@ -15,6 +16,16 @@
   box-shadow: -1px 3px 8px 1px rgba(33, 33, 33, 0.3);
   position: relative;
   border: 2px solid var(--mm-line-color);
+  transition: border-color 150ms ease-in-out;
+  color: var(--mm-white);
+}
+
+.Card.--link {
+  cursor: pointer;
+}
+
+.Card.--link:hover {
+  border: 2px solid var(--mm-blue);
 }
 
 @media screen and (min-width: 48em) {
@@ -32,12 +43,12 @@
 .Card_MoreInfoButton {
   border: none;
   outline: none;
-  color: white;
   font-size: 2.25rem;
   padding: 1rem;
   position: absolute;
   bottom: 0;
   right: 0;
+  color: currentColor;
   background: rgba(0, 0, 0, 0.3);
   border-top-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
@@ -45,6 +56,11 @@
   -webkit-backdrop-filter: blur(5px);
   cursor: pointer;
   margin: 0;
+  transition: color 150ms ease-in-out;
+}
+
+.Card_MoreInfoButton:hover {
+  color: hsl(var(--mm-blue-hue) 50% 70%);
 }
 
 .Card_Info {
@@ -66,7 +82,6 @@
   font-family: system-ui;
   font-weight: bold;
   font-size: 1rem;
-  color: var(--mm-white);
   letter-spacing: 0;
 }
 
@@ -81,11 +96,11 @@
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border-radius: 0.5rem;
+  color: var(--mm-white);
 }
 
 .Card_MoreInfo_Title,
 .Card_MoreInfo_Description {
-  color: var(--mm-white);
   font-family: system-ui;
 }
 

@@ -10,11 +10,12 @@ import { InfoIcon } from "./InfoIcon.tsx";
 
 export interface CardProps {
   title?: ReactNode;
+  href?: string;
   media: Media;
 }
 
-export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ media, title }, ref) => {
+export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
+  ({ media, title, href }, ref) => {
     const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
     const srcSet = [
@@ -28,35 +29,42 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       media.type === "movie" ? ` (${media.year})` : ""
     }`;
 
+    const Tag = href ? "a" : "div";
+
     return (
-      <div ref={ref} className="Card">
+      <Tag
+        ref={ref}
+        className={`Card ${href ? "--link" : ""}`}
+        {...(href ? { href, target: "_blank" } : {})}
+      >
         <img
           className="Card_Poster"
           src={srcSet[0]}
           srcSet={srcSet.join(", ")}
           alt={`${media.title} poster`}
         />
-        {showMoreInfo
-          ? (
-            <div className="Card_MoreInfo">
-              <p className="Card_MoreInfo_Title">{mediaTitle}</p>
-              <p className="Card_MoreInfo_Description">{media.description}</p>
-            </div>
-          )
-          : (
-            <div className="Card_Info">
-              <p className="Card_Info_Title">{title ?? mediaTitle}</p>
-            </div>
-          )}
+        {showMoreInfo ? (
+          <div className="Card_MoreInfo">
+            <p className="Card_MoreInfo_Title">{mediaTitle}</p>
+            <p className="Card_MoreInfo_Description">{media.description}</p>
+          </div>
+        ) : (
+          <div className="Card_Info">
+            <p className="Card_Info_Title">{title ?? mediaTitle}</p>
+          </div>
+        )}
         <button
           className="Card_MoreInfoButton"
-          onClick={() => setShowMoreInfo(!showMoreInfo)}
+          onClick={(e) => {
+            e.preventDefault();
+            setShowMoreInfo(!showMoreInfo);
+          }}
         >
           <InfoIcon />
         </button>
-      </div>
+      </Tag>
     );
-  },
+  }
 );
 
 Card.displayName = "Card";

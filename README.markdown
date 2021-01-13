@@ -14,20 +14,9 @@ If two (or more) people swipe right on the same movie, it'll show up in everyone
 
 ## Getting started
 
-### With Docker
-
 `docker run -it -e PLEX_URL=<Plex URL> -e PLEX_TOKEN=<Your Token> -p 8000:8000 lukechannings/moviematch`
 
 **Note**: There is also documentation for **docker-compose** over [here](./docs/docker-compose.markdown) 👈
-
-### With Deno
-
-- Install [Deno](https://deno.land/manual/getting_started/installation)
-- Download the latest [release](https://github.com/LukeChannings/moviematch/releases) and extract it, open a terminal in the extracted folder
-- Create a `.env` file (see [.env.example](./.env.example) for an example)
-- Run `deno run --allow-net --allow-read --allow-env --unstable --import-map=./configs/import-map.json ./cmd/moviematch/main.ts` in your favourite terminal
-
-Open [localhost:8000](http://localhost:8000)
 
 ## Configuration
 

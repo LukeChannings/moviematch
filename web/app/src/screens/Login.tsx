@@ -6,7 +6,7 @@ import "./Login.css";
 import { Field } from "../components/Field.tsx";
 import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
-import { getPlexCredentials } from "../api/plex.tv.ts";
+import { getPlexCredentials } from "../api/plex_tv.ts";
 import { MovieMatchContext } from "../store.ts";
 import { ScreenProps } from "../components/Screen.ts";
 import { Layout } from "../components/Layout.tsx";
@@ -15,7 +15,7 @@ import { Tr } from "../components/Tr.tsx";
 export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
   const { client, config } = useContext(MovieMatchContext);
   const [userName, setUserName] = useState<string | null>(
-    localStorage.getItem("userName"),
+    localStorage.getItem("userName")
   );
   const [userNameError, setUserNameError] = useState<string | undefined>();
 

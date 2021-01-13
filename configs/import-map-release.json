@@ -1,6 +1,0 @@
-{
-  "imports": {
-    "/": "../",
-    "pkger": "../internal/util/pkger.release.ts"
-  }
-}

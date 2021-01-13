@@ -13,7 +13,7 @@
         "--inspect=127.0.0.1:9229",
         "--allow-all",
         "--unstable",
-        "--import-map=./configs/import-map.json"
+        "--import-map=./configs/import_map.json"
       ],
       "attachSimplePort": 9229
     }

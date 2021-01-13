@@ -21,9 +21,9 @@ import {
   RoomNotFoundError,
   UserAlreadyJoinedError,
 } from "/internal/app/moviematch/room.ts";
-import { Config, getConfig } from "/internal/app/moviematch/config.ts";
-import { getUser, PlexUser } from "/internal/app/plex/plex.tv.ts";
-import { getTranslations } from "/internal/app/moviematch/template.ts";
+import { getConfig } from "/internal/app/moviematch/config.ts";
+import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
+import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 
 export class Client {
   ws: WebSocket;
