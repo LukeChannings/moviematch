@@ -14,6 +14,11 @@ import { memo } from "/internal/util/memo.ts";
 import { getLogger } from "/internal/app/moviematch/logger.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
 
+export class RoomExistsError extends Error {}
+export class AccessDeniedError extends Error {}
+export class RoomNotFoundError extends Error {}
+export class UserAlreadyJoinedError extends Error {}
+
 export class Room {
   roomName: string;
   password?: string;
@@ -140,8 +145,6 @@ type RoomName = string;
 
 const rooms = new Map<RoomName, Room>();
 
-export class RoomExistsError extends Error {}
-
 export const createRoom = (createRequest: CreateRoomRequest): Room => {
   if (rooms.has(createRequest.roomName)) {
     throw new RoomExistsError(`${createRequest.roomName} already exists.`);
@@ -151,10 +154,6 @@ export const createRoom = (createRequest: CreateRoomRequest): Room => {
   rooms.set(room.roomName, room);
   return room;
 };
-
-export class AccessDeniedError extends Error {}
-export class RoomNotFoundError extends Error {}
-export class UserAlreadyJoinedError extends Error {}
 
 export const getRoom = (
   userName: string,
