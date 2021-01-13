@@ -1,10 +1,9 @@
-name: release
+name: Release
 
 on:
   push:
-    branches: [dev]
-    # tags:
-    #   - 'v*'
+    tags:
+      - 'v2*'
 
 jobs:
   build:
@@ -43,11 +42,6 @@ jobs:
         run: deno upgrade --canary
       - name: Install esbuild
         run: npm install -g esbuild
-      - name: Log versions
-        run: |
-          deno --version
-          node --version
-          esbuild --version
       - name: bundle
         run: ./scripts/bundle.sh
         shell: bash
