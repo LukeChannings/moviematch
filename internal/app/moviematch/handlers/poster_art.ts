@@ -14,7 +14,7 @@ export const handler = async (req: ServerRequest, config: Config) => {
   } else {
     const height = String(Number(width) * 1.5);
 
-    proxy(req, "/photo/:/transcode", config.plexUrl, {
+    await proxy(req, "/photo/:/transcode", config.plexUrl, {
       width,
       height,
       minSize: "1",
