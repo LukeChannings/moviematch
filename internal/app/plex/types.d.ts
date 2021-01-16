@@ -105,7 +105,7 @@ export interface PlexVideoItem {
 }
 
 export interface PlexVideo {
-  Metadata: Array<PlexVideoItem>;
+  Metadata?: Array<PlexVideoItem>;
 }
 
 type PlexTagList = Array<{

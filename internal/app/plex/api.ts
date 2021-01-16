@@ -164,6 +164,13 @@ export const getMedia = async (
 
   let videos = media.MediaContainer.Metadata;
 
+  if (!videos || videos.length === 0) {
+    getLogger().info(
+      `${media.MediaContainer.librarySectionTitle} has no videos. Skipping.`,
+    );
+    return [];
+  }
+
   const customFilters = filters?.filter(([key]) =>
     ((CUSTOM_FILTERS as unknown) as FilterKeyword[]).includes(key)
   );
