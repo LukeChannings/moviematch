@@ -67,7 +67,7 @@ export const CreateScreen = ({
           onChange={setRoomName}
         />
 
-        <ButtonContainer>
+        <ButtonContainer reverseMobile>
           <Button
             appearance="Tertiary"
             onPress={() => navigate({ path: "join" })}

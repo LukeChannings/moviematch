@@ -5,9 +5,18 @@
   justify-content: flex-end;
 }
 
+.ButtonContainerMobileReverse {
+  flex-direction: column-reverse;
+}
+
 @media screen and (max-width: 48em) {
   .ButtonContainer .Button:nth-of-type(n + 2) {
     margin-top: var(--s2);
+  }
+
+  .ButtonContainerMobileReverse .Button:nth-of-type(n + 2) {
+    margin-top: 0;
+    margin-bottom: var(--s2);
   }
 }
 
