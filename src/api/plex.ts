@@ -113,6 +113,13 @@ export const allMovies = (async () => {
 
     const libraryData: PlexMediaContainer<PlexVideo> = await req.json()
 
+    if (!libraryData.MediaContainer.Metadata) {
+      log.info(
+        `${libraryData.MediaContainer.librarySectionTitle} does not have any items. Skipping.`
+      )
+      continue
+    }
+
     assert(
       libraryData.MediaContainer.Metadata?.length,
       `${movieSection.title} doesn't appear to have any movies`
