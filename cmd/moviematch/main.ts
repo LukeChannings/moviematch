@@ -61,7 +61,7 @@ try {
     `Failed to start an HTTP server. ${
       err.name === "NotFound" && config.tlsConfig
         ? `Please check that your TLS_CERT and TLS_FILE values are correct.`
-        : ""
+        : err.message
     }`,
   );
   Deno.exit(1);
