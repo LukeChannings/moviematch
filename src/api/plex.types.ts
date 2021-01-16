@@ -45,7 +45,7 @@ export interface PlexDirectory {
 }
 
 export interface PlexVideo {
-  Metadata?: Array<{
+  Metadata: Array<{
     ratingKey: string
     key: string
     guid: string
