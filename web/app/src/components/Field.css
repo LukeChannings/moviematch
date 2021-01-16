@@ -33,4 +33,6 @@
 
 .Field_Error {
   color: var(--mm-dark-red);
+  font-weight: bold;
+  margin-top: var(--s1);
 }

@@ -5,8 +5,13 @@ import { Avatar } from "./Avatar.tsx";
 
 import "./RoomInfoBar.css";
 import { Tr } from "./Tr.tsx";
+import { Toast } from "./Toast.tsx";
 
-export const RoomInfoBar = () => {
+interface RoomInfoBarProps {
+  addToast: (toast: Toast) => void;
+}
+
+export const RoomInfoBar = ({ addToast }: RoomInfoBarProps) => {
   const store = useContext(MovieMatchContext);
   if (!store) {
     return null;
@@ -15,11 +20,20 @@ export const RoomInfoBar = () => {
     const shareUrl = new URL(location.origin);
     shareUrl.searchParams.set("roomName", store.room?.name ?? "");
     try {
-      await navigator.share({
-        text: shareUrl.href,
+      await navigator.clipboard.writeText(shareUrl.href);
+      addToast({
+        id: Date.now(),
+        showTimeMs: 2_000,
+        message: store.translations?.COPY_LINK_SUCCESS ?? "COPY_LINK_SUCCESS",
+        appearance: "Success",
       });
     } catch (err) {
-      console.log(`Failed to share`, err);
+      addToast({
+        id: Date.now(),
+        showTimeMs: 2_000,
+        message: store.translations?.COPY_LINK_FAILURE ?? "COPY_LINK_FAILURE",
+        appearance: "Failure",
+      });
     }
   };
   return (

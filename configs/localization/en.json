@@ -13,5 +13,8 @@
   "MATCHES_SECTION_CARD_LIKERS": "${users} want to watch ${movie}",
   "LIST_CONJUNCTION": "and",
   "BACK": "Back",
-  "SHARE_ROOM_TITLE": "Let's pick a movie to watch!"
+  "SHARE_ROOM_TITLE": "Let's pick a movie to watch!",
+  "FIELD_REQUIRED_ERROR": "This field is required",
+  "COPY_LINK_SUCCESS": "Copied link to the clipboard",
+  "COPY_LINK_FAILURE": "Couldn't copy the link to the clipboard"
 }

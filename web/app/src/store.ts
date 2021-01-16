@@ -13,6 +13,7 @@ import {
 } from "../../../types/moviematch.d.ts";
 import { getClient, MovieMatchClient } from "./api/moviematch.ts";
 import { checkPin } from "./api/plex_tv.ts";
+import { Toast } from "./components/Toast.tsx";
 import { useAsyncEffect } from "./hooks/useAsyncEffect.ts";
 
 interface User {
@@ -43,6 +44,7 @@ export interface Store {
     media?: Media[];
     matches?: Match[];
   };
+  toasts: Toast[];
 }
 
 const initialState: Store = {
@@ -57,6 +59,7 @@ const initialState: Store = {
       };
     }
   })(),
+  toasts: [],
 };
 
 interface Action<K, P> {
@@ -71,7 +74,9 @@ export type Actions =
   | Action<"setAvatar", string>
   | Action<"setRoom", Store["room"]>
   | Action<"setTranslations", Translations>
-  | Action<"match", Match>;
+  | Action<"match", Match>
+  | Action<"addToast", Toast>
+  | Action<"removeToast", Toast>;
 
 function reducer(state: Store, action: Actions): Store {
   switch (action.type) {
@@ -94,6 +99,16 @@ function reducer(state: Store, action: Actions): Store {
           ...state.room!,
           matches: [...(state.room?.matches ?? []), action.payload],
         },
+      };
+    case "addToast":
+      return {
+        ...state,
+        toasts: [...state.toasts, action.payload],
+      };
+    case "removeToast":
+      return {
+        ...state,
+        toasts: state.toasts.filter((toast) => toast !== action.payload),
       };
     default:
       return state;

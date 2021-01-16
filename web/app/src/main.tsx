@@ -12,6 +12,7 @@ import { RateScreen } from "./screens/Rate.tsx";
 import { MovieMatchContext, Routes, useStore } from "./store.ts";
 import { ScreenProps } from "./components/Screen.ts";
 import { Loading } from "./screens/Loading.tsx";
+import { ToastList } from "./components/Toast.tsx";
 
 const MovieMatch = () => {
   const [store, dispatch] = useStore();
@@ -21,26 +22,34 @@ const MovieMatch = () => {
 
   return (
     <MovieMatchContext.Provider value={store}>
-      {(() => {
-        const routes: Record<
-          Routes["path"],
-          (props: ScreenProps<any>) => JSX.Element
-        > = {
-          loading: Loading,
-          login: LoginScreen,
-          join: JoinScreen,
-          createRoom: CreateScreen,
-          rate: RateScreen,
-        };
-        const CurrentComponent = routes[store.route.path];
-        return (
-          <CurrentComponent
-            navigate={navigate}
-            dispatch={dispatch}
-            params={"params" in store.route ? store.route.params : undefined}
-          />
-        );
-      })()}
+      <>
+        {(() => {
+          const routes: Record<
+            Routes["path"],
+            (props: ScreenProps<any>) => JSX.Element
+          > = {
+            loading: Loading,
+            login: LoginScreen,
+            join: JoinScreen,
+            createRoom: CreateScreen,
+            rate: RateScreen,
+          };
+          const CurrentComponent = routes[store.route.path];
+          return (
+            <CurrentComponent
+              navigate={navigate}
+              dispatch={dispatch}
+              params={"params" in store.route ? store.route.params : undefined}
+            />
+          );
+        })()}
+        <ToastList
+          toasts={store.toasts}
+          removeToast={(toast) =>
+            dispatch({ type: "removeToast", payload: toast })
+          }
+        />
+      </>
     </MovieMatchContext.Provider>
   );
 };
@@ -49,7 +58,7 @@ render(<MovieMatch />, document.getElementById("app"));
 
 if (
   window.innerHeight !==
-    document.querySelector("body")?.getBoundingClientRect().height
+  document.querySelector("body")?.getBoundingClientRect().height
 ) {
   document.body.style.setProperty("--vh", window.innerHeight / 100 + "px");
   window.addEventListener("resize", () => {

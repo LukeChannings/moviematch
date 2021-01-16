@@ -18,13 +18,19 @@ export const CreateScreen = ({
   dispatch,
   params: { roomName: initialRoomName },
 }: ScreenProps<{ roomName: string }>) => {
-  const state = useContext(MovieMatchContext);
+  const { client, translations } = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState(initialRoomName);
+  const [roomNameError, setRoomNameError] = useState<string | null>(null);
   const [createRoomError, setCreateRoomError] = useState<string>();
   const createRoom = useCallback(async () => {
+    if (!roomName) {
+      setRoomNameError(translations?.FIELD_REQUIRED_ERROR!);
+      return;
+    }
+
     if (roomName) {
       try {
-        const joinMsg: JoinRoomSuccess = await state.client.createRoom({
+        const joinMsg: JoinRoomSuccess = await client.createRoom({
           roomName,
         });
 
@@ -57,6 +63,7 @@ export const CreateScreen = ({
           label={<Tr name="LOGIN_ROOM_NAME" />}
           name="roomName"
           value={roomName}
+          errorMessage={roomNameError}
           onChange={setRoomName}
         />
 

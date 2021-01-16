@@ -39,7 +39,10 @@ export type TranslationKey =
   | "LIST_CONJUNCTION"
   | "BACK"
   | "SHARE_ROOM_TITLE"
-  | "JOIN_ROOM";
+  | "JOIN_ROOM"
+  | "FIELD_REQUIRED_ERROR"
+  | "COPY_LINK_SUCCESS"
+  | "COPY_LINK_FAILURE";
 
 // Configure message
 

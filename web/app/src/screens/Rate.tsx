@@ -8,12 +8,13 @@ import { ErrorMessage } from "../components/ErrorMessage.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { MatchesList } from "../components/MatchesList.tsx";
 import { RoomInfoBar } from "../components/RoomInfoBar.tsx";
+import { ScreenProps } from "../components/Screen.ts";
 import { Tr } from "../components/Tr.tsx";
 import { MovieMatchContext } from "../store.ts";
 
 import "./Rate.css";
 
-export const RateScreen = () => {
+export const RateScreen = ({ dispatch }: ScreenProps) => {
   const state = useContext(MovieMatchContext);
   const [currentIndex, setIndex] = useState<number>(0);
 
@@ -42,19 +43,25 @@ export const RateScreen = () => {
         ))}
       </CardStack>
 
-      <RoomInfoBar />
+      <RoomInfoBar
+        addToast={(toast) => {
+          dispatch({ type: "addToast", payload: toast });
+        }}
+      />
       <MatchesList>
         {state.room.matches?.map((match) => (
           <Card
             media={match.media}
             href={match.media.linkUrl}
-            title={<Tr
-              name="MATCHES_SECTION_CARD_LIKERS"
-              context={{
-                users: match.users.join(" & "),
-                movie: match.media.title,
-              }}
-            />}
+            title={
+              <Tr
+                name="MATCHES_SECTION_CARD_LIKERS"
+                context={{
+                  users: match.users.join(" & "),
+                  movie: match.media.title,
+                }}
+              />
+            }
           />
         ))}
       </MatchesList>

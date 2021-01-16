@@ -13,7 +13,7 @@ import { Layout } from "../components/Layout.tsx";
 import { Tr } from "../components/Tr.tsx";
 
 export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
-  const { client, config } = useContext(MovieMatchContext);
+  const { client, config, translations } = useContext(MovieMatchContext);
   const [userName, setUserName] = useState<string | null>(
     localStorage.getItem("userName")
   );
@@ -45,7 +45,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
               appearance="Primary"
               onPress={async () => {
                 if (!userName) {
-                  setUserNameError("A Username is required!");
+                  setUserNameError(translations?.FIELD_REQUIRED_ERROR!);
                   return;
                 }
                 dispatch({ type: "setUser", payload: { userName } });
@@ -63,7 +63,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
             color="plex-color"
             onPress={async () => {
               if (!userName) {
-                setUserNameError("A Username is required!");
+                setUserNameError(translations?.FIELD_REQUIRED_ERROR!);
                 return;
               }
               const plexAuth = await getPlexCredentials();
