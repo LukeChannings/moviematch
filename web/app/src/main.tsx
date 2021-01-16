@@ -46,8 +46,7 @@ const MovieMatch = () => {
         <ToastList
           toasts={store.toasts}
           removeToast={(toast) =>
-            dispatch({ type: "removeToast", payload: toast })
-          }
+            dispatch({ type: "removeToast", payload: toast })}
         />
       </>
     </MovieMatchContext.Provider>
@@ -58,7 +57,7 @@ render(<MovieMatch />, document.getElementById("app"));
 
 if (
   window.innerHeight !==
-  document.querySelector("body")?.getBoundingClientRect().height
+    document.querySelector("body")?.getBoundingClientRect().height
 ) {
   document.body.style.setProperty("--vh", window.innerHeight / 100 + "px");
   window.addEventListener("resize", () => {

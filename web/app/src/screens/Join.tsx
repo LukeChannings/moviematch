@@ -26,11 +26,11 @@ export const JoinScreen = ({
 }: ScreenProps<{ errorMessage?: string } | undefined>) => {
   const store = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState<string | undefined>(
-    store.room?.name ?? ""
+    store.room?.name ?? "",
   );
   const [roomNameError, setRoomNameError] = useState<string | undefined>();
   const [joinError, setJoinError] = useState<string | undefined>(
-    params?.errorMessage
+    params?.errorMessage,
   );
   const handleJoin = useCallback(async () => {
     if (roomName) {
