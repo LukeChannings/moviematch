@@ -1,4 +1,4 @@
-# <img src="web/static/logo.svg" height="40px" alt="MovieMatch" />
+# <img src="web/static/icons/icon-192.png" alt="MovieMatch" style="border-radius: 5px; height: 20px" /> MovieMatch
 
 ![Tests](https://github.com/LukeChannings/moviematch/workflows/Tests/badge.svg?branch=dev)
 

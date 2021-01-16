@@ -7,6 +7,8 @@ const MIME_TYPES = new Map<string, string>([
   [".css", "text/css"],
   [".js", "application/javascript"],
   [".png", "image/png"],
+  [".json", "application/json"],
+  [".webmanifest", "application/manifest+json"],
 ]);
 
 const getMimeType = (path: string): string =>

@@ -85,6 +85,7 @@ export const JoinScreen = ({
         className="JoinScreen_Form"
         onSubmit={(e) => {
           e.preventDefault();
+          handleJoin();
         }}
       >
         {joinError && <ErrorMessage message={joinError} />}
@@ -107,7 +108,7 @@ export const JoinScreen = ({
           >
             <Tr name="CREATE_ROOM" />
           </Button>
-          <Button appearance="Primary" onPress={handleJoin}>
+          <Button appearance="Primary" onPress={handleJoin} type="submit">
             <Tr name="JOIN_ROOM" />
           </Button>
         </ButtonContainer>

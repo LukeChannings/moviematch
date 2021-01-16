@@ -1,0 +1,15 @@
+<svg width="96" height="96"
+  xmlns="http://www.w3.org/2000/svg">
+  <style>
+  #background { fill: #e74b4b }
+  #foreground { fill: #d9d9f2 }
+  @media screen and (prefers-color-scheme: dark) {
+    #background { fill: #29292e }
+    #foreground { fill: #e74b4b }
+  }
+  </style>
+  <g fill="none" fill-rule="evenodd">
+    <path id="background" d="M0 0h96v96H0z"/>
+    <path id="foreground" fill-rule="nonzero" d="M32.749 73V39.32h.133L44.488 73h8.024l11.606-34.017h.133V73H74V25H59.343L48.865 58.008h-.133L37.657 25H23v48z"/>
+  </g>
+</svg>

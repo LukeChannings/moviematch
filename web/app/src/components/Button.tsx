@@ -9,6 +9,7 @@ interface ButtonProps {
   onPress?(e: React.MouseEvent): void;
   disabled?: boolean;
   color?: Color;
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
 }
 
 export const Button = ({
@@ -18,6 +19,7 @@ export const Button = ({
   paddingTop,
   disabled,
   color,
+  type,
 }: ButtonProps) => (
   <button
     className={`Button Button${appearance}`}
@@ -26,7 +28,7 @@ export const Button = ({
       ...(color ? { "--bg-color": `var(--mm-${color})` } : {}),
     }}
     onClick={onPress}
-    type="button"
+    type={type ?? "button"}
     disabled={disabled}
   >
     {children}
