@@ -28,7 +28,7 @@ export const getSections = async (): Promise<
   PlexMediaContainer<PlexDirectory>
 > => {
   log.debug(`getSections: ${PLEX_URL}/library/sections`)
- 
+
   const req = await fetch(
     `${PLEX_URL}/library/sections?X-Plex-Token=${PLEX_TOKEN}`,
     {
@@ -114,12 +114,12 @@ export const allMovies = (async () => {
     const libraryData: PlexMediaContainer<PlexVideo> = await req.json()
 
     assert(
-      libraryData.MediaContainer.Metadata.length,
+      libraryData.MediaContainer.Metadata?.length,
       `${movieSection.title} doesn't appear to have any movies`
     )
 
     log.debug(
-      `Loaded ${libraryData.MediaContainer.Metadata.length} items from ${movieSection.title}`
+      `Loaded ${libraryData.MediaContainer.Metadata?.length} items from ${movieSection.title}`
     )
 
     movies.push(...libraryData.MediaContainer.Metadata)
