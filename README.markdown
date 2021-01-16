@@ -29,7 +29,7 @@ If two (or more) people swipe right on the same movie, it'll show up in everyone
 ### With Deno
 
 - Install [Deno](https://deno.land/manual/getting_started/installation)
-- Download the latest [release](https://github.com/LukeChannings/moviematch/releases/tag/v1.2.0) and extract it, open a terminal in the extracted folder
+- Download the latest [release](https://github.com/LukeChannings/moviematch/releases) and extract it, open a terminal in the extracted folder
 - Create a `.env` file (see [.env-template](./.env-template) for an example)
 - Run `deno run --allow-net --allow-read --allow-env --unstable src/index.ts` in your favourite terminal
 

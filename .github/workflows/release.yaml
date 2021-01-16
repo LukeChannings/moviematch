@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  path-context:
+  release:
     runs-on: ubuntu-latest
     steps:
       -
@@ -29,6 +29,6 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: lukechannings/moviematch:develop
