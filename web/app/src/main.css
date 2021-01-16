@@ -8,6 +8,7 @@
   --mm-light-red: hsl(var(--mm-red-hue) 76% 60%);
   --mm-dark-red: hsl(var(--mm-red-hue) 76% 55%);
   --mm-blue: hsl(var(--mm-blue-hue) 48% 55%);
+  --mm-pale-blue: hsl(var(--mm-blue-hue) 40% 60%);
   --mm-white: hsl(var(--mm-blue-hue) 1% 100%);
   --mm-plex-color: hsl(41 100% 35%);
   --mm-line-color: hsl(var(--mm-blue-hue) 22% 90%);
@@ -19,6 +20,8 @@
   --s5: 2rem; /* 32px */
   --s6: 2.5rem; /* 40px */
   --s7: 3rem; /* 48px */
+
+  --mm-transition-duration: 100ms;
 }
 
 html {

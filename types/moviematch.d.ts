@@ -38,7 +38,8 @@ export type TranslationKey =
   | "MATCHES_SECTION_CARD_LIKERS"
   | "LIST_CONJUNCTION"
   | "BACK"
-  | "SHARE_ROOM_TITLE";
+  | "SHARE_ROOM_TITLE"
+  | "JOIN_ROOM";
 
 // Configure message
 

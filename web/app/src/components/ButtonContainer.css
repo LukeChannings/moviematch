@@ -5,18 +5,19 @@
   justify-content: flex-end;
 }
 
-.ButtonContainer > .Button:nth-of-type(n + 2) {
-  margin-top: var(--s2);
+@media screen and (max-width: 48em) {
+  .ButtonContainer .Button:nth-of-type(n + 2) {
+    margin-top: var(--s2);
+  }
 }
 
 @media screen and (min-width: 48em) {
   .ButtonContainer {
-    flex-direction: row-reverse;
-    justify-content: flex-start;
+    flex-direction: row;
   }
 
-  .ButtonContainer > .Button:nth-of-type(n + 2) {
+  .ButtonContainer > .Button {
     margin-top: 0;
-    margin-right: var(--s2);
+    margin-left: var(--s2);
   }
 }

@@ -5,6 +5,7 @@
   "LOGIN_SIGN_IN": "Sign in",
   "LOGIN_SIGN_IN_PLEX": "Sign in with Plex",
   "CREATE_ROOM": "Create",
+  "JOIN_ROOM": "Join",
   "RATE_SECTION_LOADING": "Loading movies...",
   "RATE_SECTION_EXHAUSTED_CARDS": "That\\'s all folks ✌️",
   "MATCHES_SECTION_TITLE": "Matches",

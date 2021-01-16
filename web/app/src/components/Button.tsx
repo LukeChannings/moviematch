@@ -3,7 +3,7 @@ import { Color, Spacing } from "../types.ts";
 import "./Button.css";
 
 interface ButtonProps {
-  appearance: "primary" | "secondary";
+  appearance: "Primary" | "Secondary" | "Tertiary";
   children: ReactNode;
   paddingTop?: Spacing;
   onPress?(e: React.MouseEvent): void;
@@ -20,9 +20,7 @@ export const Button = ({
   color,
 }: ButtonProps) => (
   <button
-    className={`Button ${
-      appearance === "primary" ? "ButtonPrimary" : "ButtonSecondary"
-    }`}
+    className={`Button Button${appearance}`}
     style={{
       ...(paddingTop ? { marginTop: `var(--${paddingTop})` } : {}),
       ...(color ? { "--bg-color": `var(--mm-${color})` } : {}),

@@ -3,7 +3,6 @@
  * See - https://forums.plex.tv/t/authenticating-with-plex/609370
  */
 
-import { updatePath } from "/internal/util/url.ts";
 import { fetch } from "/internal/util/fetch.ts";
 
 const APP_NAME = "MovieMatch";

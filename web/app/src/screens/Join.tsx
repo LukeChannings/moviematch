@@ -17,6 +17,7 @@ import {
 } from "../../../../types/moviematch.d.ts";
 import { Layout } from "../components/Layout.tsx";
 import { ErrorMessage } from "../components/ErrorMessage.tsx";
+import { Tr } from "../components/Tr.tsx";
 
 export const JoinScreen = ({
   navigate,
@@ -25,11 +26,11 @@ export const JoinScreen = ({
 }: ScreenProps<{ errorMessage?: string } | undefined>) => {
   const store = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState<string | undefined>(
-    store.room?.name ?? "",
+    store.room?.name ?? ""
   );
   const [roomNameError, setRoomNameError] = useState<string | undefined>();
   const [joinError, setJoinError] = useState<string | undefined>(
-    params?.errorMessage,
+    params?.errorMessage
   );
   const handleJoin = useCallback(async () => {
     if (roomName) {
@@ -93,14 +94,10 @@ export const JoinScreen = ({
           value={roomName}
           errorMessage={roomNameError}
           onChange={setRoomName}
-          paddingTop="s4"
         />
         <ButtonContainer paddingTop="s7">
-          <Button appearance="primary" onPress={handleJoin}>
-            Join
-          </Button>
           <Button
-            appearance="secondary"
+            appearance="Secondary"
             onPress={() => {
               navigate({
                 path: "createRoom",
@@ -108,7 +105,10 @@ export const JoinScreen = ({
               });
             }}
           >
-            Create
+            <Tr name="CREATE_ROOM" />
+          </Button>
+          <Button appearance="Primary" onPress={handleJoin}>
+            <Tr name="JOIN_ROOM" />
           </Button>
         </ButtonContainer>
       </form>

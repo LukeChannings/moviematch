@@ -15,7 +15,7 @@ import { Tr } from "../components/Tr.tsx";
 export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
   const { client, config } = useContext(MovieMatchContext);
   const [userName, setUserName] = useState<string | null>(
-    localStorage.getItem("userName"),
+    localStorage.getItem("userName")
   );
   const [userNameError, setUserNameError] = useState<string | undefined>();
 
@@ -42,7 +42,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
         <ButtonContainer paddingTop="s7">
           {!config?.requirePlexLogin && (
             <Button
-              appearance="primary"
+              appearance="Primary"
               onPress={async () => {
                 if (!userName) {
                   setUserNameError("A Username is required!");
@@ -59,7 +59,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
             </Button>
           )}
           <Button
-            appearance="primary"
+            appearance="Primary"
             color="plex-color"
             onPress={async () => {
               if (!userName) {

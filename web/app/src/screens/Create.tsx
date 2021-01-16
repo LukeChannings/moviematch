@@ -62,12 +62,12 @@ export const CreateScreen = ({
 
         <ButtonContainer>
           <Button
-            appearance="secondary"
+            appearance="Tertiary"
             onPress={() => navigate({ path: "join" })}
           >
             <Tr name="BACK" />
           </Button>
-          <Button appearance="secondary" onPress={createRoom}>
+          <Button appearance="Primary" onPress={createRoom}>
             <Tr name="CREATE_ROOM" />
           </Button>
         </ButtonContainer>
