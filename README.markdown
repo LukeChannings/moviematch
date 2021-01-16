@@ -2,6 +2,12 @@
 
 ![Tests](https://github.com/LukeChannings/moviematch/workflows/Tests/badge.svg?branch=dev)
 
+<div style="text-align: center">
+  <a href="screenshots/Splash.jpeg"><img src="screenshots/Splash.jpeg" alt="Splash Screen" height="300"></a>
+  <a href="screenshots/Login.jpeg"><img src="screenshots/Login.jpeg" alt="Splash Screen" height="300"></a>
+  <a href="screenshots/Rate.jpeg"><img src="screenshots/Rate.jpeg" alt="Splash Screen" height="300"></a>
+</div>
+
 Have you ever spent longer deciding on a movie than it'd take to just watch a random movie? This is an app that helps you and your friends pick a movie to watch from a [Plex](https://www.plex.tv) server.
 
 ## How it works
