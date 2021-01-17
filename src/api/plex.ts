@@ -117,6 +117,7 @@ export const allMovies = (async () => {
       log.info(
         `${libraryData.MediaContainer.librarySectionTitle} does not have any items. Skipping.`
       )
+      log.debug(JSON.stringify(libraryData, null, 2)
       continue
     }
 
