@@ -6,12 +6,15 @@ import { Avatar } from "./Avatar.tsx";
 import "./RoomInfoBar.css";
 import { Tr } from "./Tr.tsx";
 import { Toast } from "./Toast.tsx";
+import { Popover, PopoverButton } from "./Popover.tsx";
+import { Button } from "./Button.tsx";
 
 interface RoomInfoBarProps {
+  logout: () => void;
   addToast: (toast: Toast) => void;
 }
 
-export const RoomInfoBar = ({ addToast }: RoomInfoBarProps) => {
+export const RoomInfoBar = ({ addToast, logout }: RoomInfoBarProps) => {
   const store = useContext(MovieMatchContext);
   if (!store) {
     return null;
@@ -39,13 +42,26 @@ export const RoomInfoBar = ({ addToast }: RoomInfoBarProps) => {
   return (
     <div className="RoomInfoBar">
       {store.user && (
-        <div className="RoomInfoBar_User">
-          <Avatar
-            userName={store.user.userName}
-            avatarUrl={store.user.avatar}
-          />
-          <p className="RoomInfoBar_User_UserName">{store.user.userName}</p>
-        </div>
+        <PopoverButton className="RoomInfoBar_User">
+          {(isPopoverOpen) => (
+            <>
+              <Avatar
+                userName={store.user!.userName}
+                avatarUrl={store.user!.avatar}
+              />
+              <p className="RoomInfoBar_User_UserName">
+                {store.user!.userName}
+              </p>
+              {isPopoverOpen && (
+                <Popover>
+                  <Button appearance="Primary" onPress={logout}>
+                    Log out
+                  </Button>
+                </Popover>
+              )}
+            </>
+          )}
+        </PopoverButton>
       )}
       <div className="RoomInfoBar_MatchCount">
         <p className="RoomInfoBar_MatchCount_Count">

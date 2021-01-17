@@ -1,0 +1,57 @@
+.AddRemoveList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.AddRemoveList_Item {
+  display: grid;
+  grid-auto-flow: column;
+  width: 100%;
+  gap: 0.5rem;
+  grid-template-columns: 1fr 7rem;
+}
+
+.AddRemoveList_Item_Controls {
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  grid-template-columns: 3rem 3rem;
+}
+
+.AddRemoveList_Subtract,
+.AddRemoveList_Add {
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid var(--mm-black);
+  border-radius: 5px;
+  margin-top: var(--s2);
+  padding: 0;
+  font-weight: bold;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background-color var(--mm-transition-duration) ease-in-out;
+}
+
+.AddRemoveList_Subtract {
+  background: #e09090;
+}
+
+.AddRemoveList_Subtract:hover {
+  background: #eebebe;
+}
+
+.AddRemoveList_Add {
+  background: #bcbce6;
+  grid-column: 2;
+}
+
+.AddRemoveList_Add:hover {
+  background: #d3d3f9;
+}

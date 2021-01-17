@@ -8,10 +8,14 @@ import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
 import { ErrorMessage } from "../components/ErrorMessage.tsx";
 import { Field } from "../components/Field.tsx";
+import { FilterField } from "../components/FilterField.tsx";
+import { AddRemoveList } from "../components/AddRemoveList.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { ScreenProps } from "../components/Screen.ts";
 import { Tr } from "../components/Tr.tsx";
 import { MovieMatchContext } from "../store.ts";
+
+import "./Create.css";
 
 export const CreateScreen = ({
   navigate,
@@ -66,6 +70,13 @@ export const CreateScreen = ({
           errorMessage={roomNameError}
           onChange={setRoomName}
         />
+
+        <div className="CreateScreen_Filter">
+          <h2 className="CreateScreen_Filters_Title">Filters</h2>
+          <AddRemoveList>
+            {() => <FilterField onChange={(filter) => console.log(filter)} />}
+          </AddRemoveList>
+        </div>
 
         <ButtonContainer reverseMobile>
           <Button

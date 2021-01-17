@@ -1,0 +1,49 @@
+import React, {
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "https://cdn.skypack.dev/react@17.0.1?dts";
+
+import "./Popover.css";
+
+interface PopoverProps {
+  className?: string;
+  children: (popoverOpen: boolean) => ReactNode;
+}
+
+export const PopoverButton = ({ className, children }: PopoverProps) => {
+  const [isOpen, setOpen] = useState(false);
+  const popoverRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (isOpen) {
+      const handleOutsideClick = (e: MouseEvent) => {
+        if (
+          e.target instanceof HTMLElement &&
+          popoverRef.current?.contains(e.target)
+        ) {
+          return;
+        }
+        setOpen(false);
+      };
+
+      document.addEventListener("mouseup", handleOutsideClick, { once: true });
+      return () => {
+        document.removeEventListener("mouseup", handleOutsideClick);
+      };
+    }
+  }, [isOpen]);
+  return (
+    <button
+      className={`PopoverButton ${className ?? ""}`}
+      onClick={() => setOpen(!isOpen)}
+      ref={popoverRef}
+    >
+      {children(isOpen)}
+    </button>
+  );
+};
+
+export const Popover = ({ children }: { children: ReactNode }) => (
+  <div className="Popover">{children}</div>
+);

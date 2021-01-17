@@ -1,0 +1,10 @@
+.FilterField {
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  grid-template-columns: 1fr 6rem 1fr;
+}

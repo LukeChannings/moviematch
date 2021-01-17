@@ -4,7 +4,7 @@ import "./Field.css";
 interface FieldProps {
   name: string;
   value?: string;
-  label: ReactNode;
+  label?: ReactNode;
   paddingTop?: "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
   onChange?(value: string): void;
   errorMessage?: ReactNode;
@@ -24,9 +24,11 @@ export const Field = ({
     className={`Field ${errorMessage ? "--invalid" : ""}`}
     style={paddingTop ? { marginTop: `var(--${paddingTop})` } : {}}
   >
-    <label className="Field_Label" htmlFor={`${name}-text-input`}>
-      {label}
-    </label>
+    {label && (
+      <label className="Field_Label" htmlFor={`${name}-text-input`}>
+        {label}
+      </label>
+    )}
     <input
       className="Field_Input"
       type="text"

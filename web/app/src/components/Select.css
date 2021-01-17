@@ -1,0 +1,31 @@
+.Select {
+  position: relative;
+}
+
+.Select::after {
+  position: absolute;
+  top: 50%;
+  right: var(--s2);
+  width: 14px;
+  height: 15px;
+  font-size: 1.2rem;
+  content: "⌄";
+  line-height: 0;
+  font-weight: bold;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.Select_Element {
+  position: relative;
+  background-color: transparent;
+  margin-top: var(--s2);
+  width: 100%;
+  height: 3rem;
+  border: 2px solid var(--mm-black);
+  background-color: transparent;
+  border-radius: var(--s1);
+  padding: var(--s2);
+  box-shadow: none;
+  appearance: none;
+}

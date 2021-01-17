@@ -16,6 +16,7 @@
   grid-auto-flow: column;
   gap: var(--s2);
   align-items: center;
+  color: var(--mm-white);
 }
 
 .RoomInfoBar_UserName {

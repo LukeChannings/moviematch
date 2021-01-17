@@ -47,19 +47,27 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
         addToast={(toast) => {
           dispatch({ type: "addToast", payload: toast });
         }}
+        logout={() => {
+          localStorage.removeItem("userName");
+          localStorage.removeItem("plexToken");
+          localStorage.removeItem("plexClientId");
+          location.reload();
+        }}
       />
       <MatchesList>
         {state.room.matches?.map((match) => (
           <Card
             media={match.media}
             href={match.media.linkUrl}
-            title={<Tr
-              name="MATCHES_SECTION_CARD_LIKERS"
-              context={{
-                users: match.users.join(" & "),
-                movie: match.media.title,
-              }}
-            />}
+            title={
+              <Tr
+                name="MATCHES_SECTION_CARD_LIKERS"
+                context={{
+                  users: match.users.join(" & "),
+                  movie: match.media.title,
+                }}
+              />
+            }
           />
         ))}
       </MatchesList>
