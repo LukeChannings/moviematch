@@ -42,7 +42,8 @@ export type TranslationKey =
   | "JOIN_ROOM"
   | "FIELD_REQUIRED_ERROR"
   | "COPY_LINK_SUCCESS"
-  | "COPY_LINK_FAILURE";
+  | "COPY_LINK_FAILURE"
+  | "LOGOUT";
 
 // Configure message
 

@@ -48,10 +48,11 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
           dispatch({ type: "addToast", payload: toast });
         }}
         logout={() => {
-          localStorage.removeItem("userName");
-          localStorage.removeItem("plexToken");
-          localStorage.removeItem("plexClientId");
-          location.reload();
+          dispatch({ type: "logout", payload: null });
+        }}
+        leaveRoom={() => {
+          dispatch({ type: "setRoom", payload: undefined });
+          dispatch({ type: "navigate", payload: { path: "join" } });
         }}
       />
       <MatchesList>
@@ -59,13 +60,15 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
           <Card
             media={match.media}
             href={match.media.linkUrl}
-            title={<Tr
-              name="MATCHES_SECTION_CARD_LIKERS"
-              context={{
-                users: match.users.join(" & "),
-                movie: match.media.title,
-              }}
-            />}
+            title={
+              <Tr
+                name="MATCHES_SECTION_CARD_LIKERS"
+                context={{
+                  users: match.users.join(" & "),
+                  movie: match.media.title,
+                }}
+              />
+            }
           />
         ))}
       </MatchesList>

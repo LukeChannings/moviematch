@@ -73,12 +73,12 @@ export const CreateScreen = ({
 
         <div className="CreateScreen_Filter">
           <h2 className="CreateScreen_Filters_Title">Filters</h2>
-          <AddRemoveList>
+          <AddRemoveList initialChildren={0}>
             {() => <FilterField onChange={(filter) => console.log(filter)} />}
           </AddRemoveList>
         </div>
 
-        <ButtonContainer reverseMobile>
+        <ButtonContainer reverseMobile paddingTop="s3">
           <Button
             appearance="Tertiary"
             onPress={() => navigate({ path: "join" })}

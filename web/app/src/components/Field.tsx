@@ -1,5 +1,6 @@
 import React, { ReactNode } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import "./Field.css";
+import { TextInput } from "./TextInput.tsx";
 
 interface FieldProps {
   name: string;
@@ -29,19 +30,16 @@ export const Field = ({
         {label}
       </label>
     )}
-    <input
-      className="Field_Input"
-      type="text"
+    <TextInput
       name={name}
-      id={`${name}-text-input`}
       value={value}
-      autoComplete={autoComplete ?? "off"}
-      autoCorrect="off"
-      onChange={(e) => {
+      autoComplete={autoComplete}
+      onChange={(newValue) => {
         if (typeof onChange === "function") {
-          onChange(e.target.value);
+          onChange(newValue);
         }
       }}
+      paddingTop="s2"
     />
     {errorMessage && <p className="Field_Error">{errorMessage}</p>}
   </div>

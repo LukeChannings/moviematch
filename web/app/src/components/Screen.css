@@ -1,10 +1,10 @@
 .Screen {
   /* prettier-ignore */
   padding:
-    calc(env(safe-area-inset-top, 0px) + var(--s5))
-    calc(env(safe-area-inset-right, 0px) + var(--s5))
-    calc(env(safe-area-inset-bottom, 0px) + var(--s5))
-    calc(env(safe-area-inset-left, 0px) + var(--s5));
+    max(env(safe-area-inset-top), var(--s9))
+    max(env(safe-area-inset-right), var(--s5))
+    max(env(safe-area-inset-bottom), var(--s3))
+    max(env(safe-area-inset-left), var(--s5));
   display: flex;
   align-items: center;
   flex-direction: column;

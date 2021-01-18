@@ -19,7 +19,6 @@
 .Select_Element {
   position: relative;
   background-color: transparent;
-  margin-top: var(--s2);
   width: 100%;
   height: 3rem;
   border: 2px solid var(--mm-black);
@@ -28,4 +27,5 @@
   padding: var(--s2);
   box-shadow: none;
   appearance: none;
+  -webkit-appearance: none;
 }

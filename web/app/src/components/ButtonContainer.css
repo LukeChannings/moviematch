@@ -26,7 +26,6 @@
   }
 
   .ButtonContainer > .Button {
-    margin-top: 0;
     margin-left: var(--s2);
   }
 }

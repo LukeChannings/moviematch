@@ -12,18 +12,33 @@ import "./AddRemoveList.css";
 
 interface AddRemoveListProps {
   children: () => ReactNode;
+  initialChildren?: number;
 }
 
-export const AddRemoveList = ({ children }: AddRemoveListProps) => {
-  const [childList, setChildList] = useState([1]);
+export const AddRemoveList = ({
+  children,
+  initialChildren = 1,
+}: AddRemoveListProps) => {
+  const [childList, setChildList] = useState(
+    Array.from({ length: initialChildren }).map((_, i) => i)
+  );
 
   return (
     <ul className="AddRemoveList">
+      {childList.length === 0 && (
+        <button
+          type="button"
+          className="AddRemoveList_Add"
+          onClick={() => setChildList([0])}
+        >
+          {"+"}
+        </button>
+      )}
       {childList.map((i) => (
         <li key={i} className="AddRemoveList_Item">
           {children()}
           <div className="AddRemoveList_Item_Controls">
-            {childList.length > 1 && (
+            {childList.length !== 0 && (
               <button
                 type="button"
                 className="AddRemoveList_Subtract"

@@ -2,11 +2,11 @@ import React, {
   useEffect,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Field } from "./Field.tsx";
 import { Select } from "./Select.tsx";
+import { Filter } from "../../../../types/moviematch.d.ts";
+import { TextInput } from "./TextInput.tsx";
 
 import "./FilterField.css";
-import { Filter } from "../../../../types/moviematch.d.ts";
 
 const keys = {
   title: "Title",
@@ -70,7 +70,7 @@ export const FilterField = ({ onChange }: FilterFieldProps) => {
         options={operators}
         onChange={setOperator}
       />
-      <Field name="value" value={value} onChange={setValue} />
+      <TextInput name="value" value={value} onChange={setValue} />
     </fieldset>
   );
 };

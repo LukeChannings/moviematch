@@ -47,3 +47,17 @@ export const PopoverButton = ({ className, children }: PopoverProps) => {
 export const Popover = ({ children }: { children: ReactNode }) => (
   <div className="Popover">{children}</div>
 );
+
+interface PopoverMenuButtonProps {
+  children: ReactNode;
+  onPress: () => void;
+}
+
+export const PopoverMenuButton = ({
+  children,
+  onPress,
+}: PopoverMenuButtonProps) => (
+  <button className="PopoverMenuButton" onClick={onPress}>
+    {children}
+  </button>
+);

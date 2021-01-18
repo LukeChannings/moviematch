@@ -1,6 +1,7 @@
 .Button {
   --bg-color: var(--mm-blue);
   appearance: none;
+  -webkit-appearance: none;
   font-size: 1.25rem;
   font-family: system-ui;
   font-weight: 400;
@@ -17,7 +18,7 @@
 
 .ButtonPrimary {
   background-color: var(--bg-color);
-  padding: var(--s2) var(--s1);
+  padding: var(--s3) var(--s1);
   color: var(--mm-white);
   transition: background-color var(--mm-transition-duration) ease-in-out;
 }

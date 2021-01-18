@@ -4,7 +4,12 @@
   padding: 0;
   margin: 0;
   display: grid;
-  grid-auto-flow: column;
   gap: 0.5rem;
-  grid-template-columns: 1fr 6rem 1fr;
+  grid-template: 1fr 1fr 1fr / 1fr;
+}
+
+@media screen and (min-width: 48em) {
+  .FilterField {
+    grid-template: 1fr / 1fr 1fr 1fr;
+  }
 }

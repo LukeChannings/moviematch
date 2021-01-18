@@ -4,15 +4,57 @@
   outline: none;
   cursor: pointer;
   position: relative;
+  padding: 0;
+  margin: 0;
 }
 
 .Popover {
   background: var(--mm-black);
   position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-20%, -110%);
-  padding: var(--s1);
+  transform: translate(0, -80%);
+  padding: var(--s1) 0;
   border-radius: var(--s2);
   overflow: hidden;
+  border: 1px solid var(--mm-white);
+  box-shadow: -1px 3px 8px 1px rgba(33, 33, 33, 0.3);
+  overflow: visible;
+}
+
+@media screen and (min-width: 42em) {
+  .Popover {
+    transform: translate(-30%, -80%);
+  }
+}
+
+.Popover::before {
+  width: 1rem;
+  height: 1rem;
+  background: var(--mm-black);
+  content: "";
+  position: absolute;
+  bottom: -0.9rem;
+  left: 50%;
+  transform: rotate(45deg) translateX(-50%);
+  border-bottom: 1px solid var(--mm-white);
+  border-right: 1px solid var(--mm-white);
+  z-index: -1;
+}
+
+.PopoverMenuButton {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  color: var(--mm-white);
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  padding: var(--s2);
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .PopoverMenuButton:hover {
+    background: var(--mm-pale-blue);
+    color: var(--mm-white);
+  }
 }

@@ -62,7 +62,7 @@ const initialState: Store = {
   toasts: [],
 };
 
-interface Action<K, P> {
+interface Action<K, P = null> {
   type: K;
   payload: P;
 }
@@ -76,7 +76,8 @@ export type Actions =
   | Action<"setTranslations", Translations>
   | Action<"match", Match>
   | Action<"addToast", Toast>
-  | Action<"removeToast", Toast>;
+  | Action<"removeToast", Toast>
+  | Action<"logout">;
 
 function reducer(state: Store, action: Actions): Store {
   switch (action.type) {
@@ -110,6 +111,12 @@ function reducer(state: Store, action: Actions): Store {
         ...state,
         toasts: state.toasts.filter((toast) => toast !== action.payload),
       };
+    case "logout": {
+      localStorage.removeItem("userName");
+      localStorage.removeItem("plexToken");
+      localStorage.removeItem("plexClientId");
+      location.reload();
+    }
     default:
       return state;
   }

@@ -26,12 +26,10 @@ export const JoinScreen = ({
 }: ScreenProps<{ errorMessage?: string } | undefined>) => {
   const store = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState<string | undefined>(
-    store.room?.name ?? "",
+    store.room?.name ?? ""
   );
   const [roomNameError, setRoomNameError] = useState<string | undefined>();
-  const [joinError, setJoinError] = useState<string | undefined>(
-    params?.errorMessage,
-  );
+  const [joinError] = useState<string | undefined>(params?.errorMessage);
   const handleJoin = useCallback(async () => {
     if (roomName) {
       navigate({ path: "loading" });
@@ -56,7 +54,7 @@ export const JoinScreen = ({
         navigate({
           path: "join",
           params: {
-            errorMessage: `${joinRoomError.name}: ${joinRoomError.message}`,
+            errorMessage: joinRoomError.message,
           },
         });
       }
@@ -96,7 +94,15 @@ export const JoinScreen = ({
           errorMessage={roomNameError}
           onChange={setRoomName}
         />
-        <ButtonContainer paddingTop="s7">
+        <ButtonContainer paddingTop="s7" reverseMobile>
+          <Button
+            appearance="Tertiary"
+            onPress={() => {
+              dispatch({ type: "logout", payload: null });
+            }}
+          >
+            <Tr name="LOGOUT" />
+          </Button>
           <Button
             appearance="Secondary"
             onPress={() => {

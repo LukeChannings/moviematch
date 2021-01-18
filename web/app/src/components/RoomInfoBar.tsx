@@ -6,15 +6,20 @@ import { Avatar } from "./Avatar.tsx";
 import "./RoomInfoBar.css";
 import { Tr } from "./Tr.tsx";
 import { Toast } from "./Toast.tsx";
-import { Popover, PopoverButton } from "./Popover.tsx";
+import { Popover, PopoverButton, PopoverMenuButton } from "./Popover.tsx";
 import { Button } from "./Button.tsx";
 
 interface RoomInfoBarProps {
   logout: () => void;
+  leaveRoom: () => void;
   addToast: (toast: Toast) => void;
 }
 
-export const RoomInfoBar = ({ addToast, logout }: RoomInfoBarProps) => {
+export const RoomInfoBar = ({
+  addToast,
+  logout,
+  leaveRoom,
+}: RoomInfoBarProps) => {
   const store = useContext(MovieMatchContext);
   if (!store) {
     return null;
@@ -41,28 +46,33 @@ export const RoomInfoBar = ({ addToast, logout }: RoomInfoBarProps) => {
   };
   return (
     <div className="RoomInfoBar">
-      {store.user && (
-        <PopoverButton className="RoomInfoBar_User">
-          {(isPopoverOpen) => (
-            <>
-              <Avatar
-                userName={store.user!.userName}
-                avatarUrl={store.user!.avatar}
-              />
-              <p className="RoomInfoBar_User_UserName">
-                {store.user!.userName}
-              </p>
-              {isPopoverOpen && (
-                <Popover>
-                  <Button appearance="Primary" onPress={logout}>
-                    Log out
-                  </Button>
-                </Popover>
-              )}
-            </>
-          )}
-        </PopoverButton>
-      )}
+      <div className="RoomInfoBar_Item">
+        {store.user && (
+          <PopoverButton className="RoomInfoBar_User">
+            {(isPopoverOpen) => (
+              <>
+                <Avatar
+                  userName={store.user!.userName}
+                  avatarUrl={store.user!.avatar}
+                />
+                <p className="RoomInfoBar_User_UserName">
+                  {store.user!.userName}
+                </p>
+                {isPopoverOpen && (
+                  <Popover>
+                    <PopoverMenuButton onPress={leaveRoom}>
+                      Leave Room
+                    </PopoverMenuButton>
+                    <PopoverMenuButton onPress={logout}>
+                      Sign out
+                    </PopoverMenuButton>
+                  </Popover>
+                )}
+              </>
+            )}
+          </PopoverButton>
+        )}
+      </div>
       <div className="RoomInfoBar_MatchCount">
         <p className="RoomInfoBar_MatchCount_Count">
           {(store.room?.matches ?? []).length}
@@ -71,10 +81,12 @@ export const RoomInfoBar = ({ addToast, logout }: RoomInfoBarProps) => {
           <Tr name="MATCHES_SECTION_TITLE" />
         </p>
       </div>
-      <button className="RoomInfoBar_ShareRoomButton" onClick={handleShare}>
-        {store.room?.name}
-        <ShareIcon />
-      </button>
+      <div className="RoomInfoBar_Item">
+        <button className="RoomInfoBar_ShareRoomButton" onClick={handleShare}>
+          {store.room?.name}
+          <ShareIcon />
+        </button>
+      </div>
     </div>
   );
 };
