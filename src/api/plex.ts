@@ -4,6 +4,7 @@ import * as log from 'https://deno.land/std@0.79.0/log/mod.ts'
 import {
   DEFAULT_SECTION_TYPE_FILTER,
   LIBRARY_FILTER,
+  COLLECTION_FILTER,
   PLEX_TOKEN,
   PLEX_URL,
 } from '../config.ts'
@@ -112,8 +113,20 @@ export const allMovies = (async () => {
     }
 
     const libraryData: PlexMediaContainer<PlexVideo> = await req.json()
+    let metadata = libraryData.MediaContainer.Metadata
 
-    if (!libraryData.MediaContainer.Metadata) {
+    if (COLLECTION_FILTER !== '') {
+      const collectionFilter = COLLECTION_FILTER.split(',')
+      metadata = metadata.filter(x => {
+        return x.Collection?.find(collection =>
+          collectionFilter.find(
+            filter => filter.toLowerCase() === collection.tag.toLowerCase()
+          )
+        )
+      })
+    }
+
+    if (!metadata) {
       log.info(
         `${libraryData.MediaContainer.librarySectionTitle} does not have any items. Skipping.`
       )
@@ -122,15 +135,13 @@ export const allMovies = (async () => {
     }
 
     assert(
-      libraryData.MediaContainer.Metadata?.length,
+      metadata?.length,
       `${movieSection.title} doesn't appear to have any movies`
     )
 
-    log.debug(
-      `Loaded ${libraryData.MediaContainer.Metadata?.length} items from ${movieSection.title}`
-    )
+    log.debug(`Loaded ${metadata?.length} items from ${movieSection.title}`)
 
-    movies.push(...libraryData.MediaContainer.Metadata)
+    movies.push(...metadata)
   }
 
   return movies
