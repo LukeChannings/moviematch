@@ -19,6 +19,7 @@ export const {
   DEFAULT_SECTION_TYPE_FILTER = getEnvTrimmed('DEFAULT_SECTION_TYPE_FILTER') ??
     'movie',
   LIBRARY_FILTER = getEnvTrimmed('LIBRARY_FILTER') ?? '',
+  COLLECTION_FILTER = getEnvTrimmed('COLLECTION_FILTER') ?? '',
   ROOT_PATH = getEnvTrimmed('ROOT_PATH') ?? '',
 } = config()
 

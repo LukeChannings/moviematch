@@ -98,6 +98,7 @@ export interface PlexVideo {
     Director?: PlexTagList
     Writer?: PlexTagList
     Country?: PlexTagList
+    Collection?: PlexTagList
     Role?: PlexTagList
   }>
 }
