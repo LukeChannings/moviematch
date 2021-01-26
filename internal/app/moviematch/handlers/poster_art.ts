@@ -1,4 +1,4 @@
-import type { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
+import type { ServerRequest } from "https://deno.land/std@0.84.0/http/server.ts";
 import type { Config } from "/internal/app/moviematch/config.ts";
 import { proxy } from "/internal/util/proxy.ts";
 import { urlFromReqUrl } from "/internal/util/url.ts";

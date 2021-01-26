@@ -1,9 +1,10 @@
 import React, {
   useCallback,
   useContext,
+  useRef,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { JoinRoomSuccess } from "../../../../types/moviematch.d.ts";
+import { Filter, JoinRoomSuccess } from "../../../../types/moviematch.d.ts";
 import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
 import { ErrorMessage } from "../components/ErrorMessage.tsx";
@@ -26,6 +27,7 @@ export const CreateScreen = ({
   const [roomName, setRoomName] = useState(initialRoomName);
   const [roomNameError, setRoomNameError] = useState<string | null>(null);
   const [createRoomError, setCreateRoomError] = useState<string>();
+  const filters = useRef(new Map<number, Filter>());
   const createRoom = useCallback(async () => {
     if (!roomName) {
       setRoomNameError(translations?.FIELD_REQUIRED_ERROR!);
@@ -36,6 +38,7 @@ export const CreateScreen = ({
       try {
         const joinMsg: JoinRoomSuccess = await client.createRoom({
           roomName,
+          filters: [...filters.current.values()],
         });
 
         dispatch({
@@ -73,8 +76,15 @@ export const CreateScreen = ({
 
         <div className="CreateScreen_Filter">
           <h2 className="CreateScreen_Filters_Title">Filters</h2>
-          <AddRemoveList initialChildren={0}>
-            {() => <FilterField onChange={(filter) => console.log(filter)} />}
+          <AddRemoveList
+            initialChildren={0}
+            onRemove={(i) => filters.current.delete(i)}
+          >
+            {(i) => (
+              <FilterField
+                onChange={(filter) => filters.current.set(i, filter)}
+              />
+            )}
           </AddRemoveList>
         </div>
 

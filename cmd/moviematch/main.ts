@@ -1,11 +1,11 @@
-import { assert } from "https://deno.land/std@0.83.0/_util/assert.ts";
+import { assert } from "https://deno.land/std@0.84.0/_util/assert.ts";
 import {
   serve,
   Server,
   ServerRequest,
   serveTLS,
-} from "https://deno.land/std@0.83.0/http/server.ts";
-import { acceptWebSocket } from "https://deno.land/std@0.83.0/ws/mod.ts";
+} from "https://deno.land/std@0.84.0/http/server.ts";
+import { acceptWebSocket } from "https://deno.land/std@0.84.0/ws/mod.ts";
 import { Config, getConfig } from "/internal/app/moviematch/config.ts";
 import { getLogger, setupLogger } from "/internal/app/moviematch/logger.ts";
 import { getAvailableLocales } from "/internal/app/moviematch/i18n.ts";

@@ -26,7 +26,7 @@ export const JoinScreen = ({
 }: ScreenProps<{ errorMessage?: string } | undefined>) => {
   const store = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState<string | undefined>(
-    store.room?.name ?? ""
+    store.room?.name ?? "",
   );
   const [roomNameError, setRoomNameError] = useState<string | undefined>();
   const [joinError] = useState<string | undefined>(params?.errorMessage);

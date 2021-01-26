@@ -1,5 +1,5 @@
-import * as log from "https://deno.land/std@0.83.0/log/mod.ts";
-import { LogRecord } from "https://deno.land/std@0.83.0/log/logger.ts";
+import * as log from "https://deno.land/std@0.84.0/log/mod.ts";
+import { LogRecord } from "https://deno.land/std@0.84.0/log/logger.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 
 export const setupLogger = async (logLevel: keyof typeof log.LogLevels) => {

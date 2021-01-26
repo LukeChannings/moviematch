@@ -1,4 +1,4 @@
-import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
+import { ServerRequest } from "https://deno.land/std@0.84.0/http/server.ts";
 import { memo } from "/internal/util/memo.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";

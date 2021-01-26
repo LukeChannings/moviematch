@@ -1,5 +1,5 @@
-import { ServerRequest } from "https://deno.land/std@0.83.0/http/server.ts";
-import { extname } from "https://deno.land/std@0.83.0/path/mod.ts";
+import { ServerRequest } from "https://deno.land/std@0.84.0/http/server.ts";
+import { extname } from "https://deno.land/std@0.84.0/path/mod.ts";
 import { fileExists, readFile } from "pkger";
 
 const MIME_TYPES = new Map<string, string>([

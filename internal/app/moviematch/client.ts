@@ -1,4 +1,4 @@
-import { WebSocket } from "https://deno.land/std@0.83.0/ws/mod.ts";
+import { WebSocket } from "https://deno.land/std@0.84.0/ws/mod.ts";
 import {
   ClientMessage,
   CreateRoomRequest,

@@ -1,26 +1,23 @@
 import React, {
-  Children,
-  cloneElement,
-  isValidElement,
   ReactNode,
-  useCallback,
-  useContext,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 
 import "./AddRemoveList.css";
 
 interface AddRemoveListProps {
-  children: () => ReactNode;
+  children: (index: number) => ReactNode;
   initialChildren?: number;
+  onRemove?: (index: number) => void;
 }
 
 export const AddRemoveList = ({
   children,
   initialChildren = 1,
+  onRemove,
 }: AddRemoveListProps) => {
   const [childList, setChildList] = useState(
-    Array.from({ length: initialChildren }).map((_, i) => i)
+    Array.from({ length: initialChildren }).map((_, i) => i),
   );
 
   return (
@@ -36,13 +33,16 @@ export const AddRemoveList = ({
       )}
       {childList.map((i) => (
         <li key={i} className="AddRemoveList_Item">
-          {children()}
+          {children(i)}
           <div className="AddRemoveList_Item_Controls">
             {childList.length !== 0 && (
               <button
                 type="button"
                 className="AddRemoveList_Subtract"
                 onClick={() => {
+                  if (onRemove) {
+                    onRemove(i);
+                  }
                   setChildList(childList.filter((_) => _ !== i));
                 }}
               >

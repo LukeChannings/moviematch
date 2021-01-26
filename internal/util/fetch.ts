@@ -1,4 +1,4 @@
-import { join } from "https://deno.land/std@0.83.0/path/mod.ts";
+import { join } from "https://deno.land/std@0.84.0/path/mod.ts";
 import { getLogger } from "/internal/app/moviematch/logger.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 
