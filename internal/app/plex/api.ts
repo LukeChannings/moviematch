@@ -1,4 +1,4 @@
-import { join } from "https://deno.land/std@0.83.0/path/mod.ts";
+import { join } from "https://deno.land/std@0.84.0/path/mod.ts";
 import { getLogger } from "/internal/app/moviematch/logger.ts";
 import {
   PlexDirectory,
@@ -8,6 +8,7 @@ import {
   PlexVideo,
   PlexVideoItem,
 } from "/internal/app/plex/types.d.ts";
+import { Filter } from "/types/moviematch.d.ts";
 import { updatePath, updateSearch } from "/internal/util/url.ts";
 import { memo } from "/internal/util/memo.ts";
 import { fetch } from "/internal/util/fetch.ts";
@@ -29,71 +30,8 @@ interface ViewOptions {
   directoryType?: PlexDirectoryType[];
   directoryName?: string[];
   filters?: Filter[];
-  sort?: Sort;
   limit?: number;
 }
-
-export enum FilterOperator {
-  IS = "",
-  IS_NOT = "!",
-  LESS_THAN = "<<",
-  GREATER_THAN = "??",
-}
-
-type FilterKeyword =
-  | "title" // Title
-  | "studio" // Studio
-  | "userRating" // Rating
-  | "contentRating" // Content Rating
-  | "year" // Year
-  | "decade" // Decade
-  | "originallyAvailableAt" // Release Date
-  | "unmatched" // Unmatched
-  | "duplicate" // Duplicate
-  | "genre" // Genre
-  | "collection" // Collection
-  | "director" // Director
-  | "writer" // Writer
-  | "producer" // Producer
-  | "actor" // Actor
-  | "country" // Country
-  | "addedAt" // Date Added
-  | "viewCount" // Plays
-  | "lastViewedAt" // Last Played
-  | "unwatched" // Unplayed
-  | "resolution" // Resolution
-  | "hdr" // HDR
-  | "label" // Label
-  | typeof CUSTOM_FILTERS[number]; // Additional filters that Plex doesn't do for us.
-
-const CUSTOM_FILTERS = ["rating"] as const;
-
-type FilterValue = string;
-
-type Filter = [FilterKeyword, keyof typeof FilterOperator, FilterValue];
-
-type SortKeyword =
-  | "titleSort" // Title
-  | "year" // Year
-  | "originallyAvailableAt" // Release Date
-  | "rating" // Critic Rating
-  | "audienceRating" // Audience Rating
-  | "userRating" // Rating
-  | "contentRating" // Content Rating
-  | "duration" // Duration
-  | "viewOffset" // Progress
-  | "viewCount" // Plays
-  | "addedAt" // Date Added
-  | "lastViewedAt" // Date Viewed
-  | "mediaHeight" // Resolution
-  | "mediaBitrate"; // Bitrate
-
-enum SortDirection {
-  ASCENDING = "",
-  DESCENDING = ":desc",
-}
-
-type Sort = [SortKeyword, keyof typeof SortDirection];
 
 export const getDirectories = memo(async (plexUrl: URL) => {
   const directoryUrl = updatePath(plexUrl, `/library/sections`).href;
@@ -122,22 +60,21 @@ export const getDirectories = memo(async (plexUrl: URL) => {
 export const getMedia = async (
   plexUrl: URL,
   directoryKey: string,
-  { filters, sort, limit }: ViewOptions,
 ) => {
-  const [sortKeyword, sortDirection] = sort ?? ["titleSort", "ASCENDING"];
+  // const [sortKeyword, sortDirection] = sort ?? ["titleSort", "ASCENDING"];
 
   const queryUrl = updateSearch(
     updatePath(plexUrl, `/library/sections/${directoryKey}/all`),
     {
-      ...filters?.reduce(
-        (acc, [key, operator, value]) => ({
-          ...acc,
-          [`${key}${FilterOperator[operator]}`]: value,
-        }),
-        {},
-      ),
-      sort: sortKeyword + SortDirection[sortDirection],
-      limit: String(limit ?? "-1"),
+      // ...filters?.reduce(
+      //   (acc, { key, operator, value }) => ({
+      //     ...acc,
+      //     [`${key}${PlexFilterOperator[operator]}`]: value,
+      //   }),
+      //   {},
+      // ),
+      // sort: sortKeyword + SortDirection[sortDirection],
+      // limit: String(limit ?? "-1"),
     },
   );
 
@@ -162,7 +99,7 @@ export const getMedia = async (
     );
   }
 
-  let videos = media.MediaContainer.Metadata;
+  const videos = media.MediaContainer.Metadata;
 
   if (!videos || videos.length === 0) {
     getLogger().info(
@@ -171,30 +108,32 @@ export const getMedia = async (
     return [];
   }
 
-  const customFilters = filters?.filter(([key]) =>
-    ((CUSTOM_FILTERS as unknown) as FilterKeyword[]).includes(key)
-  );
+  // const customFilters = filters?.filter(({ key }) =>
+  //   ((CUSTOM_FILTERS as unknown) as PlexFilterKeyword[]).includes(
+  //     key as PlexFilterKeyword,
+  //   )
+  // );
 
-  if (customFilters) {
-    for (const [keyword, operator, value] of customFilters) {
-      switch (keyword as typeof CUSTOM_FILTERS[number]) {
-        case "rating":
-          videos = videos.filter((video) => {
-            switch (operator) {
-              case "IS":
-                return video.rating === value;
-              case "IS_NOT":
-                return video.rating !== value;
-              case "GREATER_THAN":
-                return Number(video.rating) > Number(value);
-              case "LESS_THAN":
-                return Number(video.rating) < Number(value);
-            }
-          });
-          break;
-      }
-    }
-  }
+  // if (customFilters) {
+  //   for (const { key, operator, value } of customFilters) {
+  //     switch (key as typeof CUSTOM_FILTERS[number]) {
+  //       case "rating":
+  //         videos = videos.filter((video) => {
+  //           switch (operator) {
+  //             case "equal":
+  //               return video.rating === value;
+  //             case "notEqual":
+  //               return video.rating !== value;
+  //             case "greaterThan":
+  //               return Number(video.rating) > Number(value);
+  //             case "lessThan":
+  //               return Number(video.rating) < Number(value);
+  //           }
+  //         });
+  //         break;
+  //     }
+  //   }
+  // }
 
   return videos;
 };
@@ -235,7 +174,9 @@ export const getAllMedia = async (plexUrl: URL, viewOptions: ViewOptions) => {
 
   for (const directory of filteredDirectories) {
     try {
-      videos.push(...(await getMedia(plexUrl, directory.key, viewOptions)));
+      videos.push(
+        ...(await getMedia(plexUrl, directory.key /*, viewOptions */)),
+      );
     } catch (err) {
       getLogger().error(err);
     }

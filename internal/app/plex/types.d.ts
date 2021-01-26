@@ -104,8 +104,68 @@ export interface PlexVideoItem {
   Role?: PlexTagList;
 }
 
+type PlexFilterType =
+  | "string"
+  | "integer"
+  | "tag"
+  | "date"
+  | "boolean"
+  | "resolution"
+  | "subtitleLanguage"
+  | "audioLanguage";
+
+export interface PlexFilter {
+  filter: string;
+  filterType: PlexFilterType;
+  key: string;
+  title: string;
+  type: string;
+}
+
+type PlexSortDirection = "asc" | "desc";
+
+export interface PlexSort {
+  active?: boolean;
+  activeDirection?: PlexSortDirection;
+  default?: PlexSortDirection;
+  defaultDirection: PlexSortDirection;
+  descKey: string;
+  firstCharacterKey?: string;
+  key: string;
+  title: string;
+}
+
+export interface PlexField {
+  key: string;
+  title: string;
+  type: "";
+}
+
+export interface PlexDirectoryMetaType {
+  key: string;
+  type: PlexDirectoryType;
+  title: string;
+  active: boolean;
+  Filter: PlexFilter[];
+  Sort: PlexSort[];
+}
+
+export interface PlexFieldType {
+  type: PlexFilterType;
+  Operator: Array<{
+    // e.g. '=', '!=', '>>=', '<<='
+    key: string;
+    // e.g. 'is', 'is not', 'is greater than', 'is less than'
+    title: string;
+  }>;
+}
+
 export interface PlexVideo {
   Metadata?: Array<PlexVideoItem>;
+  Meta?: {
+    Type: PlexDirectoryMetaType[];
+    FieldType: PlexFieldType[];
+  };
 }
 
 type PlexTagList = Array<{
