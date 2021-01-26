@@ -117,8 +117,8 @@ export const allMovies = (async () => {
 
     if (COLLECTION_FILTER !== '') {
       const collectionFilter = COLLECTION_FILTER.split(',')
-      metadata = metadata.filter(x => {
-        return x.Collection?.find(collection =>
+      metadata = metadata.filter(metadataItem => {
+        return metadataItem.Collection?.find(collection =>
           collectionFilter.find(
             filter => filter.toLowerCase() === collection.tag.toLowerCase()
           )
