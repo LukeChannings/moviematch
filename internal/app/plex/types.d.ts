@@ -1,3 +1,9 @@
+// Plex Types -
+// The Plex API is undocumented, so these types are what I've gleaned from
+// inspecting the behaviour of Plex Web. The JSON responses the Plex API
+// gives are translated from XML types, so a *lot* of this is not idiomatic JSON.
+// I've done my best to model it with TypeScript!
+
 export interface PlexMediaContainer<T> {
   MediaContainer: {
     size: number;
