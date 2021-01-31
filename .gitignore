@@ -2,3 +2,5 @@
 .DS_Store
 web/app/dist
 pkg.ts
+/moviematch
+/moviematch.js
