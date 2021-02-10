@@ -1,7 +1,7 @@
-import type { ServerRequest } from "https://deno.land/std@0.84.0/http/server.ts";
+import type { ServerRequest } from "http/server.ts";
 import type { Config } from "/internal/app/moviematch/config.ts";
-import { proxy } from "/internal/util/proxy.ts";
-import { urlFromReqUrl } from "/internal/util/url.ts";
+import { proxy } from "/internal/app/moviematch/util/proxy.ts";
+import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 
 export const MATCH = /^\/api\/poster$/;
 

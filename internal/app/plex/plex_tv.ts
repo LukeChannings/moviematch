@@ -3,8 +3,6 @@
  * See - https://forums.plex.tv/t/authenticating-with-plex/609370
  */
 
-import { fetch } from "/internal/util/fetch.ts";
-
 const APP_NAME = "MovieMatch";
 
 export interface PlexUser {
@@ -53,4 +51,31 @@ export const getUser = async ({
   const user = await req.json();
 
   return user;
+};
+
+export const getUsers = async ({
+  clientId,
+  plexToken,
+}: {
+  clientId: string;
+  plexToken: string;
+}) => {
+  const search = new URLSearchParams({
+    "X-Plex-Product": APP_NAME,
+    "X-Plex-Client-Identifier": clientId,
+    "X-Plex-Token": plexToken,
+  });
+  const req = await fetch(`https://plex.tv/api/users?${String(search)}`, {
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  if (!req.ok) {
+    throw new Error(`${req.status}: ${await req.text()}`);
+  }
+
+  const users = await req.json();
+
+  return users;
 };

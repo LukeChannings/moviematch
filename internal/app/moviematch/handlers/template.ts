@@ -1,7 +1,7 @@
-import { ServerRequest } from "https://deno.land/std@0.84.0/http/server.ts";
-import { memo } from "/internal/util/memo.ts";
+import { ServerRequest } from "http/server.ts";
+import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import { Config, getConfig } from "/internal/app/moviematch/config.ts";
 import { readTextFile } from "pkger";
 
 type KVP = { [key: string]: string | KVP };
@@ -25,9 +25,8 @@ const interpolate = (template: string, context: KVP): string => {
 
 const getTemplate = memo(() => readTextFile("/web/template/index.html"));
 
-export const render = async (req: ServerRequest) => {
+export const render = async (req: ServerRequest, config: Config) => {
   const translations = await getTranslations(req.headers);
-  const config = getConfig();
   const template = await getTemplate();
 
   req.respond({

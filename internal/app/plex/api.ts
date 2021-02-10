@@ -1,208 +1,168 @@
-import { join } from "https://deno.land/std@0.84.0/path/mod.ts";
-import { getLogger } from "/internal/app/moviematch/logger.ts";
-import {
-  PlexDirectory,
-  PlexDirectoryType,
-  PlexMediaContainer,
-  PlexMediaProviders,
-  PlexVideo,
-  PlexVideoItem,
-} from "/internal/app/plex/types.d.ts";
-import { Filter } from "/types/moviematch.d.ts";
-import { updatePath, updateSearch } from "/internal/util/url.ts";
-import { memo } from "/internal/util/memo.ts";
-import { fetch } from "/internal/util/fetch.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
+import { Identity } from "/internal/app/plex/types/identity.ts";
+import { Libraries, Library } from "/internal/app/plex/types/libraries_list.ts";
+import { LibraryItems } from "/internal/app/plex/types/library_items.ts";
 
-export class AuthenticationError extends Error {}
-export class TimeoutError extends Error {}
+type PlexMediaContainer<T> = { MediaContainer: T };
+export class PlexApi {
+  plexUrl: URL;
+  language: string;
 
-export const isAvailable = async (plexUrl: URL): Promise<boolean> => {
-  if (getConfig().useTestFixtures) {
-    return true;
+  constructor(plexUrl: string, plexToken: string, language = "en") {
+    this.plexUrl = new URL(plexUrl);
+    this.plexUrl.searchParams.set("X-Plex-Token", plexToken);
+    this.language = language;
   }
 
-  const req = await fetch(updatePath(plexUrl, "/identity").href, {});
-  return req.ok;
-};
+  private async fetch<T>(
+    key: string,
+    { baseKey = "/", searchParams = {} }: {
+      baseKey?: string;
+      searchParams?: Record<string, string>;
+    } = {},
+  ): Promise<T> {
+    const url = new URL(this.plexUrl.href);
+    url.pathname = key.startsWith("/") ? key : baseKey + key;
 
-interface ViewOptions {
-  directoryType?: PlexDirectoryType[];
-  directoryName?: string[];
-  filters?: Filter[];
-  limit?: number;
+    for (const [key, value] of Object.entries(searchParams)) {
+      url.searchParams.set(key, value);
+    }
+
+    const req = await fetch(url, {
+      headers: {
+        accept: "application/json",
+        "accept-language": this.language,
+      },
+    });
+
+    try {
+      const data: PlexMediaContainer<T> = await req.json();
+
+      return data.MediaContainer;
+    } catch (err) {
+      throw new Error(url.href);
+    }
+  }
+
+  async isAvaliable(): Promise<boolean> {
+    return !!(await this.getCapabilities()).size;
+  }
+
+  async getIdentity(): Promise<Identity> {
+    return this.fetch<Identity>("/identity");
+  }
+
+  async getCapabilities(): Promise<Capabilities> {
+    return this.fetch<Capabilities>("/");
+  }
+
+  async getServerVersion(): Promise<
+    {
+      fullVersion: string;
+      major: number;
+      minor: number;
+      patch: number;
+      build: number;
+      meta: string;
+      hash: string;
+    }
+  > {
+    const fullVersion = (await this.getIdentity()).version;
+    const [major, minor, patch, meta] = fullVersion.split(".");
+    const [build, hash] = meta.split("-");
+
+    return {
+      fullVersion,
+      major: Number(major),
+      minor: Number(minor),
+      patch: Number(patch),
+      build: Number(build),
+      meta,
+      hash,
+    };
+  }
+
+  async getServerName(): Promise<string> {
+    return (await this.getCapabilities()).friendlyName;
+  }
+
+  async getServerId(): Promise<string> {
+    return (await this.getIdentity()).machineIdentifier;
+  }
+
+  async getServerOwner(): Promise<string> {
+    const { myPlex, myPlexSigninState, myPlexUsername } = await this
+      .getCapabilities();
+    if (!myPlex || myPlexSigninState !== "ok") {
+      throw new Error(`This Plex server doesn't have a logged in owner.`);
+    }
+    return myPlexUsername;
+  }
+
+  async getLibraries(): Promise<Library[]> {
+    const sections = await this.fetch<Libraries>("/library/sections");
+    if (sections.size === 0) {
+      return [];
+    } else {
+      return sections.Directory;
+    }
+  }
+
+  async getAllFilters() {
+    const libraries = await this.getLibraries();
+
+    const results = [];
+
+    for (const { key } of libraries) {
+      const filters = await this.fetch<LibraryItems>(
+        `/library/sections/${key}/filters`,
+        {
+          searchParams: {
+            "includeMeta": "1",
+          },
+        },
+      );
+
+      results.push(filters);
+    }
+
+    return results;
+  }
+
+  getLibraryItems(
+    key: string,
+  ): Promise<LibraryItems> {
+    return this.fetch<LibraryItems>(
+      `/library/sections/${key}/all`,
+    );
+  }
+
+  async getLibraryItemDetails(key: string) {
+    return await this.fetch(key);
+  }
+
+  async getDeepLink(
+    key: string,
+    type: "plexTv" | "plexLocal" | "app" = "plexTv",
+    metadataType?: "1",
+  ): Promise<string> {
+    const serverId = await this.getServerId();
+
+    if (type === "app") {
+      return `plex://preplay/?metadataKey=${
+        encodeURIComponent(key)
+      }&metadataType=${metadataType}&server=${serverId}`;
+    }
+
+    const url = new URL(
+      type === "plexTv" ? "https://app.plex.tv/desktop" : this.plexUrl.origin,
+    );
+    url.hash = `!/server/${serverId}/details?key=${encodeURIComponent(key)}`;
+
+    return `https://app.plex.tv/desktop#!/server/${serverId}/details?key=${
+      encodeURIComponent(key)
+    }`;
+  }
 }
 
-export const getDirectories = memo(async (plexUrl: URL) => {
-  const directoryUrl = updatePath(plexUrl, `/library/sections`).href;
-  const response = await fetch(directoryUrl, {
-    headers: { accept: "application/json" },
-  });
-
-  getLogger().debug(`Fetching ${directoryUrl}`);
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch ${directoryUrl}: ${response.status} (${response.statusText})`,
-    );
-  }
-
-  const directory: PlexMediaContainer<PlexDirectory> = await response.json();
-  if (directory && getConfig().writeFixtures) {
-    Deno.writeTextFile(
-      join(Deno.cwd(), "/fixtures/library-sections.json"),
-      JSON.stringify(directory, null, 2),
-    );
-  }
-  return directory.MediaContainer.Directory;
-});
-
-export const getMedia = async (
-  plexUrl: URL,
-  directoryKey: string,
-) => {
-  // const [sortKeyword, sortDirection] = sort ?? ["titleSort", "ASCENDING"];
-
-  const queryUrl = updateSearch(
-    updatePath(plexUrl, `/library/sections/${directoryKey}/all`),
-    {
-      // ...filters?.reduce(
-      //   (acc, { key, operator, value }) => ({
-      //     ...acc,
-      //     [`${key}${PlexFilterOperator[operator]}`]: value,
-      //   }),
-      //   {},
-      // ),
-      // sort: sortKeyword + SortDirection[sortDirection],
-      // limit: String(limit ?? "-1"),
-    },
-  );
-
-  getLogger().debug(`Fetching ${queryUrl.href}`);
-
-  const req = await fetch(queryUrl.href, {
-    headers: {
-      accept: "application/json",
-    },
-  });
-
-  if (!req.ok) {
-    throw new Error(`Request failed with ${req.status} (${req.statusText})`);
-  }
-
-  const media: PlexMediaContainer<PlexVideo> = await req.json();
-
-  if (media && getConfig().writeFixtures) {
-    Deno.writeTextFile(
-      join(Deno.cwd(), `/fixtures/library-sections-${directoryKey}-all.json`),
-      JSON.stringify(media, null, 2),
-    );
-  }
-
-  const videos = media.MediaContainer.Metadata;
-
-  if (!videos || videos.length === 0) {
-    getLogger().info(
-      `${media.MediaContainer.librarySectionTitle} has no videos. Skipping.`,
-    );
-    return [];
-  }
-
-  // const customFilters = filters?.filter(({ key }) =>
-  //   ((CUSTOM_FILTERS as unknown) as PlexFilterKeyword[]).includes(
-  //     key as PlexFilterKeyword,
-  //   )
-  // );
-
-  // if (customFilters) {
-  //   for (const { key, operator, value } of customFilters) {
-  //     switch (key as typeof CUSTOM_FILTERS[number]) {
-  //       case "rating":
-  //         videos = videos.filter((video) => {
-  //           switch (operator) {
-  //             case "equal":
-  //               return video.rating === value;
-  //             case "notEqual":
-  //               return video.rating !== value;
-  //             case "greaterThan":
-  //               return Number(video.rating) > Number(value);
-  //             case "lessThan":
-  //               return Number(video.rating) < Number(value);
-  //           }
-  //         });
-  //         break;
-  //     }
-  //   }
-  // }
-
-  return videos;
-};
-
-export const getAllMedia = async (plexUrl: URL, viewOptions: ViewOptions) => {
-  const { directoryType, directoryName } = viewOptions;
-  const directories = await getDirectories(plexUrl);
-
-  if (!directories) {
-    throw new Error("No directories found!");
-  }
-
-  let filteredDirectories = directories;
-
-  if (directoryType?.length) {
-    filteredDirectories = filteredDirectories?.filter(({ type }) =>
-      directoryType.includes(type)
-    );
-    getLogger().debug(filteredDirectories, directoryType);
-  }
-
-  if (directoryName?.length) {
-    filteredDirectories = filteredDirectories?.filter(({ title }) =>
-      directoryName.includes(title as PlexDirectoryType)
-    );
-    getLogger().debug(filteredDirectories, directoryName);
-  }
-
-  getLogger().debug(
-    `Selected libraries: ${
-      filteredDirectories.map(
-        (_) => _.title,
-      )
-    } out of ${directories.map((_) => _.title)}`,
-  );
-
-  const videos: PlexVideoItem[] = [];
-
-  for (const directory of filteredDirectories) {
-    try {
-      videos.push(
-        ...(await getMedia(plexUrl, directory.key /*, viewOptions */)),
-      );
-    } catch (err) {
-      getLogger().error(err);
-    }
-  }
-
-  return videos;
-};
-
-export const getServerId = memo(async (plexUrl: URL) => {
-  const req = await fetch(
-    updatePath(plexUrl, "/media/providers"),
-    {
-      headers: { accept: "application/json" },
-    },
-  );
-
-  if (!req.ok) {
-    if (req.status === 401) {
-      throw new AuthenticationError(`Authentication error: ${req.url}`);
-    } else {
-      throw new Error(
-        `${req.url} returned ${req.status}: ${await req.text()}`,
-      );
-    }
-  }
-
-  const providers: PlexMediaProviders = await req.json();
-  return providers.MediaContainer.machineIdentifier;
-});
+export const getAllMedia = () => [];

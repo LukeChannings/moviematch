@@ -7,7 +7,7 @@ import { Login } from "../../../../types/moviematch.d.ts";
 const APP_NAME = "MovieMatch";
 const CLIENT_ID = localStorage.getItem("plexClientId") ?? generateClientId();
 
-interface PlexPIN {
+export interface PlexPIN {
   id: string;
   code: string;
   authToken: string | null;
@@ -53,11 +53,10 @@ export const signIn = async () => {
   }
 };
 
-export const checkPin = async () => {
-  const plexTvPin = localStorage.getItem("plexTvPin");
-  const pin: PlexPIN = JSON.parse(plexTvPin ?? "null");
+export class PlexPINExpiredError extends Error {}
 
-  if (pin && Number(new Date(pin.expiresAt)) > Date.now() && !pin.authToken) {
+export const checkPin = async (pin: PlexPIN) => {
+  if (Number(new Date(pin.expiresAt)) > Date.now() && !pin.authToken) {
     const search = new URLSearchParams({
       strong: "true",
       "X-Plex-Client-Identifier": CLIENT_ID,
@@ -90,6 +89,8 @@ export const checkPin = async () => {
       clientId: CLIENT_ID,
       plexToken: data.authToken,
     };
+  } else {
+    throw new PlexPINExpiredError();
   }
 };
 
@@ -103,5 +104,5 @@ export const getPlexCredentials = async (): Promise<Login["plexAuth"]> => {
     return;
   }
 
-  return await checkPin();
+  return await checkPin(pin);
 };

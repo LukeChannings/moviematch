@@ -1,32 +1,27 @@
-import * as log from "https://deno.land/std@0.84.0/log/mod.ts";
-import { LogRecord } from "https://deno.land/std@0.84.0/log/logger.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import * as log from "log/mod.ts";
+import { ConsoleHandler } from "log/handlers.ts";
+import { LogRecord } from "log/logger.ts";
 
-export const setupLogger = async (logLevel: keyof typeof log.LogLevels) => {
-  const defaultHandler = new log.handlers.ConsoleHandler(logLevel);
-  const { plexUrl } = getConfig();
-  const plexToken = plexUrl.searchParams.get("X-Plex-Token")!;
-  await log.setup({
-    handlers: {
-      console: new log.handlers.ConsoleHandler(logLevel, {
-        formatter: (logRecord: LogRecord) => {
-          return defaultHandler
-            .format(logRecord)
-            .replace(plexToken, "****")
-            .replace(plexUrl.hostname, "****");
-        },
-      }),
-    },
+let redactions: string[] = [];
 
-    loggers: {
-      default: {
-        level: logLevel,
-        handlers: ["console"],
-      },
-    },
-  });
+await log.setup({
+  handlers: {
+    default: new ConsoleHandler("DEBUG", {
+      formatter: ({ msg, levelName }: LogRecord) =>
+        `${levelName} ${
+          redactions.reduce((_, redaction) => _.replace(redaction, "****"), msg)
+        }`,
+    }),
+  },
+});
+
+export const setLogLevel = (level: keyof typeof log.LogLevels) => {
+  const defaultLogger = log.getLogger();
+  defaultLogger.level = log.LogLevels[level];
 };
 
-const getLogger = () => log.getLogger("default");
-
-export { getLogger };
+// redactions ensure that some piece of text (e.g. a Plex Token)
+// is not logged to the console.
+export const addRedaction = (redaction: string) => {
+  redactions.push(redaction);
+};

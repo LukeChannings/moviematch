@@ -13,6 +13,7 @@ import { MovieMatchContext, Routes, useStore } from "./store.ts";
 import { ScreenProps } from "./components/Screen.ts";
 import { Loading } from "./screens/Loading.tsx";
 import { ToastList } from "./components/Toast.tsx";
+import { ConfigScreen } from "./screens/Config.tsx";
 
 const MovieMatch = () => {
   const [store, dispatch] = useStore();
@@ -33,6 +34,7 @@ const MovieMatch = () => {
             join: JoinScreen,
             createRoom: CreateScreen,
             rate: RateScreen,
+            config: ConfigScreen,
           };
           const CurrentComponent = routes[store.route.path];
           return (

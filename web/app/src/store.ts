@@ -6,23 +6,21 @@ import {
 import {
   ClientMessage,
   Config,
+  Login,
   Match,
   Media,
   ServerMessage,
   Translations,
 } from "../../../types/moviematch.d.ts";
 import { getClient, MovieMatchClient } from "./api/moviematch.ts";
-import { checkPin } from "./api/plex_tv.ts";
+import { checkPin, PlexPIN, PlexPINExpiredError } from "./api/plex_tv.ts";
 import { Toast } from "./components/Toast.tsx";
 import { useAsyncEffect } from "./hooks/useAsyncEffect.ts";
 
 interface User {
   userName: string;
   avatar?: string;
-  plexAuth?: {
-    clientId: string;
-    plexToken: string;
-  };
+  plexAuth?: { clientId: string; plexToken: string } | { pin: PlexPIN };
 }
 
 export type Routes =
@@ -30,7 +28,8 @@ export type Routes =
   | { path: "login" }
   | { path: "join"; params?: { errorMessage?: string } }
   | { path: "createRoom"; params: { roomName: string } }
-  | { path: "rate" };
+  | { path: "rate" }
+  | { path: "config" };
 
 export interface Store {
   route: Routes;
@@ -59,6 +58,24 @@ const initialState: Store = {
       };
     }
   })(),
+  user: ((): User | undefined => {
+    const userName = localStorage.getItem("userName");
+    const plexToken = localStorage.getItem("plexToken");
+    const clientId = localStorage.getItem("plexClientId");
+    const plexTvPin = localStorage.getItem("plexTvPin");
+    const pin: PlexPIN = JSON.parse(plexTvPin ?? "null");
+
+    if (!userName) return;
+
+    return {
+      userName: userName,
+      plexAuth: plexToken && clientId
+        ? { plexToken, clientId }
+        : pin
+        ? { pin }
+        : undefined,
+    };
+  })(),
   toasts: [],
 };
 
@@ -71,7 +88,6 @@ export type Actions =
   | Action<"navigate", Routes>
   | Action<"setConfig", Config>
   | Action<"setUser", User>
-  | Action<"setAvatar", string>
   | Action<"setRoom", Store["room"]>
   | Action<"setTranslations", Translations>
   | Action<"match", Match>
@@ -87,8 +103,6 @@ function reducer(state: Store, action: Actions): Store {
       return { ...state, config: action.payload };
     case "setUser":
       return { ...state, user: action.payload };
-    case "setAvatar":
-      return { ...state, user: { ...state.user!, avatar: action.payload } };
     case "setRoom":
       return { ...state, room: action.payload };
     case "setTranslations":
@@ -124,32 +138,18 @@ function reducer(state: Store, action: Actions): Store {
 
 export const MovieMatchContext = createContext<Store>(initialState);
 
-const getStoredUser = (): User | null => {
-  const userName = localStorage.getItem("userName");
-  const plexToken = localStorage.getItem("plexToken");
-  const clientId = localStorage.getItem("plexClientId");
-
-  if (!userName) return null;
-
-  return {
-    userName: userName,
-    plexAuth: plexToken && clientId ? { plexToken, clientId } : undefined,
-  };
-};
-
 export const useStore = () => {
   const [store, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(function setServerLocale() {
-    store.client.setLocale({
-      language: navigator.language,
-    });
-  }, []);
+  useEffect(function configureClient() {
+    store.client.setLocale({ language: navigator.language });
 
-  useEffect(function handleServerMessage() {
     const handleMessage = (e: Event) => {
       const msg: ClientMessage = (e as MessageEvent).data;
       switch (msg.type) {
+        case "config":
+          dispatch({ type: "setConfig", payload: msg.payload });
+          break;
         case "match":
           dispatch({ type: "match", payload: msg.payload });
           break;
@@ -157,55 +157,62 @@ export const useStore = () => {
           dispatch({ type: "setTranslations", payload: msg.payload });
       }
     };
+
     store.client.addEventListener("message", handleMessage);
 
     return () => {
       store.client.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [store.client]);
 
-  useAsyncEffect(
-    async function getMovieMatchConfigFromServer() {
-      const config = await store.client.waitForMessage("config");
-      dispatch({ type: "setConfig", payload: config.payload });
-    },
-    [store.client],
-  );
-
-  useAsyncEffect(async function setUserStateWithStoredValue() {
-    const user = getStoredUser();
-    if (user) {
+  useAsyncEffect(async () => {
+    if (store.user?.plexAuth && "pin" in store.user.plexAuth) {
       // The plex.tv login is a multi-step process and
       // we might have a valid PIN but not have a plexToken yet.
       // Here we're checking for a PIN in the case that a PIN key/value is stored
       // but we don't yet have a token.
-      if (!user.plexAuth) {
-        try {
-          user.plexAuth = await checkPin();
-        } catch (err) {
-          console.error(err);
+      try {
+        store.user!.plexAuth = await checkPin(store.user.plexAuth.pin);
+      } catch (err) {
+        if (err instanceof PlexPINExpiredError) {
+          localStorage.removeItem("plexTvPin");
+          alert("The Plex PIN has expired. Please log into Plex again.");
+          location.reload();
         }
+
+        console.error(err);
       }
-      dispatch({ type: "setUser", payload: user });
-    } else {
-      dispatch({ type: "navigate", payload: { path: "login" } });
+    }
+
+    if (store.user?.userName) {
+      try {
+        const loginSuccess = await store.client.login(store.user as Login);
+        dispatch({
+          type: "setUser",
+          payload: { ...store.user, avatar: loginSuccess.avatarImage },
+        });
+        dispatch({ type: "navigate", payload: { path: "join" } });
+      } catch (loginError) {
+        console.error(loginError);
+      }
     }
   }, []);
 
-  useAsyncEffect(
-    async function userNameWasSet() {
-      if (store.user?.userName) {
-        try {
-          const loginSuccess = await store.client.login(store.user);
-          dispatch({ type: "setAvatar", payload: loginSuccess.avatarImage });
-          dispatch({ type: "navigate", payload: { path: "join" } });
-        } catch (loginError) {
-          console.error(loginError);
-        }
+  useEffect(function setInitialScreen() {
+    if (store.user && store.config) {
+      let path: Routes["path"];
+
+      if (store.config.requiresConfiguration) {
+        path = "config";
+      } else if (store.user.userName) {
+        path = "join";
+      } else {
+        path = "login";
       }
-    },
-    [store.user?.userName],
-  );
+
+      dispatch({ type: "navigate", payload: { path } });
+    }
+  }, [store.user, store.config]);
 
   return [store, dispatch] as const;
 };

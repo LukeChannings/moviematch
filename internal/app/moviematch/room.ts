@@ -1,3 +1,4 @@
+import * as log from "log/mod.ts";
 import { getAllMedia } from "/internal/app/plex/api.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 import {
@@ -10,8 +11,7 @@ import {
   RoomOption,
   RoomSort,
 } from "/types/moviematch.d.ts";
-import { memo } from "/internal/util/memo.ts";
-import { getLogger } from "/internal/app/moviematch/logger.ts";
+import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
 
 export class RoomExistsError extends Error {}
@@ -44,34 +44,34 @@ export class Room {
   }
 
   getMedia = memo(async () => {
-    const { libraryTitleFilter, libraryTypeFilter } = getConfig();
+    // const { libraryTitleFilter, libraryTypeFilter } = getConfig();
 
-    const plexVideoItems = await getAllMedia(getConfig().plexUrl, {
-      directoryName: libraryTitleFilter,
-      directoryType: libraryTypeFilter,
-      filters: this.filters,
-    });
+    // const plexVideoItems = await getAllMedia(getConfig().plexUrl, {
+    //   directoryName: libraryTitleFilter,
+    //   directoryType: libraryTypeFilter,
+    //   filters: this.filters,
+    // });
 
-    const media = new Map(
-      plexVideoItems.map((videoItem) => [
-        videoItem.guid,
-        {
-          id: videoItem.guid,
-          type: videoItem.type,
-          title: videoItem.title,
-          description: videoItem.summary,
-          tagline: videoItem.tagline,
-          year: videoItem.year,
-          posterUrl: `/api/poster?key=${encodeURIComponent(videoItem.thumb)}`,
-          linkUrl: `/movie/${videoItem.key}`,
-          genres: videoItem.Genre?.map((_) => _.tag) ?? [],
-          duration: Number(videoItem.duration),
-          rating: Number(videoItem.rating),
-          contentRating: videoItem.contentRating,
-        },
-      ]),
-    );
-    return media;
+    // const media = new Map(
+    //   plexVideoItems.map((videoItem) => [
+    //     videoItem.guid,
+    //     {
+    //       id: videoItem.guid,
+    //       type: videoItem.type,
+    //       title: videoItem.title,
+    //       description: videoItem.summary,
+    //       tagline: videoItem.tagline,
+    //       year: videoItem.year,
+    //       posterUrl: `/api/poster?key=${encodeURIComponent(videoItem.thumb)}`,
+    //       linkUrl: `/movie/${videoItem.key}`,
+    //       genres: videoItem.Genre?.map((_) => _.tag) ?? [],
+    //       duration: Number(videoItem.duration),
+    //       rating: Number(videoItem.rating),
+    //       contentRating: videoItem.contentRating,
+    //     },
+    //   ]),
+    // );
+    return new Map();
   });
 
   getMediaForUser = async (userName: string): Promise<Media[]> => {
@@ -120,7 +120,7 @@ export class Room {
             users: likes.map(([userName]) => userName),
           });
         } else {
-          getLogger().info(
+          log.info(
             `Tried to rate mediaId: ${mediaId}, but it looks like that media item doesn't exist.`,
           );
         }

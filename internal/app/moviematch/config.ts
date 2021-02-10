@@ -1,124 +1,306 @@
-import { LogLevels } from "https://deno.land/std@0.79.0/log/mod.ts";
-import { config } from "https://deno.land/x/dotenv@v1.0.1/mod.ts";
-import { assert } from "https://deno.land/std@0.79.0/_util/assert.ts";
-import { getLogger } from "/internal/app/moviematch/logger.ts";
+import { parse, stringify } from "encoding/yaml.ts";
+import * as log from "log/mod.ts";
+import { assert } from "util/assert.ts";
+import { join } from "path/posix.ts";
+import { addRedaction } from "/internal/app/moviematch/logger.ts";
 
 export interface BasicAuth {
-  user: string;
+  userName: string;
   password: string;
 }
-
 export interface Config {
-  addr: { port: number; hostname: string };
-  plexUrl: URL;
+  hostname: string;
+  port: number;
+  logLevel: keyof typeof log.LogLevels;
   rootPath: string;
+  servers: Array<{
+    type?: "plex";
+    url: string;
+    token: string;
+    libraryTitleFilter?: string[];
+    libraryTypeFilter?: string[];
+    linkType?: "app" | "webLocal" | "webExternal";
+  }>;
+  requirePlexTvLogin: boolean;
   basicAuth?: BasicAuth;
-  tlsConfig?: { certFile: string; keyFile: string };
-
-  logLevel: keyof typeof LogLevels;
-  devMode: boolean;
-  useTestFixtures: boolean;
-  writeFixtures: boolean;
-
-  requirePlexLogin: boolean;
-  libraryTitleFilter?: string[];
-  libraryTypeFilter?: Array<"movie" | "artist" | "photo" | "show">;
-
-  // When a match is clicked, we will open the link in the app by default
-  // but if the User Agent is not iOS we'll fall back to opening the Plex Web link
-  //
-  // 'plexApp' - opens in the app and falls back to 'plexLocal'
-  // 'plexTv' - always opens in plex.tv
-  // 'plexLocal' - always opens in the configured plexUrl.
-  movieLinkType: "plexApp" | "plexLocal" | "plexTv";
+  tlsConfig?: {
+    certFile: string;
+    keyFile: string;
+  };
 }
 
-let currentConfig: Config;
+function isRecord(
+  value: unknown,
+  name: string = "value",
+): asserts value is Record<string, unknown> {
+  assert(
+    typeof value === "object" && value !== null,
+    `${name} must be an object`,
+  );
+}
+
+function verifyConfig(value: unknown): asserts value is Config {
+  isRecord(value, "config");
+
+  if (value.hostname) {
+    assert(typeof value.hostname === "string", "hostname must be a string");
+  } else {
+    value.hostname = "0.0.0.0";
+  }
+
+  if (value.port) {
+    assert(typeof value.port === "number", "port must be a number");
+  } else {
+    value.port = 8000;
+  }
+
+  if (value.logLevel) {
+    assert(
+      typeof value.logLevel === "string" &&
+        Object.keys(log.LogLevels).includes(value.logLevel),
+      `logLevel must be one of these: ${Object.keys(log.LogLevels).join(", ")}`,
+    );
+  } else {
+    value.logLevel = "INFO";
+  }
+
+  assert(
+    Array.isArray(value.servers),
+    `At least one server must be configured`,
+  );
+
+  for (const server of value.servers) {
+    isRecord(server, "server");
+
+    if (server.type) {
+      assert(
+        server.type === "plex",
+        `"plex" is the only valid server type. Got "${server.type}"`,
+      );
+    } else {
+      server.type = "plex";
+    }
+
+    assert(typeof server.url === "string", `a server url must be specified`);
+
+    assert(
+      typeof server.token === "string",
+      `a server token must be specified`,
+    );
+
+    if (server.libraryTitleFilter) {
+      assert(
+        Array.isArray(server.libraryTitleFilter) ||
+          typeof server.libraryTitleFilter === "string",
+        `libraryTitleFilter must be a list of strings or a string.`,
+      );
+
+      if (typeof server.libraryTitleFilter === "string") {
+        server.libraryTitleFilter = [server.libraryTitleFilter];
+      }
+    }
+
+    if (server.libraryTypeFilter) {
+      assert(
+        Array.isArray(server.libraryTypeFilter) ||
+          typeof server.libraryTypeFilter === "string",
+        `libraryTypeFilter must be a list of strings or a string.`,
+      );
+
+      if (typeof server.libraryTypeFilter === "string") {
+        server.libraryTypeFilter = [server.libraryTypeFilter];
+      }
+    }
+
+    if (server.linkType) {
+      const validLinkTypes = ["app", "webLocal", "webExternal"];
+      assert(
+        typeof server.linkType === "string" &&
+          validLinkTypes.includes(server.linkType),
+        `linkType must be one of these: ${
+          validLinkTypes.join(", ")
+        }. Instead, it was "${server.linkType}"`,
+      );
+    } else {
+      server.linkType = "webLocal";
+    }
+  }
+
+  if (value.rootPath) {
+    assert(
+      typeof value.rootPath === "string",
+      "rootPath must be a string",
+    );
+    assert(value.rootPath !== "/", 'rootPath must not be "/"');
+  } else {
+    value.rootPath = "";
+  }
+
+  if (value.basicAuth) {
+    isRecord(value.basicAuth, "basicAuth");
+    assert(
+      typeof value.basicAuth.userName === "string",
+      "basicAuth.userName must be a string",
+    );
+    assert(
+      typeof value.basicAuth.password === "string",
+      "basicAuth.password must be a string",
+    );
+  }
+
+  if (value.requirePlexTvLogin) {
+    assert(
+      typeof value.requirePlexTvLogin === "boolean",
+      'requirePlexTvLogin must be "true" or "false"',
+    );
+  } else {
+    value.requirePlexTvLogin = false;
+  }
+
+  if (value.tlsConfig) {
+    isRecord(value.tlsConfig);
+    assert(typeof value.tlsConfig.certFile === "string");
+    assert(typeof value.tlsConfig.keyFile === "string");
+  }
+}
+
+export class ConfigFileNotFound extends Error {}
+export class InvalidConfigurationError extends Error {}
+export class ConfigReloadError extends Error {}
 
 const canReadEnv = Deno.permissions &&
   (await Deno.permissions.query({ name: "env" })).state === "granted";
 
-const getTrimmedEnv = (key: string): string | undefined => {
-  if (canReadEnv) {
-    let value = Deno.env.get(key);
-
-    if (typeof value === "string") {
-      value = value.trim();
-
-      // People make mistakes, like putting things in quotes,
-      // or wrapping values in <...> because they read the documentation literally
-      // Let's just avoid those issues by stripping that stuff out...
-      if (/^(".+"|'.+'|<.+>)$/.test(value)) {
-        value = value.slice(1, -1);
-      }
-    }
-
-    return value;
-  }
+const getTrimmedEnv = (key: string) => {
+  const value = Deno.env.get(key);
+  if (value) return value.trim();
 };
 
-export const getConfig = (): Config => {
-  if (currentConfig) {
-    return currentConfig;
-  }
+function readConfigFromEnv() {
+  const HOST = getTrimmedEnv("HOST");
+  const PORT = getTrimmedEnv("PORT");
+  const LOG_LEVEL = getTrimmedEnv("LOG_LEVEL");
+  const ROOT_PATH = getTrimmedEnv("ROOT_PATH");
+  const PLEX_URL = getTrimmedEnv("PLEX_URL");
+  const PLEX_TOKEN = getTrimmedEnv("PLEX_TOKEN");
+  const AUTH_USER = getTrimmedEnv("AUTH_USER");
+  const AUTH_PASS = getTrimmedEnv("AUTH_PASS");
+  const REQUIRE_PLEX_LOGIN = getTrimmedEnv("REQUIRE_PLEX_LOGIN");
+  const LIBRARY_TYPE_FILTER = getTrimmedEnv("LIBRARY_TYPE_FILTER");
+  const LIBRARY_TITLE_FILTER = getTrimmedEnv("LIBRARY_TITLE_FILTER");
+  const TLS_CERT = getTrimmedEnv("TLS_CERT");
+  const TLS_KEY = getTrimmedEnv("TLS_KEY");
+  const MOVIE_LINK_TYPE = getTrimmedEnv("MOVIE_LINK_TYPE");
 
-  const {
-    PLEX_URL = getTrimmedEnv("PLEX_URL"),
-    PLEX_TOKEN = getTrimmedEnv("PLEX_TOKEN"),
-    HOST = getTrimmedEnv("HOST") ?? "127.0.0.1",
-    PORT = getTrimmedEnv("PORT") ?? 8000,
-    LOG_LEVEL = getTrimmedEnv("LOG_LEVEL") ?? "INFO",
-    ROOT_PATH = getTrimmedEnv("ROOT_PATH") ?? "",
-    AUTH_USER = getTrimmedEnv("AUTH_USER"),
-    AUTH_PASS = getTrimmedEnv("AUTH_PASS"),
-    REQUIRE_PLEX_LOGIN = getTrimmedEnv("REQUIRE_PLEX_LOGIN") ?? "0",
-    LIBRARY_TYPE_FILTER = getTrimmedEnv("LIBRARY_TYPE_FILTER"),
-    LIBRARY_TITLE_FILTER = getTrimmedEnv("LIBRARY_TITLE_FILTER"),
-    TLS_CERT = getTrimmedEnv("TLS_CERT"),
-    TLS_FILE = getTrimmedEnv("TLS_FILE"),
-    DEV_MODE = getTrimmedEnv("DEV_MODE") ?? "0",
-    DEV_USE_TEST_FIXTURES = getTrimmedEnv("DEV_USE_TEST_FIXTURES") ?? "",
-    DEV_WRITE_FIXTURES = getTrimmedEnv("DEV_WRITE_FIXTURES") ?? "",
-    MOVIE_LINK_TYPE = getTrimmedEnv("MOVIE_LINK_TYPE") ?? "plexApp",
-  } = config();
-
-  const port = Number(PORT);
-
-  assert(!Number.isNaN(port), `PORT must be a string`);
-  assert(typeof PLEX_URL === "string", "A PLEX_URL is required");
-  assert(typeof PLEX_TOKEN === "string", "A PLEX_TOKEN is required");
-  assert(
-    isLogLevel(LOG_LEVEL),
-    `LOG_LEVEL must be one of ${Object.keys(LogLevels).join(", ")}`,
-  );
-
-  const basicAuth = !!AUTH_USER && !!AUTH_PASS
-    ? { user: AUTH_USER, password: AUTH_PASS }
-    : undefined;
-
-  currentConfig = {
-    addr: { port, hostname: HOST },
-    plexUrl: new URL(`${PLEX_URL}?X-Plex-Token=${PLEX_TOKEN}`),
-    logLevel: LOG_LEVEL,
+  const envConfig: Partial<Config> = {
+    hostname: HOST,
+    port: PORT ? Number(PORT) : undefined,
+    logLevel: LOG_LEVEL as keyof typeof log.LogLevels,
     rootPath: ROOT_PATH,
-    basicAuth,
-    devMode: DEV_MODE === "1",
-    requirePlexLogin: REQUIRE_PLEX_LOGIN === "1",
-    useTestFixtures: DEV_USE_TEST_FIXTURES === "1",
-    writeFixtures: DEV_WRITE_FIXTURES === "1",
-    libraryTitleFilter: LIBRARY_TITLE_FILTER?.split(","),
-    libraryTypeFilter: (LIBRARY_TYPE_FILTER?.split(",") as
-      | Config["libraryTypeFilter"]
-      | undefined) ?? ["movie"],
-    tlsConfig: TLS_CERT && TLS_FILE
-      ? { certFile: TLS_CERT, keyFile: TLS_FILE }
-      : undefined,
-    movieLinkType: MOVIE_LINK_TYPE as Config["movieLinkType"],
+    requirePlexTvLogin: REQUIRE_PLEX_LOGIN === "1",
+    ...(AUTH_USER && AUTH_PASS
+      ? {
+        basicAuth: {
+          userName: AUTH_USER,
+          password: AUTH_PASS,
+        },
+      }
+      : {}),
+    ...(TLS_KEY && TLS_CERT
+      ? {
+        tlsConfig: {
+          certFile: TLS_CERT,
+          keyFile: TLS_KEY,
+        },
+      }
+      : {}),
+    ...(PLEX_URL && PLEX_TOKEN
+      ? {
+        servers: [{
+          type: "plex",
+          url: PLEX_URL,
+          token: PLEX_TOKEN,
+          ...(LIBRARY_TITLE_FILTER
+            ? {
+              libraryTitleFilter: LIBRARY_TITLE_FILTER.split(","),
+            }
+            : {}),
+          ...(LIBRARY_TYPE_FILTER
+            ? {
+              libraryTypeFilter: LIBRARY_TYPE_FILTER.split(","),
+            }
+            : {}),
+          linkType: MOVIE_LINK_TYPE as Config["servers"][number]["linkType"],
+        }],
+      }
+      : {}),
   };
 
-  return currentConfig;
-};
+  return envConfig;
+}
 
-function isLogLevel(logLevel: string): logLevel is keyof typeof LogLevels {
-  return Object.keys(LogLevels).includes(logLevel);
+let configPath: string;
+let cachedConfig: Config;
+
+export function getConfig() {
+  if (!cachedConfig) {
+    throw new Error(`getConfig was called before the config was loaded.`);
+  }
+  return cachedConfig;
+}
+
+export async function loadConfig(path?: string) {
+  let config: Partial<Config> = {};
+
+  try {
+    const yamlConfigPath = path ?? join(Deno.cwd(), "config.yaml");
+    const yamlConfigRaw = await Deno.readTextFile(yamlConfigPath);
+
+    const yamlConfig = parse(yamlConfigRaw);
+    isRecord(yamlConfig, yamlConfigPath);
+
+    config = yamlConfig;
+    configPath = yamlConfigPath;
+  } catch (err) {
+    if (path) {
+      throw new ConfigFileNotFound(`${path} does not exist`);
+    }
+
+    log.info(
+      "No default config file found. Starting up with defaults until configured.",
+    );
+
+    config = {
+      port: 8000,
+      hostname: "0.0.0.0",
+      servers: [],
+      logLevel: "DEBUG",
+    };
+  }
+
+  try {
+    const envConfig = canReadEnv ? readConfigFromEnv() : {};
+
+    config = { ...config, ...envConfig };
+
+    verifyConfig(config);
+
+    for (const server of config.servers) {
+      addRedaction(server.token);
+      addRedaction(server.url);
+    }
+
+    cachedConfig = config;
+
+    return config;
+  } catch (err) {
+    throw new InvalidConfigurationError(err.message);
+  }
+}
+
+export async function updateConfiguration(config: Record<string, unknown>) {
+  cachedConfig = config as unknown as Config;
+  const yamlConfig = stringify(config, { indent: 2 });
+  await Deno.writeTextFile(configPath, yamlConfig);
+  throw new ConfigReloadError();
 }

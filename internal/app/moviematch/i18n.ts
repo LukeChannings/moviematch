@@ -1,7 +1,7 @@
 import { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
-import { memo, memo1 } from "/internal/util/memo.ts";
+import * as log from "log/mod.ts";
+import { memo, memo1 } from "/internal/app/moviematch/util/memo.ts";
 import { readDir, readTextFile } from "pkger";
-import { getLogger } from "/internal/app/moviematch/logger.ts";
 
 const CONFIG_PATH = "/configs/localization";
 
@@ -36,7 +36,7 @@ export const getTranslations = async (
 ): Promise<Record<string, string>> => {
   const accept = new Accepts(headers);
   if (!headers.get("accept-language")) {
-    getLogger().info(
+    log.info(
       `No accept-languages when loading translations. Defaulting to en`,
     );
     headers.set("accept-language", "en");

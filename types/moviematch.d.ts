@@ -48,6 +48,7 @@ export type TranslationKey =
 // Configure message
 
 export interface Config {
+  requiresConfiguration: boolean;
   requirePlexLogin: boolean;
 }
 

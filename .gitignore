@@ -5,3 +5,5 @@ pkg.ts
 /moviematch
 /moviematch.exe
 /moviematch.js
+config.yaml
+*_test.ts

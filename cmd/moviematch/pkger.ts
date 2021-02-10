@@ -13,8 +13,8 @@
 //
 // This module is a quickly hacked together bundler reminiscent of Golang's pkger - https://github.com/markbates/pkger
 
-import { join } from "https://deno.land/std@0.84.0/path/mod.ts";
-import { walk } from "https://deno.land/std@0.84.0/fs/walk.ts";
+import { join } from "https://deno.land/std@0.86.0/path/mod.ts";
+import { walk } from "https://deno.land/std@0.86.0/fs/walk.ts";
 
 const pkg = new Map<string, Uint8Array>();
 

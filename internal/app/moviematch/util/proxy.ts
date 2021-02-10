@@ -1,7 +1,6 @@
-import { ServerRequest } from "https://deno.land/std@0.84.0/http/server.ts";
-import { getLogger } from "https://deno.land/std@0.79.0/log/mod.ts";
-import { updatePath, updateSearch } from "/internal/util/url.ts";
-import { fetch } from "/internal/util/fetch.ts";
+import { ServerRequest } from "http/server.ts";
+import * as log from "log/mod.ts";
+import { updatePath, updateSearch } from "/internal/app/moviematch/util/url.ts";
 
 class AuthenticationError extends Error {}
 
@@ -12,7 +11,7 @@ export const proxy = async (
   params: Record<string, string> = {},
 ) => {
   const url = updateSearch(updatePath(to, from), params);
-  getLogger().debug(`Proxying ${from} to ${url}`);
+  log.debug(`Proxying ${from} to ${url}`);
   try {
     const proxyReq = await fetch(url);
 
@@ -33,6 +32,6 @@ export const proxy = async (
       headers: proxyReq.headers,
     });
   } catch (err) {
-    getLogger().error(`Failed to load ${url}. ${err}`);
+    log.error(`Failed to load ${url}. ${err}`);
   }
 };

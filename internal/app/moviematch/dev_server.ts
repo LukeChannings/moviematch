@@ -1,8 +1,7 @@
 /**
  * Watches web app for changes and compiles the dist files
  */
-
-import { getLogger } from "/internal/app/moviematch/logger.ts";
+import * as log from "log/mod.ts";
 
 const WEB_APP_PATH = Deno.cwd() + "/web/app";
 
@@ -34,7 +33,7 @@ export const watchAndBuild = async () => {
       try {
         await build();
       } catch (err) {
-        getLogger().error(err);
+        log.error(err);
       }
     }
   }

@@ -1,4 +1,5 @@
-import { WebSocket } from "https://deno.land/std@0.84.0/ws/mod.ts";
+import { WebSocket } from "ws/mod.ts";
+import * as log from "log/mod.ts";
 import {
   ClientMessage,
   CreateRoomRequest,
@@ -11,7 +12,6 @@ import {
   Rate,
   ServerMessage,
 } from "/types/moviematch.d.ts";
-import { getLogger } from "/internal/app/moviematch/logger.ts";
 import {
   AccessDeniedError,
   createRoom,
@@ -26,17 +26,20 @@ import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 
 export class Client {
+  finished: Promise<void>;
   ws: WebSocket;
   room?: Room;
   userName?: string;
   plexAuth?: Login["plexAuth"];
   plexUser?: PlexUser;
   locale?: Locale;
+  #resolveFinished = () => {};
 
   constructor(ws: WebSocket) {
     this.ws = ws;
     this.listenForMessages();
     this.sendConfig();
+    this.finished = new Promise((resolve) => this.#resolveFinished = resolve);
   }
 
   sendConfig() {
@@ -47,49 +50,53 @@ export class Client {
     this.sendMessage({
       type: "config",
       payload: {
-        requirePlexLogin: getConfig().requirePlexLogin,
+        requiresConfiguration: getConfig().servers.length === 0,
+        requirePlexLogin: getConfig().requirePlexTvLogin,
       },
     });
   }
 
   async listenForMessages() {
-    for await (const messageText of this.ws) {
-      if (this.ws.isClosed) {
-        this.handleClose();
-        break;
-      } else if (typeof messageText === "string") {
-        try {
-          const message: ServerMessage = JSON.parse(messageText);
-          switch (message.type) {
-            case "login":
-              this.handleLogin(message.payload);
-              break;
-            case "createRoom":
-              this.handleCreateRoom(message.payload);
-              break;
-            case "joinRoom":
-              this.handleJoinRoom(message.payload);
-              break;
-            case "rate":
-              this.handleRate(message.payload);
-              break;
-            case "setLocale":
-              this.handleSetLocale(message.payload);
-              break;
-            default:
-              getLogger().info(`Unhandled message: ${messageText}`);
-              break;
+    try {
+      for await (const messageText of this.ws) {
+        if (this.ws.isClosed) {
+          this.handleClose();
+          break;
+        } else if (typeof messageText === "string") {
+          try {
+            const message: ServerMessage = JSON.parse(messageText);
+            switch (message.type) {
+              case "login":
+                this.handleLogin(message.payload);
+                break;
+              case "createRoom":
+                this.handleCreateRoom(message.payload);
+                break;
+              case "joinRoom":
+                this.handleJoinRoom(message.payload);
+                break;
+              case "rate":
+                this.handleRate(message.payload);
+                break;
+              case "setLocale":
+                this.handleSetLocale(message.payload);
+                break;
+              default:
+                log.info(`Unhandled message: ${messageText}`);
+                break;
+            }
+          } catch (err) {
+            log.error(`Failed to parse message: ${messageText}`);
           }
-        } catch (err) {
-          getLogger().error(`Failed to parse message: ${messageText}`);
         }
       }
+    } finally {
+      this.handleClose();
     }
-    this.handleClose();
   }
 
   async handleLogin(login: Login) {
-    getLogger().debug(`Handling login event: ${JSON.stringify(login)}`);
+    log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
     if (typeof login?.userName !== "string") {
       const error: LoginError = {
@@ -101,7 +108,7 @@ export class Client {
     }
 
     if (this.userName && login.userName !== this.userName) {
-      getLogger().debug(`Logging out ${this.userName}`);
+      log.debug(`Logging out ${this.userName}`);
       this.room?.users.delete(this.userName);
     }
 
@@ -119,7 +126,7 @@ export class Client {
         this.plexUser = plexUser;
         successMessage.avatarImage = plexUser.thumb;
       } catch (err) {
-        getLogger().error(
+        log.error(
           `plexAuth invalid! ${JSON.stringify(login.plexAuth)}`,
           err,
         );
@@ -130,7 +137,7 @@ export class Client {
   }
 
   async handleCreateRoom(createRoomReq: CreateRoomRequest) {
-    getLogger().debug(
+    log.debug(
       `Handling room creation event: ${JSON.stringify(createRoomReq)}`,
     );
 
@@ -164,7 +171,7 @@ export class Client {
           },
         });
       } else {
-        getLogger().error(err);
+        log.error(err);
       }
     }
   }
@@ -209,14 +216,14 @@ export class Client {
         },
       });
     }
-    getLogger().debug(
+    log.debug(
       `Handling room join event: ${JSON.stringify(joinRoomReq)}`,
     );
   }
 
   handleRate(rate: Rate) {
     if (this.userName) {
-      getLogger().debug(
+      log.debug(
         `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`,
       );
       this.room?.storeRating(this.userName, rate);
@@ -237,18 +244,20 @@ export class Client {
   }
 
   handleClose() {
-    getLogger().info(`${this.userName ?? "Unknown user"} left.`);
+    log.info(`${this.userName ?? "Unknown user"} left.`);
 
     if (this.room && this.userName) {
       this.room.users.delete(this.userName);
     }
+
+    this.#resolveFinished();
   }
 
   async sendMessage(msg: ClientMessage) {
     try {
       await this.ws.send(JSON.stringify(msg));
     } catch (err) {
-      getLogger().warning(`Tried to send message to a disconnected client`);
+      log.warning(`Tried to send message to a disconnected client`);
     }
   }
 }
