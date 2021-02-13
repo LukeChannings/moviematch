@@ -17,15 +17,11 @@ export const createProvider = (
   return {
     options,
     isAvailable: () => api.isAvaliable(),
-    isUserAuthorized: async () => true,
+    isUserAuthorized: () => Promise.resolve(true),
     getName: () => api.getServerName(),
-    getLibraries: async () => {
-      return [];
-    },
-    getFilterOptions: async () => [],
-    getArtwork: async () => {
-      return new Uint8Array();
-    },
-    getCanonicalUrl: async (key: string) => api.getDeepLink(key),
+    getLibraries: () => Promise.resolve([]),
+    getFilterOptions: () => Promise.resolve([]),
+    getArtwork: () => Promise.resolve(new Uint8Array()),
+    getCanonicalUrl: (key: string) => api.getDeepLink(key),
   };
 };

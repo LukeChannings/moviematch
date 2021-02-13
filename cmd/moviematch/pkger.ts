@@ -48,4 +48,4 @@ out += "])";
 
 const encoder = new TextEncoder();
 
-Deno.writeFile("pkg.ts", encoder.encode(out));
+Deno.writeFile("internal/pkg.ts", encoder.encode(out));

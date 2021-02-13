@@ -5,3 +5,4 @@ node_modules
 .DS_Store
 *.sketch
 config.yaml
+web/app/dist

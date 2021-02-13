@@ -2,7 +2,7 @@ import * as log from "log/mod.ts";
 import { ConsoleHandler } from "log/handlers.ts";
 import { LogRecord } from "log/logger.ts";
 
-let redactions: string[] = [];
+const redactions: string[] = [];
 
 await log.setup({
   handlers: {

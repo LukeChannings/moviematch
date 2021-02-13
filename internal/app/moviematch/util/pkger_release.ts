@@ -1,4 +1,4 @@
-import { pkg } from "/pkg.ts";
+import { pkg } from "/internal/pkg.ts";
 
 export const isRelease = true;
 

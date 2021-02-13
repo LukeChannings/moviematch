@@ -59,5 +59,4 @@ export interface Directory {
   count: number;
   key: string;
   title: string;
-  
 }

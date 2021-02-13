@@ -28,7 +28,7 @@ export class PlexApi {
       url.searchParams.set(key, value);
     }
 
-    const req = await fetch(url, {
+    const req = await fetch(url.href, {
       headers: {
         accept: "application/json",
         "accept-language": this.language,
@@ -48,11 +48,11 @@ export class PlexApi {
     return !!(await this.getCapabilities()).size;
   }
 
-  async getIdentity(): Promise<Identity> {
+  getIdentity(): Promise<Identity> {
     return this.fetch<Identity>("/identity");
   }
 
-  async getCapabilities(): Promise<Capabilities> {
+  getCapabilities(): Promise<Capabilities> {
     return this.fetch<Capabilities>("/");
   }
 

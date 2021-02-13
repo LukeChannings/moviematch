@@ -1,5 +1,5 @@
 import { serve, Server, ServerRequest, serveTLS } from "http/server.ts";
-import { acceptWebSocket } from "ws/mod.ts";
+import { acceptable, acceptWebSocket } from "ws/mod.ts";
 import * as log from "log/mod.ts";
 import { route as templateRoute } from "/internal/app/moviematch/handlers/template.ts";
 import { serveStatic } from "/internal/app/moviematch/handlers/serve_static.ts";
@@ -16,6 +16,7 @@ import type { MovieMatchProvider } from "/internal/app/moviematch/providers/type
 type Handler = (
   req: ServerRequest,
   config: Config,
+  abortSignal?: AbortSignal,
 ) => Promise<void>;
 
 export class ProviderUnavailableError extends Error {}
@@ -69,39 +70,34 @@ export const Application = async (
 
   const routes: Array<readonly [RegExp, Handler]> = [
     templateRoute,
-    [/^\/api\/poster$/, async (req) => {}],
-    [/^\/movie\/(?<key>.+)$/, async (req) => {
-      const key = req.url.match(/^\/movie\/(?<key>.+)$/)?.groups?.key;
-      if (!key) {
-        return req.respond({ status: 404 });
-      }
+    // [/^\/api\/poster$/, async (req) => {}],
+    // [/^\/movie\/(?<key>.+)$/, async (req) => {
+    //   const key = req.url.match(/^\/movie\/(?<key>.+)$/)?.groups?.key;
+    //   if (!key) {
+    //     return req.respond({ status: 404 });
+    //   }
 
-      const location = "";
+    //   const location = "";
 
-      await req.respond({
-        status: 302,
-        headers: new Headers({
-          Location: location,
-        }),
-      });
-    }],
-    [/^\/api\/ws$/, async (req) => {
+    //   await req.respond({
+    //     status: 302,
+    //     headers: new Headers({
+    //       Location: location,
+    //     }),
+    //   });
+    // }],
+    [/^\/api\/ws$/, async (req, _, abortSignal) => {
       try {
         const webSocket = await acceptWebSocket({
-          conn: req.conn,
           bufReader: req.r,
           bufWriter: req.w,
-          headers: req.headers,
+          ...req,
         });
 
-        const client = new Client(webSocket);
-
+        const client = new Client(webSocket, abortSignal);
         await client.finished;
-
-        Deno.shutdown(req.conn.rid);
       } catch (err) {
-        log.error(`Failed to upgrade to a WebSocket`, err);
-        req.respond({ status: 404 });
+        log.error(`Failed to upgrade to a WebSocket ${String(err)}`);
       }
     }],
   ];
@@ -130,7 +126,7 @@ export const Application = async (
         log.debug(`Handling ${req.url}`);
 
         if (handler) {
-          await handler(req, config);
+          await handler(req, config, signal);
         } else {
           await serveStatic(req, ["/web/static", "/web/app/dist"]);
         }

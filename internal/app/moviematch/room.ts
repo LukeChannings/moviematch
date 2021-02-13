@@ -43,7 +43,7 @@ export class Room {
     this.media = this.getMedia();
   }
 
-  getMedia = memo(async () => {
+  getMedia = memo(() => {
     // const { libraryTitleFilter, libraryTypeFilter } = getConfig();
 
     // const plexVideoItems = await getAllMedia(getConfig().plexUrl, {
@@ -71,7 +71,7 @@ export class Room {
     //     },
     //   ]),
     // );
-    return new Map();
+    return Promise.resolve(new Map());
   });
 
   getMediaForUser = async (userName: string): Promise<Media[]> => {

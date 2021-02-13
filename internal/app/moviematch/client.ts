@@ -1,5 +1,6 @@
 import { WebSocket } from "ws/mod.ts";
 import * as log from "log/mod.ts";
+import { Deferred, deferred } from "async/deferred.ts";
 import {
   ClientMessage,
   CreateRoomRequest,
@@ -26,23 +27,26 @@ import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 
 export class Client {
-  finished: Promise<void>;
+  finished: Deferred<void> = deferred();
   ws: WebSocket;
   room?: Room;
   userName?: string;
   plexAuth?: Login["plexAuth"];
   plexUser?: PlexUser;
   locale?: Locale;
-  #resolveFinished = () => {};
 
-  constructor(ws: WebSocket) {
+  constructor(ws: WebSocket, signal?: AbortSignal) {
     this.ws = ws;
     this.listenForMessages();
     this.sendConfig();
-    this.finished = new Promise((resolve) => this.#resolveFinished = resolve);
+    if (signal) {
+      signal.addEventListener("abort", () => this.handleAbort(), {
+        once: true,
+      });
+    }
   }
 
-  sendConfig() {
+  private sendConfig() {
     if (this.ws.isClosed) {
       throw new Error(`Cannot send config when WebSocket is closed`);
     }
@@ -56,13 +60,14 @@ export class Client {
     });
   }
 
-  async listenForMessages() {
+  private async listenForMessages() {
     try {
       for await (const messageText of this.ws) {
         if (this.ws.isClosed) {
-          this.handleClose();
           break;
-        } else if (typeof messageText === "string") {
+        }
+
+        if (typeof messageText === "string") {
           try {
             const message: ServerMessage = JSON.parse(messageText);
             switch (message.type) {
@@ -90,12 +95,15 @@ export class Client {
           }
         }
       }
+    } catch (err) {
+      log.info(`WebSocket had an error. ${String(err)}`);
     } finally {
+      log.info(`WebSocket listenForMessages has finished`);
       this.handleClose();
     }
   }
 
-  async handleLogin(login: Login) {
+  private async handleLogin(login: Login) {
     log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
     if (typeof login?.userName !== "string") {
@@ -136,7 +144,7 @@ export class Client {
     this.sendMessage({ type: "loginSuccess", payload: successMessage });
   }
 
-  async handleCreateRoom(createRoomReq: CreateRoomRequest) {
+  private async handleCreateRoom(createRoomReq: CreateRoomRequest) {
     log.debug(
       `Handling room creation event: ${JSON.stringify(createRoomReq)}`,
     );
@@ -176,7 +184,7 @@ export class Client {
     }
   }
 
-  async handleJoinRoom(joinRoomReq: JoinRoomRequest) {
+  private async handleJoinRoom(joinRoomReq: JoinRoomRequest) {
     if (!this.userName) {
       return this.sendMessage({
         type: "joinRoomError",
@@ -221,7 +229,7 @@ export class Client {
     );
   }
 
-  handleRate(rate: Rate) {
+  private handleRate(rate: Rate) {
     if (this.userName) {
       log.debug(
         `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`,
@@ -230,7 +238,7 @@ export class Client {
     }
   }
 
-  async handleSetLocale(locale: Locale) {
+  private async handleSetLocale(locale: Locale) {
     this.locale = locale;
 
     const headers = new Headers({
@@ -243,14 +251,27 @@ export class Client {
     });
   }
 
-  handleClose() {
+  private handleClose() {
     log.info(`${this.userName ?? "Unknown user"} left.`);
 
     if (this.room && this.userName) {
       this.room.users.delete(this.userName);
     }
 
-    this.#resolveFinished();
+    this.finished.resolve();
+  }
+
+  private async handleAbort() {
+    log.info(
+      `WebSocket ${this.ws.isClosed ? "already closed" : "gonna close."}`,
+    );
+    try {
+      if (!this.ws.isClosed) {
+        await this.ws.close();
+      }
+    } catch (err) {
+      log.info(`this.ws.close() threw: ${String(err)}`);
+    }
   }
 
   async sendMessage(msg: ClientMessage) {

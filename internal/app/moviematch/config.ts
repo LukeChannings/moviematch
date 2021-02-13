@@ -12,7 +12,7 @@ export interface Config {
   hostname: string;
   port: number;
   logLevel: keyof typeof log.LogLevels;
-  rootPath: string;
+  basePath: string;
   servers: Array<{
     type?: "plex";
     url: string;
@@ -31,7 +31,7 @@ export interface Config {
 
 function isRecord(
   value: unknown,
-  name: string = "value",
+  name = "value",
 ): asserts value is Record<string, unknown> {
   assert(
     typeof value === "object" && value !== null,
@@ -126,14 +126,14 @@ function verifyConfig(value: unknown): asserts value is Config {
     }
   }
 
-  if (value.rootPath) {
+  if (value.basePath) {
     assert(
-      typeof value.rootPath === "string",
-      "rootPath must be a string",
+      typeof value.basePath === "string",
+      "basePath must be a string",
     );
-    assert(value.rootPath !== "/", 'rootPath must not be "/"');
+    assert(value.basePath !== "/", 'basePath must not be "/"');
   } else {
-    value.rootPath = "";
+    value.basePath = "";
   }
 
   if (value.basicAuth) {
@@ -180,7 +180,7 @@ function readConfigFromEnv() {
   const HOST = getTrimmedEnv("HOST");
   const PORT = getTrimmedEnv("PORT");
   const LOG_LEVEL = getTrimmedEnv("LOG_LEVEL");
-  const ROOT_PATH = getTrimmedEnv("ROOT_PATH");
+  const BASE_PATH = getTrimmedEnv("BASE_PATH");
   const PLEX_URL = getTrimmedEnv("PLEX_URL");
   const PLEX_TOKEN = getTrimmedEnv("PLEX_TOKEN");
   const AUTH_USER = getTrimmedEnv("AUTH_USER");
@@ -196,7 +196,7 @@ function readConfigFromEnv() {
     hostname: HOST,
     port: PORT ? Number(PORT) : undefined,
     logLevel: LOG_LEVEL as keyof typeof log.LogLevels,
-    rootPath: ROOT_PATH,
+    basePath: BASE_PATH,
     requirePlexTvLogin: REQUIRE_PLEX_LOGIN === "1",
     ...(AUTH_USER && AUTH_PASS
       ? {

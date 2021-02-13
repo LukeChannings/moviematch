@@ -2,7 +2,7 @@ import React, { useEffect } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import {
   CSSTransition,
   TransitionGroup,
-} from "https://cdn.skypack.dev/react-transition-group?dts";
+} from "https://cdn.skypack.dev/react-transition-group@4.4.1?dts";
 
 import "./Toast.css";
 

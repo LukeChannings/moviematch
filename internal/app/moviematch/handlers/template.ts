@@ -1,7 +1,7 @@
 import { ServerRequest } from "http/server.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
-import { Config, getConfig } from "/internal/app/moviematch/config.ts";
+import { Config } from "/internal/app/moviematch/config.ts";
 import { readTextFile } from "pkger";
 
 type KVP = { [key: string]: string | KVP };
