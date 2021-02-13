@@ -2,15 +2,18 @@
   "editor.formatOnSave": true,
   "deno.enable": true,
   "deno.unstable": true,
-  "deno.lint": false,
-  "deno.import_map": "configs/import_map.json",
-  "deno.import_intellisense_origins": {
-    "https://deno.land": true
-  },
+  "deno.lint": true,
+  "deno.importMap": "configs/import_map.json",
+  "deno.codeLens.referencesAllFunctions": true,
+  "deno.codeLens.references": true,
+  "deno.config": "tsconfig.json",
   "[javascript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "denoland.vscode-deno-canary"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "denoland.vscode-deno-canary"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "denoland.vscode-deno-canary"
   }
 }
