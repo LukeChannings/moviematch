@@ -2,12 +2,13 @@
   "imports": {
     "/": "../",
     "pkger": "../internal/app/moviematch/util/pkger.ts",
-    "http/": "https://deno.land/std@0.86.0/http/",
-    "ws/": "https://deno.land/std@0.86.0/ws/",
-    "log/": "https://deno.land/std@0.86.0/log/",
-    "util/": "https://deno.land/std@0.86.0/_util/",
-    "path/": "https://deno.land/std@0.86.0/path/",
-    "encoding/": "https://deno.land/std@0.86.0/encoding/",
-    "flags/": "https://deno.land/std@0.86.0/flags/"
+    "http/": "https://deno.land/std@0.87.0/http/",
+    "ws/": "https://deno.land/std@0.87.0/ws/",
+    "log/": "https://deno.land/std@0.87.0/log/",
+    "util/": "https://deno.land/std@0.87.0/_util/",
+    "path/": "https://deno.land/std@0.87.0/path/",
+    "encoding/": "https://deno.land/std@0.87.0/encoding/",
+    "flags/": "https://deno.land/std@0.87.0/flags/",
+    "async/": "https://deno.land/std@0.87.0/async/"
   }
 }
