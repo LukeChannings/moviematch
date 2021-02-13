@@ -11,7 +11,7 @@ import {
 
 const API_URL = (() => {
   const url = new URL(location.href);
-  url.pathname = "/api/ws";
+  url.pathname = document.body.dataset.basePath + "/api/ws";
   url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
   return url.href;
 })();

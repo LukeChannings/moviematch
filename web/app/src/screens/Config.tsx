@@ -8,7 +8,6 @@ export const ConfigScreen = ({
   navigate,
   dispatch,
 }: ScreenProps<{ roomName: string }>) => {
-
   return (
     <Layout>
       <p>CONFIG</p>
