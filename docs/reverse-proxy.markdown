@@ -7,7 +7,9 @@ Many people choose to run services behind a reverse proxy. This page aims to pro
 ### Behind a subdomain
 
 ```nginx.conf
-[...]
+events {
+  worker_connections 4096;
+}
 
 http {
   server {
@@ -20,16 +22,16 @@ http {
     }
   }
 }
-
-[...]
 ```
 
 ### Behind a subpath
 
-Run MovieMatch with the `ROOT_PATH=/moviematch`, and use the following `nginx.conf`.
+Run MovieMatch normally, and use the following `nginx.conf`.
 
 ```nginx.conf
-[...]
+events {
+  worker_connections 4096;
+}
 
 http {
   server {
@@ -38,11 +40,15 @@ http {
     location ^~ /moviematch/ {
         proxy_pass http://localhost:8000/;
         proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header X-Forwarded-Prefix /moviematch;
+    }
+
+    location ^~ / {
+        proxy_pass http://localhost:8000/;
+        proxy_set_header Upgrade $http_upgrade;
     }
   }
 }
-
-[...]
 ```
 
 ## HAProxy
