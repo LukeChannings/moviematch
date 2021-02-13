@@ -17,6 +17,7 @@ jobs:
         run: |-
           curl -fsSL https://deno.land/x/install/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
+          export PATH="$DENO_INSTALL/bin:$PATH"
       - name: Install Node
         uses: actions/setup-node@v2
         with:
