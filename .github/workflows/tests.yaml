@@ -18,6 +18,7 @@ jobs:
       run: |-
         curl -fsSL https://deno.land/x/install/install.sh | sh
         echo "$HOME/.deno/bin" >> $GITHUB_PATH
+        deno upgrade --canary
     - run: |
         chmod +x ./scripts/test.sh
         ./scripts/test.sh
