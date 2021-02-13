@@ -1,4 +1,4 @@
-import { Schema } from "https://cdn.skypack.dev/valivar?dts";
+import { Schema } from "https://cdn.skypack.dev/valivar";
 import { assert, assertEquals, assertNotEquals } from "testing/asserts.ts";
 import { PlexApi } from "/internal/app/plex/api.ts";
 
