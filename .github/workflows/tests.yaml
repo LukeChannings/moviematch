@@ -22,4 +22,4 @@ jobs:
         deno cache cmd/moviematch/main.ts --import-map configs/import_map.json --unstable
         deno cache internal/app/plex/plex_test.ts --import-map configs/import_map.json --unstable
         chmod +x ./scripts/test.sh
-        ./scripts/test.sh
+        env TEST_PLEX_TOKEN=$TEST_PLEX_TOKEN TEST_PLEX_URL=$TEST_PLEX_URL ./scripts/test.sh
