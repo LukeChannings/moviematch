@@ -19,8 +19,6 @@ jobs:
         curl -fsSL https://deno.land/x/install/install.sh | sh
         echo "$HOME/.deno/bin" >> $GITHUB_PATH
     - run: |
-        deno cache cmd/moviematch/main.ts --import-map configs/import_map.json --unstable
-        deno cache internal/app/plex/plex_test.ts --import-map configs/import_map.json --unstable
         chmod +x ./scripts/test.sh
         ./scripts/test.sh
       env:
