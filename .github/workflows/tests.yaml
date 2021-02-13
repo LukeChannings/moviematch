@@ -7,7 +7,6 @@ on:
     branches: [ '*' ]
 
 jobs:
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -16,9 +15,9 @@ jobs:
       name: Checkout
       uses: actions/checkout@v2
     - name: Install Deno
-        run: |-
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+      run: |-
+        curl -fsSL https://deno.land/x/install/install.sh | sh
+        echo "$HOME/.deno/bin" >> $GITHUB_PATH
     - run: |
         chmod +x ./scripts/test.sh
         ./scripts/test.sh
