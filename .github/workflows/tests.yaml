@@ -18,8 +18,7 @@ jobs:
       run: |-
         curl -fsSL https://deno.land/x/install/install.sh | sh
         echo "$DENO_INSTALL/bin" >> $GITHUB_PATH
-        export PATH="$DENO_INSTALL/bin:$PATH"
-        deno upgrade --canary
+        $DENO_INSTALL/bin/deno upgrade --canary
     - run: |
         chmod +x ./scripts/test.sh
         ./scripts/test.sh
