@@ -14,8 +14,6 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
       - name: Install Deno
-        if: |
-          !startsWith(matrix.os, 'windows')
         run: |-
           curl -fsSL https://deno.land/x/install/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
@@ -24,11 +22,6 @@ jobs:
         with:
           node-version: "14"
           check-latest: true
-      - name: Install Deno (Windows)
-        if: startsWith(matrix.os, 'windows')
-        run: |-
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          echo "$HOME/.deno/bin" >> $env:GITHUB_PATH
       - name: Upgrade Deno to Canary
         run: deno upgrade --canary
       - name: Install esbuild
