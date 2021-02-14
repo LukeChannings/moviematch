@@ -1,7 +1,8 @@
 import { ServerRequest } from "http/server.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
-import { Config } from "/internal/app/moviematch/config.ts";
+import { getConfig } from "/internal/app/moviematch/config.ts";
+import { Config } from "/types/moviematch.d.ts";
 import { readTextFile } from "pkger";
 
 type KVP = { [key: string]: string | KVP };
@@ -34,7 +35,8 @@ const getBasePath = (req: ServerRequest, config: Config) => {
   return (forwardedPrefix ?? config.basePath ?? "").trim().replace(/\/$/, "");
 };
 
-export const render = async (req: ServerRequest, config: Config) => {
+export const handler = async (req: ServerRequest) => {
+  const config = getConfig();
   const translations = await getTranslations(req.headers);
   const template = await getTemplate();
 
@@ -47,5 +49,3 @@ export const render = async (req: ServerRequest, config: Config) => {
     }),
   });
 };
-
-export const route = [/^\/$/, render] as const;

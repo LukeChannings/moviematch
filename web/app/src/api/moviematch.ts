@@ -1,5 +1,6 @@
 import {
   ClientMessage,
+  Config,
   CreateRoomRequest,
   JoinRoomRequest,
   JoinRoomSuccess,
@@ -53,7 +54,7 @@ export class MovieMatchClient extends EventTarget {
   };
 
   private handleClose = () => {
-    throw new Error(`WEBSOCKET CLOSED`);
+    location.reload();
   };
 
   waitForMessage = <K extends ClientMessage["type"]>(
@@ -147,6 +148,16 @@ export class MovieMatchClient extends EventTarget {
       type: "setLocale",
       payload: locale,
     });
+  };
+
+  setup = async (config: Config) => {
+    this.sendMessage({
+      type: "setup",
+      payload: config,
+    });
+
+    const msg = await this.waitForMessage("setupError");
+    return msg.payload;
   };
 
   sendMessage(msg: ServerMessage) {

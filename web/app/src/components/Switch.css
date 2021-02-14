@@ -1,0 +1,27 @@
+.Switch {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 5rem;
+  height: 2rem;
+  border: 2px solid var(--mm-black);
+  border-radius: var(--s1);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+}
+
+.Switch::before {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 1.5rem;
+  background-color: var(--mm-black);
+  border-radius: var(--s1);
+  left: calc(var(--s1) / 2);
+  position: absolute;
+}
+
+.Switch[checked]::before {
+  left: 2.75rem;
+}

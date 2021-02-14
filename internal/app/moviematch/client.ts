@@ -3,6 +3,7 @@ import * as log from "log/mod.ts";
 import { Deferred, deferred } from "async/deferred.ts";
 import {
   ClientMessage,
+  Config,
   CreateRoomRequest,
   JoinRoomError,
   JoinRoomRequest,
@@ -22,7 +23,12 @@ import {
   RoomNotFoundError,
   UserAlreadyJoinedError,
 } from "/internal/app/moviematch/room.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import {
+  ConfigReloadError,
+  getConfig,
+  updateConfiguration,
+  verifyConfig,
+} from "/internal/app/moviematch/config.ts";
 import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 
@@ -35,15 +41,10 @@ export class Client {
   plexUser?: PlexUser;
   locale?: Locale;
 
-  constructor(ws: WebSocket, signal?: AbortSignal) {
+  constructor(ws: WebSocket) {
     this.ws = ws;
     this.listenForMessages();
     this.sendConfig();
-    if (signal) {
-      signal.addEventListener("abort", () => this.handleAbort(), {
-        once: true,
-      });
-    }
   }
 
   private sendConfig() {
@@ -51,11 +52,18 @@ export class Client {
       throw new Error(`Cannot send config when WebSocket is closed`);
     }
 
+    const requiresConfiguration = getConfig().servers.length === 0;
+
     this.sendMessage({
       type: "config",
       payload: {
-        requiresConfiguration: getConfig().servers.length === 0,
+        requiresConfiguration,
         requirePlexLogin: getConfig().requirePlexTvLogin,
+        ...(requiresConfiguration
+          ? {
+            initialConfiguration: getConfig(),
+          }
+          : {}),
       },
     });
   }
@@ -72,30 +80,41 @@ export class Client {
             const message: ServerMessage = JSON.parse(messageText);
             switch (message.type) {
               case "login":
-                this.handleLogin(message.payload);
+                await this.handleLogin(message.payload);
                 break;
               case "createRoom":
-                this.handleCreateRoom(message.payload);
+                await this.handleCreateRoom(message.payload);
                 break;
               case "joinRoom":
-                this.handleJoinRoom(message.payload);
+                await this.handleJoinRoom(message.payload);
                 break;
               case "rate":
-                this.handleRate(message.payload);
+                await this.handleRate(message.payload);
                 break;
               case "setLocale":
-                this.handleSetLocale(message.payload);
+                await this.handleSetLocale(message.payload);
+                break;
+              case "setup":
+                await this.handleSetup(message.payload);
                 break;
               default:
                 log.info(`Unhandled message: ${messageText}`);
                 break;
             }
           } catch (err) {
+            if (err instanceof ConfigReloadError) {
+              throw err;
+            }
+
             log.error(`Failed to parse message: ${messageText}`);
           }
         }
       }
     } catch (err) {
+      if (err instanceof ConfigReloadError) {
+        throw err;
+      }
+
       log.info(`WebSocket had an error. ${String(err)}`);
     } finally {
       log.info(`WebSocket listenForMessages has finished`);
@@ -271,6 +290,39 @@ export class Client {
       }
     } catch (err) {
       log.info(`this.ws.close() threw: ${String(err)}`);
+    }
+  }
+
+  private async handleSetup(config: Config) {
+    const currentConfig = getConfig();
+    if (currentConfig.servers.length === 0) {
+      try {
+        verifyConfig(config, true);
+        await updateConfiguration(config as unknown as Record<string, unknown>);
+      } catch (err) {
+        this.sendMessage({
+          type: "setupError",
+          payload: {
+            "message": String(err),
+            "type": "INVALID_CONFIG",
+          },
+        });
+        log.error(`Tried to setup with an invalid config. ${String(err)}`);
+      }
+    } else {
+      this.sendMessage({
+        type: "setupError",
+        payload: {
+          "message": "MovieMatch has already been set up",
+          "type": "ALREADY_SETUP",
+        },
+      });
+      log.info(
+        `An attempt was made to configure MovieMatch after it has been initially set up.`,
+      );
+      log.info(
+        `Please edit the configuration YAML directly and restart MovieMatch.`,
+      );
     }
   }
 

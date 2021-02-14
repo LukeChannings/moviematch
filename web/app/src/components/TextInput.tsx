@@ -6,9 +6,10 @@ interface TextInputProps {
   name: string;
   value?: string;
   paddingTop?: "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
-  onChange?(value: string): void;
   autoComplete?: string;
   invalid?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 export const TextInput = ({
@@ -17,6 +18,7 @@ export const TextInput = ({
   autoComplete,
   invalid,
   onChange,
+  onBlur,
   paddingTop,
 }: TextInputProps) => (
   <input
@@ -30,10 +32,7 @@ export const TextInput = ({
     value={value}
     autoComplete={autoComplete ?? "off"}
     autoCorrect="off"
-    onChange={(e) => {
-      if (typeof onChange === "function") {
-        onChange(e.target.value);
-      }
-    }}
+    onChange={onChange}
+    onBlur={onBlur}
   />
 );

@@ -2,6 +2,32 @@
  * Shared API interfaces between the frontend and backend
  */
 
+export interface BasicAuth {
+  userName: string;
+  password: string;
+}
+
+export interface Config {
+  hostname: string;
+  port: number;
+  logLevel: "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
+  basePath: string;
+  servers: Array<{
+    type?: "plex";
+    url: string;
+    token: string;
+    libraryTitleFilter?: string[];
+    libraryTypeFilter?: string[];
+    linkType?: "app" | "webLocal" | "webExternal";
+  }>;
+  requirePlexTvLogin: boolean;
+  basicAuth?: BasicAuth;
+  tlsConfig?: {
+    certFile: string;
+    keyFile: string;
+  };
+}
+
 export type Message = ServerMessage | ClientMessage;
 
 export type ServerMessage =
@@ -9,7 +35,8 @@ export type ServerMessage =
   | { type: "createRoom"; payload: CreateRoomRequest }
   | { type: "joinRoom"; payload: JoinRoomRequest }
   | { type: "rate"; payload: Rate }
-  | { type: "setLocale"; payload: Locale };
+  | { type: "setLocale"; payload: Locale }
+  | { type: "setup"; payload: Config };
 
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
@@ -20,8 +47,9 @@ export type ClientMessage =
   | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
   | { type: "match"; payload: Match }
   | { type: "media"; payload: Media[] }
-  | { type: "config"; payload: Config }
-  | { type: "translations"; payload: Translations };
+  | { type: "config"; payload: AppConfig }
+  | { type: "translations"; payload: Translations }
+  | { type: "setupError"; payload: SetupError };
 
 // Translations
 export type TranslationKey =
@@ -47,9 +75,10 @@ export type TranslationKey =
 
 // Configure message
 
-export interface Config {
+export interface AppConfig {
   requiresConfiguration: boolean;
   requirePlexLogin: boolean;
+  initialConfiguration?: Partial<Config>;
 }
 
 // Translations message
@@ -154,4 +183,9 @@ export interface Match {
 export interface Rate {
   rating: "like" | "dislike";
   mediaId: string;
+}
+
+export interface SetupError {
+  message: string;
+  type: string;
 }

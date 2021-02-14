@@ -3,31 +3,7 @@ import * as log from "log/mod.ts";
 import { assert } from "util/assert.ts";
 import { join } from "path/posix.ts";
 import { addRedaction } from "/internal/app/moviematch/logger.ts";
-
-export interface BasicAuth {
-  userName: string;
-  password: string;
-}
-export interface Config {
-  hostname: string;
-  port: number;
-  logLevel: keyof typeof log.LogLevels;
-  basePath: string;
-  servers: Array<{
-    type?: "plex";
-    url: string;
-    token: string;
-    libraryTitleFilter?: string[];
-    libraryTypeFilter?: string[];
-    linkType?: "app" | "webLocal" | "webExternal";
-  }>;
-  requirePlexTvLogin: boolean;
-  basicAuth?: BasicAuth;
-  tlsConfig?: {
-    certFile: string;
-    keyFile: string;
-  };
-}
+import { Config } from "/types/moviematch.d.ts";
 
 function isRecord(
   value: unknown,
@@ -39,7 +15,10 @@ function isRecord(
   );
 }
 
-function verifyConfig(value: unknown): asserts value is Config {
+export function verifyConfig(
+  value: unknown,
+  strict?: boolean,
+): asserts value is Config {
   isRecord(value, "config");
 
   if (value.hostname) {
@@ -66,8 +45,12 @@ function verifyConfig(value: unknown): asserts value is Config {
 
   assert(
     Array.isArray(value.servers),
-    `At least one server must be configured`,
+    `servers must be an Array`,
   );
+
+  if (strict) {
+    assert(value.servers.length > 0, `At least one server must be configured`);
+  }
 
   for (const server of value.servers) {
     isRecord(server, "server");
@@ -83,10 +66,14 @@ function verifyConfig(value: unknown): asserts value is Config {
 
     assert(typeof server.url === "string", `a server url must be specified`);
 
+    addRedaction(server.url);
+
     assert(
       typeof server.token === "string",
       `a server token must be specified`,
     );
+
+    addRedaction(server.token);
 
     if (server.libraryTitleFilter) {
       assert(
@@ -195,7 +182,7 @@ function readConfigFromEnv() {
   const envConfig: Partial<Config> = {
     hostname: HOST,
     port: PORT ? Number(PORT) : undefined,
-    logLevel: LOG_LEVEL as keyof typeof log.LogLevels,
+    logLevel: LOG_LEVEL as Config["logLevel"],
     basePath: BASE_PATH,
     requirePlexTvLogin: REQUIRE_PLEX_LOGIN === "1",
     ...(AUTH_USER && AUTH_PASS
@@ -301,6 +288,8 @@ export async function loadConfig(path?: string) {
 export async function updateConfiguration(config: Record<string, unknown>) {
   cachedConfig = config as unknown as Config;
   const yamlConfig = stringify(config, { indent: 2 });
-  await Deno.writeTextFile(configPath, yamlConfig);
-  throw new ConfigReloadError();
+  await Deno.writeTextFile(
+    configPath ?? join(Deno.cwd(), "config.yaml"),
+    yamlConfig,
+  );
 }

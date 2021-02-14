@@ -3,21 +3,25 @@ import "./Field.css";
 import { TextInput } from "./TextInput.tsx";
 
 interface FieldProps {
-  name: string;
-  value?: string;
+  name?: string;
+  value?: string | number | undefined;
   label?: ReactNode;
   paddingTop?: "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
-  onChange?(value: string): void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   errorMessage?: ReactNode;
   autoComplete?: string;
+  children?: ReactNode;
 }
 
 export const Field = ({
+  children,
   label,
   name,
   value,
   paddingTop,
   onChange,
+  onBlur,
   errorMessage,
   autoComplete,
 }: FieldProps) => (
@@ -30,17 +34,14 @@ export const Field = ({
         {label}
       </label>
     )}
-    <TextInput
-      name={name}
-      value={value}
+    {children ? children : <TextInput
+      name={name!}
+      value={String(value)}
       autoComplete={autoComplete}
-      onChange={(newValue) => {
-        if (typeof onChange === "function") {
-          onChange(newValue);
-        }
-      }}
+      onChange={onChange}
+      onBlur={onBlur}
       paddingTop="s2"
-    />
+    />}
     {errorMessage && <p className="Field_Error">{errorMessage}</p>}
   </div>
 );

@@ -42,6 +42,7 @@ const MovieMatch = () => {
               navigate={navigate}
               dispatch={dispatch}
               params={"params" in store.route ? store.route.params : undefined}
+              store={store}
             />
           );
         })()}

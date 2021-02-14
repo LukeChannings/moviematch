@@ -35,7 +35,7 @@ export const AddRemoveList = ({
         <li key={i} className="AddRemoveList_Item">
           {children(i)}
           <div className="AddRemoveList_Item_Controls">
-            {childList.length !== 0 && (
+            {i >= initialChildren && (
               <button
                 type="button"
                 className="AddRemoveList_Subtract"

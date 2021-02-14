@@ -4,12 +4,11 @@ import {
   useReducer,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import {
+  AppConfig,
   ClientMessage,
-  Config,
   Login,
   Match,
   Media,
-  ServerMessage,
   Translations,
 } from "../../../types/moviematch.d.ts";
 import { getClient, MovieMatchClient } from "./api/moviematch.ts";
@@ -35,7 +34,7 @@ export interface Store {
   route: Routes;
   client: MovieMatchClient;
   translations?: Translations;
-  config?: Config;
+  config?: AppConfig;
   user?: User;
   room?: {
     name: string;
@@ -86,7 +85,7 @@ interface Action<K, P = null> {
 
 export type Actions =
   | Action<"navigate", Routes>
-  | Action<"setConfig", Config>
+  | Action<"setConfig", AppConfig>
   | Action<"setUser", User>
   | Action<"setRoom", Store["room"]>
   | Action<"setTranslations", Translations>

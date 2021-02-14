@@ -3,7 +3,7 @@ import { assert, assertEquals } from "testing/asserts.ts";
 import {
   isAuthorized,
   respondRequiringAuth,
-} from "/internal/app/moviematch/util/basic_auth.ts";
+} from "/internal/app/moviematch/handlers/basic_auth.ts";
 
 Deno.test("basicAuth -> isAuthorized", () => {
   const req = {
