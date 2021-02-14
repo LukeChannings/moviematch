@@ -20,14 +20,7 @@ Deno.test("basicAuth -> isAuthorized", () => {
 });
 
 Deno.test("basicAuth -> respondRequiringAuth", () => {
-  let response: Response;
-
-  respondRequiringAuth({
-    respond(_: Response) {
-      response = _;
-      return Promise.resolve();
-    },
-  } as ServerRequest);
+  const response: Response = respondRequiringAuth();
 
   assert(!!response!);
 

@@ -17,7 +17,7 @@ export const isAuthorized = (
   return false;
 };
 
-export const respondRequiringAuth = (req: ServerRequest): Response => {
+export const respondRequiringAuth = (): Response => {
   return {
     headers: new Headers([
       ["WWW-Authenticate", 'Basic realm="MovieMatch", charset="UTF-8"'],
@@ -33,5 +33,5 @@ export const handler: RouteHandler = (req) => {
     return Promise.resolve();
   }
 
-  return Promise.resolve(respondRequiringAuth(req));
+  return Promise.resolve(respondRequiringAuth());
 };
