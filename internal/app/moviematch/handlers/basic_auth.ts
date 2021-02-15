@@ -1,7 +1,7 @@
 import { Response, ServerRequest } from "http/server.ts";
 import { BasicAuth } from "/types/moviematch.d.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
-import { RouteHandler } from "../types.ts";
+import { RouteHandler } from "/internal/app/moviematch/types.ts";
 
 export const isAuthorized = (
   basicAuth: BasicAuth,
@@ -30,8 +30,8 @@ export const handler: RouteHandler = (req) => {
   const config = getConfig();
 
   if (!config.basicAuth || isAuthorized(config.basicAuth, req)) {
-    return Promise.resolve();
+    return;
   }
 
-  return Promise.resolve(respondRequiringAuth());
+  return respondRequiringAuth();
 };

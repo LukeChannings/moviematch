@@ -3,6 +3,7 @@ import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 import { Config } from "/types/moviematch.d.ts";
+import { RouteHandler } from "/internal/app/moviematch/types.ts";
 import { readTextFile } from "pkger";
 
 type KVP = { [key: string]: string | KVP };
@@ -35,17 +36,17 @@ const getBasePath = (req: ServerRequest, config: Config) => {
   return (forwardedPrefix ?? config.basePath ?? "").trim().replace(/\/$/, "");
 };
 
-export const handler = async (req: ServerRequest) => {
+export const handler: RouteHandler = async (req: ServerRequest) => {
   const config = getConfig();
   const translations = await getTranslations(req.headers);
   const template = await getTemplate();
 
-  req.respond({
+  return {
     status: 200,
     body: interpolate(template, {
       ...translations,
       config: (config as unknown) as KVP,
       basePath: getBasePath(req, config),
     }),
-  });
+  };
 };

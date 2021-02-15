@@ -1,7 +1,9 @@
 import { Response, ServerRequest } from "http/server.ts";
 import { lookup } from "https://deno.land/x/media_types/mod.ts";
 import { fileExists, readFile } from "pkger";
-export const serveStatic = (basePaths: string[]) =>
+import { RouteHandler } from "/internal/app/moviematch/types.ts";
+
+export const serveStatic = (basePaths: string[]): RouteHandler =>
   async (req: ServerRequest): Promise<Response | void> => {
     let response: Response = {
       status: 404,
