@@ -21,12 +21,25 @@ const build = async () => {
 
   await p.status();
   p.close();
+  return p;
 };
 
 export const watchAndBuild = async () => {
   const watcher = Deno.watchFs(WEB_APP_PATH + "/src", { recursive: true });
 
-  await build();
+  try {
+    await build();
+  } catch (err) {
+    if (err.name === "NotFound") {
+      log.critical(
+        `esbuild must be installed to compile the front end code.\nhttps://esbuild.github.io/getting-started/#install-esbuild`,
+      );
+    } else {
+      log.critical(err);
+    }
+
+    Deno.exit(1);
+  }
 
   for await (const event of watcher) {
     if (["create", "modify", "remove"].includes(event.kind)) {
