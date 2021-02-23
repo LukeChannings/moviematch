@@ -205,7 +205,7 @@ function readConfigFromEnv() {
       ? {
         servers: [{
           type: "plex",
-          url: PLEX_URL,
+          url: PLEX_URL.replace(/\/$/, ""), // Trim trailing '/' character (#52)
           token: PLEX_TOKEN,
           ...(LIBRARY_TITLE_FILTER
             ? {
