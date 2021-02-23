@@ -50,9 +50,14 @@ const main = async () => {
     topCardEl = topCardEl.nextSibling
 
     if (!topCardEl) {
-      document
-        .querySelector('.js-card-stack')
-        ?.style.setProperty('--empty-text', `var(--i18n-exhausted-cards)`)
+      const cardStackEl = document.querySelector('.js-card-stack')
+
+      if (cardStackEl) {
+        cardStackEl.style.setProperty(
+          '--empty-text',
+          `var(--i18n-exhausted-cards)`
+        )
+      }
 
       rateControls.setAttribute('disabled', '')
     }
