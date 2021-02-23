@@ -2,75 +2,60 @@ import React, {
   useEffect,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
+import { Filter, Filters } from "../../../../types/moviematch.ts";
 import { Select } from "./Select.tsx";
-import { Filter } from "../../../../types/moviematch.d.ts";
 import { TextInput } from "./TextInput.tsx";
 
 import "./FilterField.css";
 
-const keys = {
-  title: "Title",
-  studio: "Studio",
-  userRating: "Rating",
-  contentRating: "Content Rating",
-  year: "Year",
-  decade: "Decade",
-  originallyAvailableAt: "Release Date",
-  unmatched: "Unmatched",
-  duplicate: "Duplicate",
-  genre: "Genre",
-  collection: "Collection",
-  director: "Director",
-  writer: "Writer",
-  producer: "Producer",
-  actor: "Actor",
-  country: "Country",
-  addedAt: "Date Added",
-  viewCount: "Plays",
-  lastViewedAt: "Last Played",
-  unwatched: "Unplayed",
-  resolution: "Resolution",
-  hdr: "HDR",
-  label: "Label",
-  rating: "Rating",
-};
-
-const operators = {
-  equal: "is",
-  notEqual: "isn't",
-  lessThan: "at least",
-  greaterThan: "at most",
-};
-
 interface FilterFieldProps {
+  filters: Filters;
   onChange: (filter: Filter) => void;
 }
 
-export const FilterField = ({ onChange }: FilterFieldProps) => {
-  const [key, setKey] = useState<string>("genre");
-  const [operator, setOperator] = useState<string>("equal");
+export const FilterField = ({ onChange, filters }: FilterFieldProps) => {
+  const [key, setKey] = useState<string>("");
+  const [operator, setOperator] = useState<string>("");
   const [value, setValue] = useState<string>("");
 
   useEffect(() => {
-    if (typeof onChange === "function") {
-      onChange({
-        key,
-        operator: operator as keyof typeof operators,
-        value,
-      });
-    }
-  }, [key, operator, value]);
+    console.log(filters);
+  }, []);
 
   return (
     <fieldset className="FilterField">
-      <Select name="key" value={key} options={keys} onChange={setKey} />
       <Select
-        name="operator"
-        value={operator}
-        options={operators}
-        onChange={setOperator}
+        name="key"
+        value={key}
+        options={filters.filters.reduce(
+          (acc, filter) => ({ ...acc, [filter.key]: filter.title }),
+          {},
+        )}
+        onChange={(e) => setKey(e.target.value)}
       />
-      <TextInput name="value" value={value} onChange={setValue} />
+      {key && (
+        <>
+          <Select
+            name="operator"
+            value={operator}
+            options={filters.filterTypes[
+              filters.filters.find((_) => _.key === key)!.type
+            ]?.reduce(
+              (acc, filterType) => ({
+                ...acc,
+                [filterType.key]: filterType.title,
+              }),
+              {},
+            )}
+            onChange={(e) => setOperator(e.target.value)}
+          />
+          <TextInput
+            name="value"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </>
+      )}
     </fieldset>
   );
 };

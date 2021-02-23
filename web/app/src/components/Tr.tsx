@@ -2,7 +2,7 @@ import React, {
   memo,
   useContext,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { TranslationKey } from "../../../../types/moviematch.d.ts";
+import { TranslationKey } from "../../../../types/moviematch.ts";
 import { MovieMatchContext, Store } from "../store.ts";
 
 interface TranslationProps {

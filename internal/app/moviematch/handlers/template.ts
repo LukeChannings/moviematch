@@ -2,7 +2,7 @@ import { ServerRequest } from "http/server.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
-import { Config } from "/types/moviematch.d.ts";
+import { Config } from "/types/moviematch.ts";
 import { RouteHandler } from "/internal/app/moviematch/types.ts";
 import { readTextFile } from "pkger";
 

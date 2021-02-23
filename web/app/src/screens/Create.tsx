@@ -4,7 +4,11 @@ import React, {
   useRef,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Filter, JoinRoomSuccess } from "../../../../types/moviematch.d.ts";
+import {
+  Filter,
+  Filters,
+  JoinRoomSuccess,
+} from "../../../../types/moviematch.ts";
 import { Button } from "../components/Button.tsx";
 import { ButtonContainer } from "../components/ButtonContainer.tsx";
 import { ErrorMessage } from "../components/ErrorMessage.tsx";
@@ -15,8 +19,11 @@ import { Layout } from "../components/Layout.tsx";
 import { ScreenProps } from "../components/Screen.ts";
 import { Tr } from "../components/Tr.tsx";
 import { MovieMatchContext } from "../store.ts";
+import { useAsyncEffect } from "../hooks/useAsyncEffect.ts";
 
 import "./Create.css";
+
+// TODO - Move this into root types
 
 export const CreateScreen = ({
   navigate,
@@ -27,6 +34,7 @@ export const CreateScreen = ({
   const [roomName, setRoomName] = useState(initialRoomName);
   const [roomNameError, setRoomNameError] = useState<string | null>(null);
   const [createRoomError, setCreateRoomError] = useState<string>();
+  const [availableFilters, setAvailableFilters] = useState<Filters>();
   const filters = useRef(new Map<number, Filter>());
   const createRoom = useCallback(async () => {
     if (!roomName) {
@@ -57,6 +65,11 @@ export const CreateScreen = ({
     }
   }, [roomName]);
 
+  useAsyncEffect(async () => {
+    const filters = await client.getFilters();
+    setAvailableFilters(filters);
+  }, []);
+
   return (
     <Layout>
       <form
@@ -71,21 +84,24 @@ export const CreateScreen = ({
           name="roomName"
           value={roomName}
           errorMessage={roomNameError}
-          onChange={setRoomName}
+          onChange={(e) => setRoomName(e.target.value)}
         />
 
         <div className="CreateScreen_Filter">
           <h2 className="CreateScreen_Filters_Title">Filters</h2>
-          <AddRemoveList
-            initialChildren={0}
-            onRemove={(i) => filters.current.delete(i)}
-          >
-            {(i) => (
-              <FilterField
-                onChange={(filter) => filters.current.set(i, filter)}
-              />
-            )}
-          </AddRemoveList>
+          {availableFilters && (
+            <AddRemoveList
+              initialChildren={0}
+              onRemove={(i) => filters.current.delete(i)}
+            >
+              {(i) => (
+                <FilterField
+                  onChange={(filter) => filters.current.set(i, filter)}
+                  filters={availableFilters}
+                />
+              )}
+            </AddRemoveList>
+          )}
         </div>
 
         <ButtonContainer reverseMobile paddingTop="s3">

@@ -13,7 +13,7 @@ import {
   LoginSuccess,
   Rate,
   ServerMessage,
-} from "/types/moviematch.d.ts";
+} from "/types/moviematch.ts";
 import {
   AccessDeniedError,
   createRoom,
@@ -29,20 +29,23 @@ import {
   updateConfiguration,
   verifyConfig,
 } from "/internal/app/moviematch/config.ts";
+import { AppContext } from "/internal/app/moviematch/types.ts";
 import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 
 export class Client {
   finished: Deferred<void> = deferred();
   ws: WebSocket;
+  ctx: AppContext;
   room?: Room;
   userName?: string;
   plexAuth?: Login["plexAuth"];
   plexUser?: PlexUser;
   locale?: Locale;
 
-  constructor(ws: WebSocket) {
+  constructor(ws: WebSocket, ctx: AppContext) {
     this.ws = ws;
+    this.ctx = ctx;
     this.listenForMessages();
     this.sendConfig();
   }
@@ -97,6 +100,9 @@ export class Client {
               case "setup":
                 await this.handleSetup(message.payload);
                 break;
+              case "requestFilters":
+                await this.handleRequestFilters();
+                break;
               default:
                 log.info(`Unhandled message: ${messageText}`);
                 break;
@@ -115,9 +121,9 @@ export class Client {
         throw err;
       }
 
-      log.info(`WebSocket had an error. ${String(err)}`);
+      log.error(`WebSocket had an error. ${String(err)}`);
     } finally {
-      log.info(`WebSocket listenForMessages has finished`);
+      log.debug(`WebSocket listenForMessages has finished`);
       this.handleClose();
     }
   }
@@ -280,19 +286,6 @@ export class Client {
     this.finished.resolve();
   }
 
-  private async handleAbort() {
-    log.info(
-      `WebSocket ${this.ws.isClosed ? "already closed" : "gonna close."}`,
-    );
-    try {
-      if (!this.ws.isClosed) {
-        await this.ws.close();
-      }
-    } catch (err) {
-      log.info(`this.ws.close() threw: ${String(err)}`);
-    }
-  }
-
   private async handleSetup(config: Config) {
     const currentConfig = getConfig();
     if (currentConfig.servers.length === 0) {
@@ -323,6 +316,20 @@ export class Client {
       log.info(
         `Please edit the configuration YAML directly and restart MovieMatch.`,
       );
+    }
+  }
+
+  async handleRequestFilters() {
+    if (this.ctx.providers.length) {
+      // TODO - Aggregate filters from all providers.
+      const [provider] = this.ctx.providers;
+      const filters = await provider.getFilters();
+      this.sendMessage({
+        type: "filters",
+        payload: filters,
+      });
+    } else {
+      throw new Error("NO PROVIDERS");
     }
   }
 

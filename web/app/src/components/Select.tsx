@@ -11,7 +11,7 @@ interface SelectProps<Value extends string = string> {
 }
 
 export const Select = (
-  { name, value, options, onChange, onBlur }: SelectProps,
+  { name, value = "", options, onChange, onBlur }: SelectProps,
 ) => (
   <div className="Select">
     <select
@@ -20,7 +20,8 @@ export const Select = (
       onChange={onChange}
       onBlur={onBlur}
     >
-      {Object.entries(options).map(([optionValue, label]) => (
+      <option value="">-- Select --</option>
+      {options && Object.entries(options).map(([optionValue, label]) => (
         <option
           value={optionValue}
           selected={optionValue === value}

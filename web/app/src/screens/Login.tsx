@@ -32,7 +32,8 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
           name="userName"
           autoComplete="given-name"
           value={userName ?? ""}
-          onChange={(userName: string) => {
+          onChange={(e) => {
+            const userName = e.target.value;
             setUserName(userName);
             localStorage.setItem("userName", userName);
           }}

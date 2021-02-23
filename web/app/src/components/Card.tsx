@@ -3,7 +3,7 @@ import React, {
   ReactNode,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Media } from "../../../../types/moviematch.d.ts";
+import { Media } from "../../../../types/moviematch.ts";
 
 import "./Card.css";
 import { InfoIcon } from "./InfoIcon.tsx";

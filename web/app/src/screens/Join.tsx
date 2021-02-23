@@ -14,7 +14,7 @@ import { MovieMatchContext } from "../store.ts";
 import {
   JoinRoomError,
   JoinRoomSuccess,
-} from "../../../../types/moviematch.d.ts";
+} from "../../../../types/moviematch.ts";
 import { Layout } from "../components/Layout.tsx";
 import { ErrorMessage } from "../components/ErrorMessage.tsx";
 import { Tr } from "../components/Tr.tsx";
@@ -92,7 +92,7 @@ export const JoinScreen = ({
           name="roomName"
           value={roomName}
           errorMessage={roomNameError}
-          onChange={setRoomName}
+          onChange={(e) => setRoomName(e.target.value)}
         />
         <ButtonContainer paddingTop="s7" reverseMobile>
           <Button

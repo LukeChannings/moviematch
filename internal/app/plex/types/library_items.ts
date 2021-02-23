@@ -48,7 +48,7 @@ export type FilterType =
 
 export interface Type {
   key: string;
-  type: string;
+  type: ViewGroup;
   title: string;
   active: boolean;
   Filter?: Filter[];
@@ -243,7 +243,10 @@ export type ContentRating =
   | "TV-Y7";
 
 export type ViewGroup =
-  | "artist"
   | "movie"
-  | "photo"
-  | "show";
+  | "show"
+  | "episode"
+  | "artist"
+  | "album"
+  | "track"
+  | "photo";

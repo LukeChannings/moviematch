@@ -2,7 +2,7 @@
 
 ## Code
 
-The entire codebase is written in TypeScript, and common types are defined in [types/moviematch.d.ts](types/moviematch.d.ts).
+The entire codebase is written in TypeScript, and common types are defined in [types/moviematch.ts](types/moviematch.ts).
 
 ### Dependencies
 

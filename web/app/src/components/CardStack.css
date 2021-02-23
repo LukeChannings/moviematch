@@ -5,6 +5,7 @@
 
   position: relative;
   perspective: calc(var(--vh) * 100);
+  min-height: min(calc(80vmin * 1.5), calc(var(--vh) * 80));
 }
 
 .CardStack > .Card {

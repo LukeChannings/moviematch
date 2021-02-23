@@ -3,7 +3,7 @@ import * as log from "log/mod.ts";
 import { assert } from "util/assert.ts";
 import { join } from "path/posix.ts";
 import { addRedaction } from "/internal/app/moviematch/logger.ts";
-import { Config } from "/types/moviematch.d.ts";
+import { Config } from "/types/moviematch.ts";
 
 function isRecord(
   value: unknown,

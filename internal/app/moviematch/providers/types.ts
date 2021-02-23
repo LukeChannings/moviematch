@@ -8,6 +8,8 @@
  * - Allow connecting to multiple providers of the same type, e.g. more than one Plex server
  */
 
+import { Filters, Library } from "/types/moviematch.ts";
+
 export interface MovieMatchProvider {
   options: { url: string };
   isAvailable(): Promise<boolean>;
@@ -17,25 +19,15 @@ export interface MovieMatchProvider {
 
   getName(): Promise<string>;
 
-  getLibraries(): Promise<MovieMatchLibrary[]>;
+  getLibraries(): Promise<Library[]>;
 
-  // this will return the available values for a given filter
-  // e.g. if the key is 'Genre', the options might be ['Comedy', 'Drama', etc]
-  getFilterOptions(key: string): Promise<string[]>;
+  getFilters(): Promise<Filters>;
+
+  getFilterValues(
+    key: string,
+  ): Promise<Array<{ title: string; value: string }>>;
 
   getArtwork(key: string, width: number): Promise<Uint8Array>;
 
   getCanonicalUrl(key: string): Promise<string>;
-}
-
-type MovieMatchLibraryName = string;
-
-interface MovieMatchLibrary {
-  name: MovieMatchLibraryName;
-  type: "show" | "movie" | "music" | "photo";
-  filters: MovieMatchFilter[];
-}
-
-interface MovieMatchFilter {
-  availability: MovieMatchLibraryName[];
 }

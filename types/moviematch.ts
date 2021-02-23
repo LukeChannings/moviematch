@@ -36,7 +36,8 @@ export type ServerMessage =
   | { type: "joinRoom"; payload: JoinRoomRequest }
   | { type: "rate"; payload: Rate }
   | { type: "setLocale"; payload: Locale }
-  | { type: "setup"; payload: Config };
+  | { type: "setup"; payload: Config }
+  | { type: "requestFilters" };
 
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
@@ -49,7 +50,8 @@ export type ClientMessage =
   | { type: "media"; payload: Media[] }
   | { type: "config"; payload: AppConfig }
   | { type: "translations"; payload: Translations }
-  | { type: "setupError"; payload: SetupError };
+  | { type: "setupError"; payload: SetupError }
+  | { type: "filters"; payload: Filters };
 
 // Translations
 export type TranslationKey =
@@ -136,6 +138,11 @@ export interface CreateRoomError {
   message: string;
 }
 
+// Contains metadata for Create Room filters
+export interface CreateRoomFilterMetadata {
+  availableFilters: Array<{ key: string; value: string; operator: string }>;
+}
+
 // Join
 
 export interface JoinRoomRequest {
@@ -162,7 +169,7 @@ export interface JoinRoomSuccess {
 
 export interface Media {
   id: string;
-  type: "movie" | "show" | "artist" | "photo";
+  type: LibraryType;
   title: string;
   description: string;
   tagline: string;
@@ -188,4 +195,34 @@ export interface Rate {
 export interface SetupError {
   message: string;
   type: string;
+}
+
+// Filters
+
+export type LibraryName = string;
+
+export type LibraryType = "show" | "movie" | "music" | "photo";
+
+export interface Library {
+  name: LibraryName;
+  type: LibraryType;
+}
+
+export interface Filters {
+  filters: Array<{
+    title: string;
+    key: string;
+    type: string;
+    libraryTypes: LibraryType[];
+  }>;
+
+  // e.g. { integer: [{ key: '=', title: 'is' }, { key: '!=', title: 'is not' }] }
+  // Note, the meanings of certain keys (e.g. '=') can be different depending on the type
+  filterTypes: Record<
+    string,
+    Array<{
+      key: string;
+      title: string;
+    }>
+  >;
 }

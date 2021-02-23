@@ -3,7 +3,7 @@ import React, {
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 import { Formik } from "https://cdn.skypack.dev/formik?dts";
-import { Config } from "../../../../types/moviematch.d.ts";
+import { Config } from "../../../../types/moviematch.ts";
 import { AddRemoveList } from "../components/AddRemoveList.tsx";
 import { Field } from "../components/Field.tsx";
 import { Layout } from "../components/Layout.tsx";

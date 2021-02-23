@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Rate } from "../../../../types/moviematch.d.ts";
+import { Rate } from "../../../../types/moviematch.ts";
 import { useAnimationFrame } from "../hooks/useAnimationFrame.ts";
 
 import "./CardStack.css";

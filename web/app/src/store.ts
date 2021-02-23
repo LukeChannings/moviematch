@@ -10,7 +10,7 @@ import {
   Match,
   Media,
   Translations,
-} from "../../../types/moviematch.d.ts";
+} from "../../../types/moviematch.ts";
 import { getClient, MovieMatchClient } from "./api/moviematch.ts";
 import { checkPin, PlexPIN, PlexPINExpiredError } from "./api/plex_tv.ts";
 import { Toast } from "./components/Toast.tsx";
@@ -198,12 +198,12 @@ export const useStore = () => {
   }, []);
 
   useEffect(function setInitialScreen() {
-    if (store.user && store.config) {
+    if (store.config) {
       let path: Routes["path"];
 
       if (store.config.requiresConfiguration) {
         path = "config";
-      } else if (store.user.userName) {
+      } else if (store.user?.userName) {
         path = "join";
       } else {
         path = "login";

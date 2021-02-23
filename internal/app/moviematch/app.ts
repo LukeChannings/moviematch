@@ -1,6 +1,6 @@
 import { serve, Server, serveTLS } from "http/server.ts";
 import * as log from "log/mod.ts";
-import { Config } from "/types/moviematch.d.ts";
+import { Config } from "/types/moviematch.ts";
 import { handler as serveStaticHandler } from "/internal/app/moviematch/handlers/serve_static.ts";
 import { handler as rootHandler } from "/internal/app/moviematch/handlers/template.ts";
 import { handler as healthHandler } from "/internal/app/moviematch/handlers/health.ts";
@@ -9,7 +9,7 @@ import { handler as basicAuthHandler } from "/internal/app/moviematch/handlers/b
 import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 
 import { createProvider as createPlexProvider } from "/internal/app/moviematch/providers/plex.ts";
-import type { MovieMatchProvider } from "/internal/app/moviematch/providers/types.d.ts";
+import type { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
 import { RouteHandler } from "./types.ts";
 import { deferred } from "async/deferred.ts";
 
@@ -73,6 +73,7 @@ export const Application = async (
 
   try {
     const handling = new Set<Promise<void>>();
+
     for await (const req of server) {
       const url = urlFromReqUrl(req.url);
       const [, handlers] = routes.find(([path]) => {
@@ -91,7 +92,7 @@ export const Application = async (
           handling.add(dfd);
           let response;
           for (const handler of handlers) {
-            response = await handler(req);
+            response = await handler(req, { providers, config });
             if (response) {
               break;
             }

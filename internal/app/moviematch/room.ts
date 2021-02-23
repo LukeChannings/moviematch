@@ -1,6 +1,4 @@
 import * as log from "log/mod.ts";
-import { getAllMedia } from "/internal/app/plex/api.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
 import {
   CreateRoomRequest,
   Filter,
@@ -10,7 +8,7 @@ import {
   Rate,
   RoomOption,
   RoomSort,
-} from "/types/moviematch.d.ts";
+} from "/types/moviematch.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
 

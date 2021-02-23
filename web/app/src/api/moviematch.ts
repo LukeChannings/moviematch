@@ -8,7 +8,7 @@ import {
   Login,
   Rate,
   ServerMessage,
-} from "../../../../types/moviematch.d.ts";
+} from "../../../../types/moviematch.ts";
 
 const API_URL = (() => {
   const url = new URL(location.href);
@@ -139,6 +139,12 @@ export class MovieMatchClient extends EventTarget {
       type: "rate",
       payload: rateRequest,
     });
+  };
+
+  getFilters = async () => {
+    this.sendMessage({ type: "requestFilters" });
+    const filters = await this.waitForMessage("filters");
+    return filters.payload;
   };
 
   setLocale = async (locale: Locale) => {

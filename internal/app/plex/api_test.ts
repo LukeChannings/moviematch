@@ -17,6 +17,9 @@ assert(
 const plexApi = new PlexApi(
   TEST_PLEX_URL,
   TEST_PLEX_TOKEN,
+  {
+    language: "en",
+  },
 );
 
 Deno.test("plexApi -> isAvaliable", async () => {
@@ -112,4 +115,9 @@ Deno.test("plexApi -> getLibraries", async () => {
   for (const library of libraries) {
     assertEquals(librarySchema.validate(library), []);
   }
+});
+
+Deno.test("plexApi -> getAllFilters", async () => {
+  const filters = await plexApi.getAllFilters();
+  // console.log(JSON.stringify(filters, null, 2));
 });

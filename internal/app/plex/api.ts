@@ -1,17 +1,29 @@
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
 import { Identity } from "/internal/app/plex/types/identity.ts";
 import { Libraries, Library } from "/internal/app/plex/types/libraries_list.ts";
-import { LibraryItems } from "/internal/app/plex/types/library_items.ts";
+import {
+  LibraryItems,
+  Meta,
+  ViewGroup,
+} from "/internal/app/plex/types/library_items.ts";
 
 type PlexMediaContainer<T> = { MediaContainer: T };
+
+export interface PlexApiOptions {
+  language?: string;
+  libraryTitleFilter?: string[];
+  libraryTypeFilter?: string[];
+  linkType?: "app" | "webLocal" | "webExternal";
+}
+
 export class PlexApi {
   plexUrl: URL;
-  language: string;
+  options: PlexApiOptions;
 
-  constructor(plexUrl: string, plexToken: string, language = "en") {
+  constructor(plexUrl: string, plexToken: string, options: PlexApiOptions) {
     this.plexUrl = new URL(plexUrl);
     this.plexUrl.searchParams.set("X-Plex-Token", plexToken);
-    this.language = language;
+    this.options = options;
   }
 
   private async fetch<T>(
@@ -19,6 +31,7 @@ export class PlexApi {
     { baseKey = "/", searchParams = {} }: {
       baseKey?: string;
       searchParams?: Record<string, string>;
+      lang?: string;
     } = {},
   ): Promise<T> {
     const url = new URL(this.plexUrl.href);
@@ -31,7 +44,7 @@ export class PlexApi {
     const req = await fetch(url.href, {
       headers: {
         accept: "application/json",
-        "accept-language": this.language,
+        "accept-language": this.options.language ?? "en",
       },
     });
 
@@ -108,13 +121,13 @@ export class PlexApi {
     }
   }
 
-  async getAllFilters() {
+  async getAllFilters(): Promise<Meta> {
     const libraries = await this.getLibraries();
 
-    const results = [];
+    const results: Meta = { Type: [], FieldType: [] };
 
     for (const { key } of libraries) {
-      const filters = await this.fetch<LibraryItems>(
+      const result = await this.fetch<LibraryItems>(
         `/library/sections/${key}/filters`,
         {
           searchParams: {
@@ -123,10 +136,24 @@ export class PlexApi {
         },
       );
 
-      results.push(filters);
+      if (result.Meta) {
+        if (!results.FieldType.length && result.Meta.FieldType.length) {
+          results.FieldType = result.Meta.FieldType;
+        }
+        results.Type.push(...result.Meta.Type);
+      }
     }
 
     return results;
+  }
+
+  getFilterValues(key: string) {
+    return this.fetch<{
+      fastKey: string;
+      key: string;
+      title: string;
+      type: string;
+    }>(`/library/sections/${key}`);
   }
 
   getLibraryItems(
