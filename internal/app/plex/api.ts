@@ -1,11 +1,8 @@
+import { FilterValues } from "./types/library_filter_values.ts";
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
 import { Identity } from "/internal/app/plex/types/identity.ts";
 import { Libraries, Library } from "/internal/app/plex/types/libraries_list.ts";
-import {
-  LibraryItems,
-  Meta,
-  ViewGroup,
-} from "/internal/app/plex/types/library_items.ts";
+import { LibraryItems, Meta } from "/internal/app/plex/types/library_items.ts";
 
 type PlexMediaContainer<T> = { MediaContainer: T };
 
@@ -147,13 +144,13 @@ export class PlexApi {
     return results;
   }
 
-  getFilterValues(key: string) {
-    return this.fetch<{
-      fastKey: string;
-      key: string;
-      title: string;
-      type: string;
-    }>(`/library/sections/${key}`);
+  getFilterValues(
+    libraryKey: string,
+    filterName: string,
+  ): Promise<FilterValues> {
+    return this.fetch<FilterValues>(
+      `/library/sections/${libraryKey}/${filterName}`,
+    );
   }
 
   getLibraryItems(

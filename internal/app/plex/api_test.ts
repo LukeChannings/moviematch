@@ -1,4 +1,10 @@
-import { Schema } from "https://cdn.skypack.dev/valivar";
+import {
+  array,
+  boolean,
+  number,
+  object,
+  string,
+} from "https://cdn.skypack.dev/yup?dts";
 import { assert, assertEquals, assertNotEquals } from "testing/asserts.ts";
 import { PlexApi } from "/internal/app/plex/api.ts";
 
@@ -31,14 +37,15 @@ Deno.test("plexApi -> isAvaliable", async () => {
 });
 
 Deno.test("plexApi -> getIdentity", async () => {
-  const identitySchema = new Schema({
-    size: Number,
-    claimed: Boolean,
-    machineIdentifier: String,
-    version: String,
+  const identitySchema = object().shape({
+    size: number().required(),
+    claimed: boolean().required(),
+    machineIdentifier: string().required(),
+    version: string().required(),
   });
 
-  assertEquals(identitySchema.validate(await plexApi.getIdentity()).length, 0);
+  const identity = await plexApi.getIdentity();
+  await identitySchema.validate(identity);
 });
 
 Deno.test("plexApi -> getCapabilities", async () => {
@@ -52,19 +59,18 @@ Deno.test("plexApi -> getCapabilities", async () => {
 });
 
 Deno.test("plexApi -> getServerVersion", async () => {
-  const serverVersionSchema = new Schema({
-    fullVersion: String,
-    major: Number,
-    minor: Number,
-    patch: Number,
-    build: Number,
-    meta: String,
-    hash: String,
+  const serverVersionSchema = object().shape({
+    fullVersion: string().required(),
+    major: number().required(),
+    minor: number().required(),
+    patch: number().required(),
+    build: number().required(),
+    meta: string().required(),
+    hash: string().required(),
   });
 
   const serverVersion = await plexApi.getServerVersion();
-  const errors = serverVersionSchema.validate(serverVersion);
-  assertEquals(errors.length, 0);
+  await serverVersionSchema.validate(serverVersion);
 });
 
 Deno.test("plexApi -> getServerName", async () => {
@@ -80,44 +86,102 @@ Deno.test("plexApi -> getServerOwner", async () => {
 });
 
 Deno.test("plexApi -> getLibraries", async () => {
-  const libraries = await plexApi.getLibraries();
-
-  const librarySchema = new Schema({
-    allowSync: Boolean,
-    art: String,
-    composite: String,
-    filters: Boolean,
-    refreshing: Boolean,
-    thumb: String,
-    key: String,
-    type: {
-      type: String,
-      enum: ["movie", "show", "artist", "photo"],
-    },
-    title: String,
-    agent: String,
-    scanner: String,
-    language: String,
-    uuid: String,
-    updatedAt: Number,
-    createdAt: Number,
-    scannedAt: Number,
-    content: Boolean,
-    directory: Boolean,
-    contentChangedAt: Number,
-    hidden: Number,
-    Location: [{
-      id: Number,
-      path: String,
-    }],
+  const librarySchema = object().shape({
+    allowSync: boolean().required(),
+    art: string().required(),
+    composite: string().required(),
+    filters: boolean().required(),
+    refreshing: boolean().required(),
+    thumb: string().required(),
+    key: string().required(),
+    type: string().matches(/^(movie|show|artist|photo)$/).required(),
+    title: string().required(),
+    agent: string().required(),
+    scanner: string().required(),
+    language: string().required(),
+    uuid: string().required(),
+    updatedAt: number().required(),
+    createdAt: number().required(),
+    scannedAt: number().required(),
+    content: boolean().required(),
+    directory: boolean().required(),
+    contentChangedAt: number().required(),
+    hidden: number().required(),
+    Location: array(
+      object().shape({
+        id: number().required(),
+        path: string().required(),
+      }).required(),
+    ).required(),
   });
 
+  const libraries = await plexApi.getLibraries();
+
   for (const library of libraries) {
-    assertEquals(librarySchema.validate(library), []);
+    await librarySchema.validate(library);
   }
 });
 
 Deno.test("plexApi -> getAllFilters", async () => {
   const filters = await plexApi.getAllFilters();
-  // console.log(JSON.stringify(filters, null, 2));
+
+  const filtersSchema = object().shape({
+    Type: array(
+      object().shape({
+        key: string().required(),
+        type: string().required(),
+        title: string().required(),
+        active: boolean().required(),
+        Filter: array(
+          object().shape({
+            filter: string().required(),
+            filterType: string().required(),
+            key: string().required(),
+            title: string().required(),
+            type: string().required(),
+          }).required(),
+        ),
+      }),
+    ),
+    FieldType: array(
+      object().shape({
+        type: string().required(),
+        Operator: array(
+          object().shape({
+            key: string().required(),
+            title: string().required(),
+          }),
+        ),
+      }),
+    ),
+  });
+
+  await filtersSchema.validate(filters);
+});
+
+Deno.test("plexApi -> getFilterValues", async () => {
+  const filterValues = await plexApi.getFilterValues("3", "collection");
+
+  const filterValueSchema = object().shape({
+    size: number().required(),
+    allowSync: boolean().required(),
+    art: string().required(),
+    content: string().required(),
+    identifier: string().required(),
+    mediaTagPrefix: string().required(),
+    mediaTagVersion: number().required(),
+    thumb: string().required(),
+    title1: string().required(),
+    title2: string().required(),
+    viewGroup: string().required(),
+    viewMode: number().required(),
+    Directory: array(
+      object().shape({
+        key: string().required(),
+        title: string().required(),
+      }),
+    ).required(),
+  });
+
+  await filterValueSchema.validate(filterValues);
 });

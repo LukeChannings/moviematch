@@ -52,10 +52,10 @@ export interface Capabilities {
   updater: boolean;
   version: string;
   voiceSearch: boolean;
-  Directory: Directory[];
+  Directory: Capability[];
 }
 
-export interface Directory {
+export interface Capability {
   count: number;
   key: string;
   title: string;

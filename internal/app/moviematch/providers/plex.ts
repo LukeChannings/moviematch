@@ -1,8 +1,9 @@
-import { LibraryType } from "/types/moviematch.ts";
+import { Filters, LibraryType } from "/types/moviematch.ts";
 import { PlexApi } from "/internal/app/plex/api.ts";
 import {
   MovieMatchProvider,
 } from "/internal/app/moviematch/providers/types.ts";
+import { FieldType } from "/internal/app/plex/types/library_items.ts";
 
 export interface PlexProviderConfig {
   url: string;
@@ -55,8 +56,11 @@ export const createProvider = (
       }
 
       const filterTypes = meta.FieldType.reduce(
-        (acc, _) => ({ ...acc, [_.type]: _.Operator }),
-        {},
+        (acc, _: FieldType) => ({
+          ...acc,
+          [_.type]: _.Operator,
+        }),
+        {} as Filters["filterTypes"],
       );
 
       return {
