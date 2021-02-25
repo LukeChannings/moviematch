@@ -1,4 +1,5 @@
-import { FilterValues } from "./types/library_filter_values.ts";
+import * as log from "log/mod.ts";
+import { FilterValue, FilterValues } from "./types/library_filter_values.ts";
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
 import { Identity } from "/internal/app/plex/types/identity.ts";
 import { Libraries, Library } from "/internal/app/plex/types/libraries_list.ts";
@@ -144,13 +145,39 @@ export class PlexApi {
     return results;
   }
 
-  getFilterValues(
-    libraryKey: string,
-    filterName: string,
+  async getFilterValues(
+    key: string,
   ): Promise<FilterValues> {
-    return this.fetch<FilterValues>(
-      `/library/sections/${libraryKey}/${filterName}`,
-    );
+    if (key.includes("/")) {
+      return this.fetch<FilterValues>(
+        `/library/sections/${key}`,
+      );
+    } else {
+      const libraries = await this.getLibraries();
+
+      let filterValueList: FilterValue[] = [];
+      let filterValues: FilterValues;
+
+      for (const { key: libraryKey } of libraries) {
+        const path = `/library/sections/${libraryKey}/${key}`;
+        filterValues = await this.fetch<FilterValues>(path);
+
+        log.debug(`got ${filterValues.size} values from ${path}`);
+
+        if (filterValues.size > 0) {
+          for (const filterValue of filterValues.Directory) {
+            filterValueList.push(filterValue);
+            log.debug(filterValue);
+          }
+        }
+      }
+
+      log.debug(filterValueList);
+
+      filterValues!.Directory = filterValueList;
+      filterValues!.size = filterValueList.length;
+      return filterValues!;
+    }
   }
 
   getLibraryItems(

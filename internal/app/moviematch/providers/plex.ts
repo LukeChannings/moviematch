@@ -68,7 +68,18 @@ export const createProvider = (
         filterTypes,
       };
     },
-    getFilterValues: () => Promise.resolve([]),
+    getFilterValues: async (key: string) => {
+      const filterValues = await api.getFilterValues(key);
+
+      if (filterValues.size) {
+        return filterValues.Directory.map((filterValue) => ({
+          title: filterValue.title,
+          value: filterValue.fastKey,
+        }));
+      }
+
+      return [];
+    },
     getArtwork: () => Promise.resolve(new Uint8Array()),
     getCanonicalUrl: (key: string) => api.getDeepLink(key),
   };

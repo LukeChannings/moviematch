@@ -37,7 +37,8 @@ export type ServerMessage =
   | { type: "rate"; payload: Rate }
   | { type: "setLocale"; payload: Locale }
   | { type: "setup"; payload: Config }
-  | { type: "requestFilters" };
+  | { type: "requestFilters" }
+  | { type: "requestFilterValues"; payload: FilterValueRequest };
 
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
@@ -51,7 +52,8 @@ export type ClientMessage =
   | { type: "config"; payload: AppConfig }
   | { type: "translations"; payload: Translations }
   | { type: "setupError"; payload: SetupError }
-  | { type: "filters"; payload: Filters };
+  | { type: "filters"; payload: Filters }
+  | { type: "filterValues"; payload: FilterValue[] };
 
 // Translations
 export type TranslationKey =
@@ -119,8 +121,8 @@ export type RoomOption = "EndOnFirstMatch";
 
 export interface Filter {
   key: string;
-  operator: "equal" | "notEqual" | "lessThan" | "greaterThan";
-  value: string;
+  operator: string;
+  value: string[];
 }
 
 export type RoomSort = "random" | "rating";
@@ -225,4 +227,13 @@ export interface Filters {
       title: string;
     }>
   >;
+}
+
+export interface FilterValue {
+  title: string;
+  value: string;
+}
+
+export interface FilterValueRequest {
+  key: string;
 }

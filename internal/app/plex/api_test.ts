@@ -160,7 +160,7 @@ Deno.test("plexApi -> getAllFilters", async () => {
 });
 
 Deno.test("plexApi -> getFilterValues", async () => {
-  const filterValues = await plexApi.getFilterValues("3", "collection");
+  const filterValues = await plexApi.getFilterValues("3/collection");
 
   const filterValueSchema = object().shape({
     size: number().required(),

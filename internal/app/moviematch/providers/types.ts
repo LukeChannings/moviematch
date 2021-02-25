@@ -8,7 +8,7 @@
  * - Allow connecting to multiple providers of the same type, e.g. more than one Plex server
  */
 
-import { Filters, Library } from "/types/moviematch.ts";
+import { Filters, FilterValue, Library } from "/types/moviematch.ts";
 
 export interface MovieMatchProvider {
   options: { url: string };
@@ -25,7 +25,7 @@ export interface MovieMatchProvider {
 
   getFilterValues(
     key: string,
-  ): Promise<Array<{ title: string; value: string }>>;
+  ): Promise<FilterValue[]>;
 
   getArtwork(key: string, width: number): Promise<Uint8Array>;
 

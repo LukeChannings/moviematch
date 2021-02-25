@@ -79,8 +79,15 @@ export class Client {
         }
 
         if (typeof messageText === "string") {
+          let message: ServerMessage;
           try {
-            const message: ServerMessage = JSON.parse(messageText);
+            message = JSON.parse(messageText);
+          } catch (err) {
+            log.error(`Failed to parse message: ${messageText}`, String(err));
+            return;
+          }
+
+          try {
             switch (message.type) {
               case "login":
                 await this.handleLogin(message.payload);
@@ -103,6 +110,9 @@ export class Client {
               case "requestFilters":
                 await this.handleRequestFilters();
                 break;
+              case "requestFilterValues":
+                await this.handleRequestFilterValues(message.payload.key);
+                break;
               default:
                 log.info(`Unhandled message: ${messageText}`);
                 break;
@@ -112,7 +122,7 @@ export class Client {
               throw err;
             }
 
-            log.error(`Failed to parse message: ${messageText}`);
+            log.error(`Error handling ${message.type}: ${String(err)}`);
           }
         }
       }
@@ -327,6 +337,20 @@ export class Client {
       this.sendMessage({
         type: "filters",
         payload: filters,
+      });
+    } else {
+      throw new Error("NO PROVIDERS");
+    }
+  }
+
+  async handleRequestFilterValues(key: string) {
+    if (this.ctx.providers.length) {
+      // TODO - Aggregate filter values from all providers.
+      const [provider] = this.ctx.providers;
+      const filterValues = await provider.getFilterValues(key);
+      this.sendMessage({
+        type: "filterValues",
+        payload: filterValues,
       });
     } else {
       throw new Error("NO PROVIDERS");

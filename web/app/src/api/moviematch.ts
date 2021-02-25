@@ -147,6 +147,12 @@ export class MovieMatchClient extends EventTarget {
     return filters.payload;
   };
 
+  getFilterValues = async (key: string) => {
+    this.sendMessage({ type: "requestFilterValues", payload: { key } });
+    const filterValues = await this.waitForMessage("filterValues");
+    return filterValues.payload;
+  };
+
   setLocale = async (locale: Locale) => {
     await this.waitForConnected();
 
