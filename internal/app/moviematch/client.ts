@@ -195,7 +195,7 @@ export class Client {
     }
 
     try {
-      this.room = createRoom(createRoomReq);
+      this.room = createRoom(createRoomReq, this.ctx);
       this.room.users.set(this.userName, this);
       this.sendMessage({
         type: "createRoomSuccess",

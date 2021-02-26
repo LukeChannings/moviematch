@@ -39,6 +39,8 @@ export class PlexApi {
       url.searchParams.set(key, value);
     }
 
+    log.debug(url.href);
+
     const req = await fetch(url.href, {
       headers: {
         accept: "application/json",
@@ -155,7 +157,7 @@ export class PlexApi {
     } else {
       const libraries = await this.getLibraries();
 
-      let filterValueList: FilterValue[] = [];
+      const filterValueList: FilterValue[] = [];
       let filterValues: FilterValues;
 
       for (const { key: libraryKey } of libraries) {
@@ -167,12 +169,9 @@ export class PlexApi {
         if (filterValues.size > 0) {
           for (const filterValue of filterValues.Directory) {
             filterValueList.push(filterValue);
-            log.debug(filterValue);
           }
         }
       }
-
-      log.debug(filterValueList);
 
       filterValues!.Directory = filterValueList;
       filterValues!.size = filterValueList.length;
@@ -182,9 +181,13 @@ export class PlexApi {
 
   getLibraryItems(
     key: string,
+    { filters }: { filters?: Record<string, string> } = {},
   ): Promise<LibraryItems> {
     return this.fetch<LibraryItems>(
       `/library/sections/${key}/all`,
+      {
+        searchParams: filters,
+      },
     );
   }
 

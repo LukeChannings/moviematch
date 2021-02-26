@@ -174,14 +174,14 @@ export interface Media {
   type: LibraryType;
   title: string;
   description: string;
-  tagline: string;
-  year: string;
-  posterUrl: string;
+  tagline?: string;
+  year?: number;
+  posterUrl?: string;
   linkUrl: string;
   genres: string[];
   duration: number;
   rating: number;
-  contentRating: string;
+  contentRating?: string;
 }
 
 export interface Match {

@@ -11,6 +11,7 @@ import {
 } from "/types/moviematch.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
+import { AppContext } from "./types.ts";
 
 export class RoomExistsError extends Error {}
 export class AccessDeniedError extends Error {}
@@ -18,6 +19,7 @@ export class RoomNotFoundError extends Error {}
 export class UserAlreadyJoinedError extends Error {}
 
 export class Room {
+  appContext: AppContext;
   roomName: string;
   password?: string;
   users = new Map<string, Client>();
@@ -31,7 +33,8 @@ export class Room {
     Array<[userName: string, rating: Rate["rating"]]>
   >();
 
-  constructor(req: CreateRoomRequest) {
+  constructor(req: CreateRoomRequest, ctx: AppContext) {
+    this.appContext = ctx;
     this.roomName = req.roomName;
     this.password = req.password;
     this.options = req.options;
@@ -41,35 +44,14 @@ export class Room {
     this.media = this.getMedia();
   }
 
-  getMedia = memo(() => {
-    // const { libraryTitleFilter, libraryTypeFilter } = getConfig();
-
-    // const plexVideoItems = await getAllMedia(getConfig().plexUrl, {
-    //   directoryName: libraryTitleFilter,
-    //   directoryType: libraryTypeFilter,
-    //   filters: this.filters,
-    // });
-
-    // const media = new Map(
-    //   plexVideoItems.map((videoItem) => [
-    //     videoItem.guid,
-    //     {
-    //       id: videoItem.guid,
-    //       type: videoItem.type,
-    //       title: videoItem.title,
-    //       description: videoItem.summary,
-    //       tagline: videoItem.tagline,
-    //       year: videoItem.year,
-    //       posterUrl: `/api/poster?key=${encodeURIComponent(videoItem.thumb)}`,
-    //       linkUrl: `/movie/${videoItem.key}`,
-    //       genres: videoItem.Genre?.map((_) => _.tag) ?? [],
-    //       duration: Number(videoItem.duration),
-    //       rating: Number(videoItem.rating),
-    //       contentRating: videoItem.contentRating,
-    //     },
-    //   ]),
-    // );
-    return Promise.resolve(new Map());
+  getMedia = memo(async () => {
+    const media = new Map<string, Media>();
+    for (const provider of this.appContext.providers) {
+      for (const _ of await provider.getMedia({ filters: this.filters })) {
+        media.set(_.id, _);
+      }
+    }
+    return media;
   });
 
   getMediaForUser = async (userName: string): Promise<Media[]> => {
@@ -145,12 +127,15 @@ type RoomName = string;
 
 const rooms = new Map<RoomName, Room>();
 
-export const createRoom = (createRequest: CreateRoomRequest): Room => {
+export const createRoom = (
+  createRequest: CreateRoomRequest,
+  ctx: AppContext,
+): Room => {
   if (rooms.has(createRequest.roomName)) {
     throw new RoomExistsError(`${createRequest.roomName} already exists.`);
   }
 
-  const room = new Room(createRequest);
+  const room = new Room(createRequest, ctx);
   rooms.set(room.roomName, room);
   return room;
 };

@@ -1,4 +1,4 @@
-import { Filters, LibraryType } from "/types/moviematch.ts";
+import { Filter, Filters, LibraryType, Media } from "/types/moviematch.ts";
 import { PlexApi } from "/internal/app/plex/api.ts";
 import {
   MovieMatchProvider,
@@ -12,6 +12,11 @@ export interface PlexProviderConfig {
   libraryTypeFilter?: string[];
   linkType?: "app" | "webLocal" | "webExternal";
 }
+
+const filtersToSearchParams = (filters?: Filter[]): URLSearchParams => {
+  const searchParams = new URLSearchParams();
+  return searchParams;
+};
 
 export const createProvider = (
   options: PlexProviderConfig,
@@ -74,7 +79,7 @@ export const createProvider = (
       if (filterValues.size) {
         return filterValues.Directory.map((filterValue) => ({
           title: filterValue.title,
-          value: filterValue.fastKey,
+          value: filterValue.key,
         }));
       }
 
@@ -82,5 +87,48 @@ export const createProvider = (
     },
     getArtwork: () => Promise.resolve(new Uint8Array()),
     getCanonicalUrl: (key: string) => api.getDeepLink(key),
+    getMedia: async ({ filters }) => {
+      const filterParams: Record<string, string> = {};
+      if (filters) {
+        for (const { key, operator, value } of filters) {
+          switch (operator) {
+            case "==":
+              filterParams[key] = value.join(",");
+              break;
+            case "!=":
+              filterParams[key + "!"] = value.join(",");
+          }
+        }
+      }
+
+      const libraryItems = await api.getLibraryItems(
+        "2",
+        { filters: filterParams },
+      );
+
+      const media: Media[] = [];
+      if (libraryItems.size) {
+        for (const libraryItem of libraryItems.Metadata) {
+          media.push({
+            id: libraryItem.guid,
+            type: libraryItem.type as LibraryType,
+            title: libraryItem.title,
+            description: libraryItem.summary,
+            tagline: libraryItem.tagline,
+            year: libraryItem.year,
+            posterUrl: libraryItem.thumb
+              ? `/api/poster?key=${encodeURIComponent(libraryItem.thumb)}`
+              : undefined,
+            linkUrl: `/movie/${libraryItem.key}`,
+            genres: libraryItem.Genre?.map((_) => _.tag) ?? [],
+            duration: Number(libraryItem.duration),
+            rating: Number(libraryItem.rating),
+            contentRating: libraryItem.contentRating,
+          });
+        }
+      }
+
+      return media;
+    },
   };
 };

@@ -21,5 +21,6 @@
   },
   "[markdown]": {
     "editor.defaultFormatter": "denoland.vscode-deno-canary"
-  }
+  },
+  "debug.javascript.unmapMissingSources": true
 }
