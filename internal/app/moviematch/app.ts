@@ -6,6 +6,7 @@ import { handler as rootHandler } from "/internal/app/moviematch/handlers/templa
 import { handler as healthHandler } from "/internal/app/moviematch/handlers/health.ts";
 import { handler as apiHandler } from "/internal/app/moviematch/handlers/api.ts";
 import { handler as basicAuthHandler } from "/internal/app/moviematch/handlers/basic_auth.ts";
+import { handler as posterHandler } from "/internal/app/moviematch/handlers/poster.ts";
 import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 
 import { createProvider as createPlexProvider } from "/internal/app/moviematch/providers/plex.ts";
@@ -21,13 +22,15 @@ export const Application = async (
 ): Promise<number> => {
   let server: Server;
 
-  const providers: MovieMatchProvider[] = config.servers.map((server) => {
-    if (typeof server.type === "string" && server.type !== "plex") {
-      throw new Error(`server type ${server.type} unhandled.`);
-    }
+  const providers: MovieMatchProvider[] = config.servers.map(
+    (server, index) => {
+      if (typeof server.type === "string" && server.type !== "plex") {
+        throw new Error(`server type ${server.type} unhandled.`);
+      }
 
-    return createPlexProvider(server);
-  });
+      return createPlexProvider(String(index), server);
+    },
+  );
 
   for (const provider of providers) {
     if (!await provider.isAvailable()) {
@@ -67,6 +70,10 @@ export const Application = async (
     ["/", [basicAuthHandler, rootHandler]],
     ["/health", [healthHandler]],
     ["/api/ws", [basicAuthHandler, apiHandler]],
+    [
+      /^\/api\/poster\/(?<providerIndex>[0-9]+)\/(?<key>[0-9/]+)$/,
+      [basicAuthHandler, posterHandler],
+    ],
     ["/manifest.webmanifest", [serveStaticHandler]],
     [/.*/, [basicAuthHandler, serveStaticHandler]],
   ];
@@ -76,7 +83,7 @@ export const Application = async (
 
     for await (const req of server) {
       const url = urlFromReqUrl(req.url);
-      const [, handlers] = routes.find(([path]) => {
+      const [path, handlers] = routes.find(([path]) => {
         if (typeof path === "string") {
           return path === url.pathname;
         } else {
@@ -84,15 +91,19 @@ export const Application = async (
         }
       }) ?? [];
 
-      if (!handlers) {
+      if (!handlers || !path) {
         log.error(`No handlers for ${url.pathname}`);
       } else {
         (async () => {
           const dfd = deferred<void>();
           handling.add(dfd);
           let response;
+          let params;
+          if (path instanceof RegExp) {
+            params = path.exec(url.pathname)?.groups;
+          }
           for (const handler of handlers) {
-            response = await handler(req, { providers, config });
+            response = await handler(req, { providers, config, path, params });
             if (response) {
               break;
             }

@@ -19,10 +19,10 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
     const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
     const srcSet = [
-      `${media.posterUrl}&w=300`,
-      `${media.posterUrl}&w=450 1.5x`,
-      `${media.posterUrl}&w=600 2x`,
-      `${media.posterUrl}&w=900 3x`,
+      `${media.posterUrl}?width=300`,
+      `${media.posterUrl}?width=450 1.5x`,
+      `${media.posterUrl}?width=600 2x`,
+      `${media.posterUrl}?width=900 3x`,
     ];
 
     const mediaTitle = `${media.title}${

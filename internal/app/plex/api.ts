@@ -195,11 +195,49 @@ export class PlexApi {
     return await this.fetch(key);
   }
 
+  async transcodePhoto(
+    key: string,
+    options: PlexTranscodeOptions,
+  ): Promise<[ReadableStream, Headers]> {
+    const url = new URL(this.plexUrl.href);
+    url.pathname = `/photo/:/transcode`;
+
+    const [metadataId, thumbId] = key.split("/");
+
+    url.searchParams.append(
+      "url",
+      `/library/metadata/${metadataId}/thumb/${thumbId}`,
+    );
+
+    for (
+      const [key, value] of Object.entries({
+        upscale: "1",
+        minSize: "1",
+        width: 480,
+        height: (options.width ?? 720) * 1.5,
+        ...options,
+      })
+    ) {
+      url.searchParams.append(
+        key,
+        String(typeof value === "boolean" ? +value : value),
+      );
+    }
+
+    const response = await fetch(url.href);
+
+    if (response.ok && response.body) {
+      return [response.body, response.headers];
+    } else {
+      throw new Error(`${response.status}: ${await response.text()}`);
+    }
+  }
+
   async getDeepLink(
     key: string,
-    type: "plexTv" | "plexLocal" | "app" = "plexTv",
-    metadataType?: "1",
+    options?: PlexDeepLinkOptions,
   ): Promise<string> {
+    const { type = "plexTv", metadataType = "1" } = options ?? {};
     const serverId = await this.getServerId();
 
     if (type === "app") {
@@ -219,4 +257,14 @@ export class PlexApi {
   }
 }
 
-export const getAllMedia = () => [];
+interface PlexDeepLinkOptions {
+  type: "plexTv" | "plexLocal" | "app";
+  metadataType?: string;
+}
+
+interface PlexTranscodeOptions {
+  width?: number;
+  height?: number;
+  minSize?: boolean;
+  upscale?: boolean;
+}

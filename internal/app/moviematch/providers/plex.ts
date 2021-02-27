@@ -2,6 +2,7 @@ import { Filter, Filters, LibraryType, Media } from "/types/moviematch.ts";
 import { PlexApi } from "/internal/app/plex/api.ts";
 import {
   MovieMatchProvider,
+  MovieMatchProviderCtor,
 } from "/internal/app/moviematch/providers/types.ts";
 import { FieldType } from "/internal/app/plex/types/library_items.ts";
 
@@ -19,6 +20,7 @@ const filtersToSearchParams = (filters?: Filter[]): URLSearchParams => {
 };
 
 export const createProvider = (
+  id: string,
   options: PlexProviderConfig,
 ): MovieMatchProvider => {
   const api = new PlexApi(options.url, options.token, options);
@@ -85,7 +87,11 @@ export const createProvider = (
 
       return [];
     },
-    getArtwork: () => Promise.resolve(new Uint8Array()),
+    getArtwork: (
+      key: string,
+      width: number,
+    ): Promise<[ReadableStream<Uint8Array>, Headers]> =>
+      api.transcodePhoto(key, { width }),
     getCanonicalUrl: (key: string) => api.getDeepLink(key),
     getMedia: async ({ filters }) => {
       const filterParams: Record<string, string> = {};
@@ -109,6 +115,11 @@ export const createProvider = (
       const media: Media[] = [];
       if (libraryItems.size) {
         for (const libraryItem of libraryItems.Metadata) {
+          let posterUrl;
+          if (libraryItem.thumb) {
+            const [, , , metadataId, , thumbId] = libraryItem.thumb.split("/");
+            posterUrl = `/api/poster/${id}/${metadataId}/${thumbId}`;
+          }
           media.push({
             id: libraryItem.guid,
             type: libraryItem.type as LibraryType,
@@ -116,9 +127,7 @@ export const createProvider = (
             description: libraryItem.summary,
             tagline: libraryItem.tagline,
             year: libraryItem.year,
-            posterUrl: libraryItem.thumb
-              ? `/api/poster?key=${encodeURIComponent(libraryItem.thumb)}`
-              : undefined,
+            posterUrl,
             linkUrl: `/movie/${libraryItem.key}`,
             genres: libraryItem.Genre?.map((_) => _.tag) ?? [],
             duration: Number(libraryItem.duration),

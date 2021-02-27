@@ -29,21 +29,21 @@ import {
   updateConfiguration,
   verifyConfig,
 } from "/internal/app/moviematch/config.ts";
-import { AppContext } from "/internal/app/moviematch/types.ts";
+import { RouteContext } from "/internal/app/moviematch/types.ts";
 import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 
 export class Client {
   finished: Deferred<void> = deferred();
   ws: WebSocket;
-  ctx: AppContext;
+  ctx: RouteContext;
   room?: Room;
   userName?: string;
   plexAuth?: Login["plexAuth"];
   plexUser?: PlexUser;
   locale?: Locale;
 
-  constructor(ws: WebSocket, ctx: AppContext) {
+  constructor(ws: WebSocket, ctx: RouteContext) {
     this.ws = ws;
     this.ctx = ctx;
     this.listenForMessages();

@@ -16,6 +16,13 @@ import {
   Media,
 } from "/types/moviematch.ts";
 
+export type MovieMatchProviderCtor = <T>(
+  // this is a unique identifier for the provider
+  // it could just be the index, or a hash of the provider options
+  id: string,
+  options: T,
+) => MovieMatchProvider;
+
 export interface MovieMatchProvider {
   options: { url: string };
   isAvailable(): Promise<boolean>;
@@ -33,7 +40,10 @@ export interface MovieMatchProvider {
     key: string,
   ): Promise<FilterValue[]>;
 
-  getArtwork(key: string, width: number): Promise<Uint8Array>;
+  getArtwork(
+    key: string,
+    width: number,
+  ): Promise<[ReadableStream<Uint8Array>, Headers]>;
 
   getCanonicalUrl(key: string): Promise<string>;
 

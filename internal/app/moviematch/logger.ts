@@ -22,6 +22,14 @@ export const setLogLevel = (level: keyof typeof log.LogLevels) => {
 
 // redactions ensure that some piece of text (e.g. a Plex Token)
 // is not logged to the console.
+
+const REDACTIONS_DISABLED =
+  Deno.env.get("UNADVISABLY_DISABLE_LOG_REDACTIONS") === "please";
+
 export const addRedaction = (redaction: string) => {
+  if (REDACTIONS_DISABLED) {
+    return;
+  }
+
   redactions.push(redaction);
 };

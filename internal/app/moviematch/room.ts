@@ -11,7 +11,7 @@ import {
 } from "/types/moviematch.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
-import { AppContext } from "./types.ts";
+import { RouteContext } from "./types.ts";
 
 export class RoomExistsError extends Error {}
 export class AccessDeniedError extends Error {}
@@ -19,7 +19,7 @@ export class RoomNotFoundError extends Error {}
 export class UserAlreadyJoinedError extends Error {}
 
 export class Room {
-  appContext: AppContext;
+  RouteContext: RouteContext;
   roomName: string;
   password?: string;
   users = new Map<string, Client>();
@@ -33,8 +33,8 @@ export class Room {
     Array<[userName: string, rating: Rate["rating"]]>
   >();
 
-  constructor(req: CreateRoomRequest, ctx: AppContext) {
-    this.appContext = ctx;
+  constructor(req: CreateRoomRequest, ctx: RouteContext) {
+    this.RouteContext = ctx;
     this.roomName = req.roomName;
     this.password = req.password;
     this.options = req.options;
@@ -46,7 +46,7 @@ export class Room {
 
   getMedia = memo(async () => {
     const media = new Map<string, Media>();
-    for (const provider of this.appContext.providers) {
+    for (const provider of this.RouteContext.providers) {
       for (const _ of await provider.getMedia({ filters: this.filters })) {
         media.set(_.id, _);
       }
@@ -129,7 +129,7 @@ const rooms = new Map<RoomName, Room>();
 
 export const createRoom = (
   createRequest: CreateRoomRequest,
-  ctx: AppContext,
+  ctx: RouteContext,
 ): Room => {
   if (rooms.has(createRequest.roomName)) {
     throw new RoomExistsError(`${createRequest.roomName} already exists.`);

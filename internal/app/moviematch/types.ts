@@ -2,12 +2,15 @@ import { Response, ServerRequest } from "http/server.ts";
 import { Config } from "/types/moviematch.ts";
 import { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
 
-export interface AppContext {
+export interface RouteContext {
   config: Config;
   providers: MovieMatchProvider[];
+
+  path: string | RegExp;
+  params?: Record<string, string>;
 }
 
 export type RouteHandler = (
   req: ServerRequest,
-  ctx: AppContext,
+  ctx: RouteContext,
 ) => (Promise<Response | void> | Response | void);
