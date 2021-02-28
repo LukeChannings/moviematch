@@ -16,7 +16,7 @@ export interface PlexProviderConfig {
   url: string;
   token: string;
   libraryTitleFilter?: string[];
-  libraryTypeFilter: string[];
+  libraryTypeFilter?: LibraryType[];
   linkType?: "app" | "webLocal" | "webExternal";
 }
 
@@ -69,7 +69,7 @@ export const createProvider = (
         }) as Library
       )
       .filter((library) =>
-        providerOptions.libraryTypeFilter.includes(library.type)
+        (providerOptions.libraryTypeFilter ?? ["movie"]).includes(library.type)
       );
 
     return libraries;
