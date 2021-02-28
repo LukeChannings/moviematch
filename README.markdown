@@ -8,6 +8,8 @@
   <a href="screenshots/Rate.jpeg"><img src="screenshots/Rate.jpeg" alt="Splash Screen" width="25%"></a>
 </div>
 
+**This branch is not yet stable, please see the [v1 branch](https://github.com/LukeChannings/moviematch/tree/v1) for the current stable codebase**
+
 Have you ever spent longer deciding on a movie than it'd take to just watch a random movie? This is an app that helps you and your friends pick a movie to watch from a [Plex](https://www.plex.tv) server.
 
 ## How it works

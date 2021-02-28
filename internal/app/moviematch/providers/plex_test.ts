@@ -8,6 +8,7 @@ Deno.test("providers -> plex -> getFilters", async () => {
   const provider = createProvider("0", {
     url: TEST_PLEX_URL!,
     token: TEST_PLEX_TOKEN!,
+    libraryTypeFilter: ["movie"],
   });
 
   const filters = await provider.getFilters();
