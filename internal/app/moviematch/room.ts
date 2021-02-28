@@ -45,13 +45,17 @@ export class Room {
   }
 
   getMedia = memo(async () => {
-    const media = new Map<string, Media>();
+    const media: Media[] = [];
+
     for (const provider of this.RouteContext.providers) {
-      for (const _ of await provider.getMedia({ filters: this.filters })) {
-        media.set(_.id, _);
-      }
+      media.push(...await provider.getMedia({ filters: this.filters }));
     }
-    return media;
+
+    media.sort(() => 0.5 - Math.random());
+
+    return new Map<string, Media>(
+      media.map((media) => ([media.id, media])),
+    );
   });
 
   getMediaForUser = async (userName: string): Promise<Media[]> => {
