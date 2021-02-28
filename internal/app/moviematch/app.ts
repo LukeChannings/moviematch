@@ -45,11 +45,11 @@ interface ApplicationInstance {
   statusCode: Deferred<number | undefined>;
 }
 
-export const Application = async (
+export const Application = (
   config: Config,
   signal?: AbortSignal,
-): Promise<ApplicationInstance> => {
-  let statusCode = deferred<number | undefined>();
+): ApplicationInstance => {
+  const statusCode = deferred<number | undefined>();
 
   (async () => {
     let server: Server;
