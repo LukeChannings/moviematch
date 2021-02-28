@@ -7,7 +7,6 @@ import "./RoomInfoBar.css";
 import { Tr } from "./Tr.tsx";
 import { Toast } from "./Toast.tsx";
 import { Popover, PopoverButton, PopoverMenuButton } from "./Popover.tsx";
-import { Button } from "./Button.tsx";
 
 interface RoomInfoBarProps {
   logout: () => void;

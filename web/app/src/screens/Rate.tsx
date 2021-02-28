@@ -10,6 +10,7 @@ import { MatchesList } from "../components/MatchesList.tsx";
 import { RoomInfoBar } from "../components/RoomInfoBar.tsx";
 import { ScreenProps } from "../components/Screen.ts";
 import { Tr } from "../components/Tr.tsx";
+import { Version } from "../components/Version.tsx";
 import { MovieMatchContext } from "../store.ts";
 
 import "./Rate.css";
@@ -70,6 +71,7 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
           />
         ))}
       </MatchesList>
+      <Version />
     </Layout>
   );
 };

@@ -4,6 +4,7 @@ import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config.ts";
 import { Config } from "/types/moviematch.ts";
 import { RouteHandler } from "/internal/app/moviematch/types.ts";
+import { getVersion } from "/internal/app/moviematch/version.ts";
 import { readTextFile } from "pkger";
 
 type KVP = { [key: string]: string | KVP };
@@ -47,6 +48,7 @@ export const handler: RouteHandler = async (req: ServerRequest) => {
       ...translations,
       config: (config as unknown) as KVP,
       basePath: getBasePath(req, config),
+      version: await getVersion(),
     }),
   };
 };
