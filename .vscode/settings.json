@@ -20,7 +20,7 @@
     "editor.defaultFormatter": "denoland.vscode-deno-canary"
   },
   "[markdown]": {
-    "editor.defaultFormatter": "denoland.vscode-deno-canary"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "debug.javascript.unmapMissingSources": true
 }
