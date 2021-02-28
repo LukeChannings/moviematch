@@ -99,8 +99,6 @@ export function verifyConfig(
           validLinkTypes.join(", ")
         }. Instead, it was "${server.linkType}"`,
       );
-    } else {
-      server.linkType = "webLocal";
     }
   }
 

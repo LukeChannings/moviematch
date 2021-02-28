@@ -45,7 +45,10 @@ export interface MovieMatchProvider {
     width: number,
   ): Promise<[ReadableStream<Uint8Array>, Headers]>;
 
-  getCanonicalUrl(key: string): Promise<string>;
+  getCanonicalUrl(
+    key: string,
+    options?: { userAgent?: string | null },
+  ): Promise<string>;
 
   getMedia(options: {
     filters?: Filter[];

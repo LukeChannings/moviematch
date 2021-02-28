@@ -7,6 +7,7 @@ import { handler as healthHandler } from "/internal/app/moviematch/handlers/heal
 import { handler as apiHandler } from "/internal/app/moviematch/handlers/api.ts";
 import { handler as basicAuthHandler } from "/internal/app/moviematch/handlers/basic_auth.ts";
 import { handler as posterHandler } from "/internal/app/moviematch/handlers/poster.ts";
+import { handler as linkHandler } from "/internal/app/moviematch/handlers/link.ts";
 import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 
 import { createProvider as createPlexProvider } from "/internal/app/moviematch/providers/plex.ts";
@@ -73,6 +74,10 @@ export const Application = async (
     [
       /^\/api\/poster\/(?<providerIndex>[0-9]+)\/(?<key>[0-9/]+)$/,
       [basicAuthHandler, posterHandler],
+    ],
+    [
+      /^\/api\/link\/(?<providerIndex>[0-9]+)\/(?<key>[0-9a-z/]+)$/i,
+      [basicAuthHandler, linkHandler],
     ],
     ["/manifest.webmanifest", [serveStaticHandler]],
     [/.*/, [basicAuthHandler, serveStaticHandler]],
