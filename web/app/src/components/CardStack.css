@@ -5,11 +5,12 @@
 
   position: relative;
   perspective: calc(var(--vh) * 100);
+  min-height: min(calc(80vmin * 1.5), calc(var(--vh) * 80));
 }
 
-@media screen and (max-width: 20em) {
+@media screen and (min-width: 20em) {
   .CardStack {
-    min-height: min(calc(80vmin * 1.5), calc(var(--vh) * 80));
+    min-height: var(--card-height, calc(var(--vh) * 60));
   }
 }
 
@@ -39,4 +40,14 @@
 }
 .CardStack > .Card:nth-of-type(5) {
   z-index: -4;
+}
+
+.CardStack.--empty {
+  display: flex;
+  align-items: center;
+}
+
+.CardStackEmptyMessage {
+  font-size: 1.2rem;
+  font-weight: bold;
 }

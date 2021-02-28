@@ -12,6 +12,7 @@ import { Rate } from "../../../../types/moviematch.ts";
 import { useAnimationFrame } from "../hooks/useAnimationFrame.ts";
 
 import "./CardStack.css";
+import { Tr } from "./Tr.tsx";
 
 interface CardStackProps {
   children: ReactNode;
@@ -217,8 +218,15 @@ export const CardStack = ({ children, onRate }: CardStackProps) => {
     [cardStackEl.current, topCardIndex],
   );
 
+  const isEmpty = Children.count(children) === 0;
+
   return (
-    <div className="CardStack" ref={cardStackEl}>
+    <div className={`CardStack ${isEmpty ? "--empty" : ""}`} ref={cardStackEl}>
+      {isEmpty && (
+        <p className="CardStackEmptyMessage">
+          <Tr name="RATE_SECTION_EXHAUSTED_CARDS" />
+        </p>
+      )}
       {Children.map(children, (child, index) => {
         if (isValidElement(child)) {
           if ((child.type as NamedExoticComponent)?.displayName === "Card") {
