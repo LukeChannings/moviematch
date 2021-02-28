@@ -1,6 +1,6 @@
 # MovieMatch
 
-![Tests](https://github.com/LukeChannings/moviematch/workflows/Tests/badge.svg?branch=dev)
+![Tests](https://github.com/LukeChannings/moviematch/workflows/Tests/badge.svg?branch=main)
 
 <div style="text-align: center">
   <a href="screenshots/Splash.jpeg"><img src="screenshots/Splash.jpeg" alt="Splash Screen" width="25%"></a>
