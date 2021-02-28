@@ -11,12 +11,12 @@ export const Version = () => {
   const messages: ReactNode[] = [
     <>Version {document.body.dataset.version}</>,
     <>
-      {`Made with ❤️ by `}
+      {`Made by `}
       <a href="https://twitter.com/LukeChannings" target="_blank">
         @LukeChannings
       </a>
     </>,
-    <>For my beautiful wife Victoria</>,
+    <>For my beautiful wife Victoria ❤️</>,
     <a href="https://www.paypal.me/lukechannings">Buy me a coffee ☕️?</a>,
   ];
 

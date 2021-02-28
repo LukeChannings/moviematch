@@ -17,7 +17,7 @@ export interface Config {
     url: string;
     token: string;
     libraryTitleFilter?: string[];
-    libraryTypeFilter?: string[];
+    libraryTypeFilter: LibraryType[];
     linkType?: "app" | "webLocal" | "webExternal";
   }>;
   requirePlexTvLogin: boolean;
@@ -205,7 +205,8 @@ export interface SetupError {
 
 // Filters
 
-export type LibraryType = "show" | "movie" | "music" | "photo";
+export const LibaryTypes = ["show", "movie", "music", "photo"] as const;
+export type LibraryType = typeof LibaryTypes[number];
 
 export interface Library {
   title: string;

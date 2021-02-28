@@ -16,7 +16,7 @@ export interface PlexProviderConfig {
   url: string;
   token: string;
   libraryTitleFilter?: string[];
-  libraryTypeFilter?: string[];
+  libraryTypeFilter: string[];
   linkType?: "app" | "webLocal" | "webExternal";
 }
 
@@ -60,13 +60,17 @@ export const createProvider = (
 
     const plexLibraries = await api.getLibraries();
 
-    libraries = plexLibraries.map((library) =>
-      ({
-        title: library.title,
-        key: library.key,
-        type: library.type,
-      }) as Library
-    );
+    libraries = plexLibraries
+      .map((library) =>
+        ({
+          title: library.title,
+          key: library.key,
+          type: library.type,
+        }) as Library
+      )
+      .filter((library) =>
+        providerOptions.libraryTypeFilter.includes(library.type)
+      );
 
     return libraries;
   };

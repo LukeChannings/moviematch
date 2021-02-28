@@ -2,7 +2,7 @@ import { parse, stringify } from "encoding/yaml.ts";
 import * as log from "log/mod.ts";
 import { assert } from "util/assert.ts";
 import { join } from "path/posix.ts";
-import { Config } from "/types/moviematch.ts";
+import { Config, LibaryTypes, LibraryType } from "/types/moviematch.ts";
 import { addRedaction } from "/internal/app/moviematch/logger.ts";
 import { isRecord } from "/internal/app/moviematch/util/is_record.ts";
 
@@ -87,6 +87,15 @@ export function verifyConfig(
 
       if (typeof server.libraryTypeFilter === "string") {
         server.libraryTypeFilter = [server.libraryTypeFilter];
+      }
+
+      for (const libraryType of (server.libraryTypeFilter as string[])) {
+        assert(
+          LibaryTypes.includes(libraryType as LibraryType),
+          `libraryTypeFilter(s) must be one of ${
+            LibaryTypes.join(", ")
+          }. Instead you entered "${libraryType}"`,
+        );
       }
     }
 
@@ -201,11 +210,8 @@ function readConfigFromEnv() {
               libraryTitleFilter: LIBRARY_TITLE_FILTER.split(","),
             }
             : {}),
-          ...(LIBRARY_TYPE_FILTER
-            ? {
-              libraryTypeFilter: LIBRARY_TYPE_FILTER.split(","),
-            }
-            : {}),
+          libraryTypeFilter: (LIBRARY_TYPE_FILTER?.split(",") ??
+            ["movie"]) as LibraryType[],
           linkType: MOVIE_LINK_TYPE as Config["servers"][number]["linkType"],
         }],
       }
