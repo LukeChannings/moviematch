@@ -20,11 +20,6 @@ export interface PlexProviderConfig {
   linkType?: "app" | "webLocal" | "webExternal";
 }
 
-const filtersToSearchParams = (filters?: Filter[]): URLSearchParams => {
-  const searchParams = new URLSearchParams();
-  return searchParams;
-};
-
 export const createProvider = (
   id: string,
   providerOptions: PlexProviderConfig,

@@ -39,7 +39,7 @@ export class PlexApi {
       url.searchParams.set(key, value);
     }
 
-    log.debug(url.href);
+    log.debug(`Fetching: ${url.href}`);
 
     const req = await fetch(url.href, {
       headers: {
@@ -257,7 +257,7 @@ export class PlexApi {
   }
 }
 
-interface PlexDeepLinkOptions {
+export interface PlexDeepLinkOptions {
   type: "plexTv" | "plexLocal" | "app";
   metadataType?: string;
 }

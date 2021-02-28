@@ -201,12 +201,12 @@ export interface SetupError {
 
 // Filters
 
-export type LibraryName = string;
-
 export type LibraryType = "show" | "movie" | "music" | "photo";
 
 export interface Library {
-  name: LibraryName;
+  title: string;
+  key: string;
+
   type: LibraryType;
 }
 
