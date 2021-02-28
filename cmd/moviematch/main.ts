@@ -42,7 +42,8 @@ while (typeof exitCode === "undefined") {
   }
 
   try {
-    exitCode = await Application(config, abortController.signal);
+    const app = await Application(config, abortController.signal);
+    exitCode = await app.statusCode;
   } catch (err) {
     if (err instanceof ProviderUnavailableError) {
       exitCode = 1;

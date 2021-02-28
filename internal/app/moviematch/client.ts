@@ -19,7 +19,6 @@ import {
   createRoom,
   getRoom,
   Room,
-  RoomExistsError,
   RoomNotFoundError,
   UserAlreadyJoinedError,
 } from "/internal/app/moviematch/room.ts";
@@ -32,6 +31,7 @@ import {
 import { RouteContext } from "/internal/app/moviematch/types.ts";
 import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
+import { shutdown } from "/internal/app/moviematch/app.ts";
 
 export class Client {
   finished: Deferred<void> = deferred();
@@ -300,6 +300,9 @@ export class Client {
       try {
         verifyConfig(config, true);
         await updateConfiguration(config as unknown as Record<string, unknown>);
+
+        // the client will reload automatically when the WebSocket is closed
+        shutdown();
       } catch (err) {
         this.sendMessage({
           type: "setupError",
