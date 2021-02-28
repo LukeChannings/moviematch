@@ -136,7 +136,11 @@ export interface CreateRoomRequest {
 }
 
 export interface CreateRoomError {
-  name: "RoomExistsError" | "UnauthorizedError" | "NotLoggedInError";
+  name:
+    | "RoomExistsError"
+    | "UnauthorizedError"
+    | "NotLoggedInError"
+    | "NoMedia";
   message: string;
 }
 

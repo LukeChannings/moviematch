@@ -195,7 +195,7 @@ export class Client {
     }
 
     try {
-      this.room = createRoom(createRoomReq, this.ctx);
+      this.room = await createRoom(createRoomReq, this.ctx);
       this.room.users.set(this.userName, this);
       this.sendMessage({
         type: "createRoomSuccess",
@@ -205,17 +205,15 @@ export class Client {
         },
       });
     } catch (err) {
-      if (err instanceof RoomExistsError) {
-        return this.sendMessage({
-          type: "createRoomError",
-          payload: {
-            name: "RoomExistsError",
-            message: err.message,
-          },
-        });
-      } else {
-        log.error(err);
-      }
+      this.sendMessage({
+        type: "createRoomError",
+        payload: {
+          name: err.name,
+          message: err.message,
+        },
+      });
+
+      log.error(err);
     }
   }
 

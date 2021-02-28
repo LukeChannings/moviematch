@@ -155,6 +155,7 @@ Deno.test("plexApi -> getAllFilters", async () => {
       }),
     ),
   });
+  console.log(JSON.stringify(filters, null, 2));
 
   await filtersSchema.validate(filters);
 });

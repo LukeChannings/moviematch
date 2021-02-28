@@ -1,4 +1,3 @@
-import * as log from "log/mod.ts";
 import {
   Filter,
   Filters,
@@ -11,6 +10,7 @@ import {
   MovieMatchProvider,
 } from "/internal/app/moviematch/providers/types.ts";
 import { FieldType } from "/internal/app/plex/types/library_items.ts";
+import { filterToQueryString } from "/internal/app/plex/filters.ts";
 
 export interface PlexProviderConfig {
   url: string;
@@ -19,6 +19,27 @@ export interface PlexProviderConfig {
   libraryTypeFilter?: string[];
   linkType?: "app" | "webLocal" | "webExternal";
 }
+
+export const filtersToPlexQueryString = (
+  filters?: Filter[],
+): Record<string, string> => {
+  const queryString: Record<string, string> = {};
+
+  if (filters) {
+    for (const filter of filters) {
+      // We're re-using the filters dict to include library,
+      // but we want to handle that ourselves.
+      if (filter.key === "library") {
+        continue;
+      }
+
+      const [key, value] = filterToQueryString(filter);
+      queryString[key] = value;
+    }
+  }
+
+  return queryString;
+};
 
 export const createProvider = (
   id: string,
@@ -76,10 +97,13 @@ export const createProvider = (
                 existing.libraryTypes.push(type.type as LibraryType);
               }
             } else {
+              const filterType = type.Field!.find((_) =>
+                _.key === filter.filter
+              )?.type ?? filter.filterType;
               filters.set(filter.filter, {
                 title: filter.title,
                 key: filter.filter,
-                type: filter.filterType,
+                type: filterType!,
                 libraryTypes: [type.type as LibraryType],
               });
             }
@@ -142,30 +166,11 @@ export const createProvider = (
       return api.getDeepLink(key, { type: linkType });
     },
     getMedia: async ({ filters }) => {
-      const filterParams: Record<string, string> = {};
+      const filterParams: Record<string, string> = filtersToPlexQueryString(
+        filters,
+      );
 
-      let libraries: Library[] = await getLibraries();
-
-      if (filters) {
-        for (const { key, operator, value } of filters) {
-          // We're re-using the filters dict to include library,
-          // but we want to handle that ourselves.
-          if (key === "library") {
-            continue;
-          }
-
-          switch (operator) {
-            case "==":
-              filterParams[key] = value.join(",");
-              break;
-            case "!=":
-              filterParams[key + "!"] = value.join(",");
-              break;
-            default:
-              log.debug(`Can't handle operator ${operator}`);
-          }
-        }
-      }
+      const libraries: Library[] = await getLibraries();
 
       const media: Media[] = [];
 

@@ -7,8 +7,45 @@
 - `includeExternalMedia` - ??
 - `includeAdvanced` - ??
 
-## Filter URL examples
+## Filter to Query String conversion
 
-`genre!: 14` - genre != 14
-`genre: 14` genre == 14
-`contentRating: gb/18,gb/15,gb/12A,gb/12` - content rating is `gb/18` or `gb/15` or `gb/12A` or `gb/12`
+### Integer
+
+| Name            | Operator | Query String  |
+| --------------- | -------- | ------------- |
+| is              | =        | `key=value`   |
+| is not          | !=       | `key!=value`  |
+| is greater than | >>=      | `key>>=value` |
+| is less than    | <<=      | `key<<=value` |
+
+### String
+
+| Name             | Operator | Query String  |
+| ---------------- | -------- | ------------- |
+| contains         | =        | `key=value`   |
+| does not contain | !=       | `key!=value`  |
+| is               | ==       | `key==value`  |
+| is not           | !==      | `key!==value` |
+| begins with      | <=       | `key<=value`  |
+| ends with        | >=       | `key>=value`  |
+
+### Boolean
+
+| Name     | Operator | Query String |
+| -------- | -------- | ------------ |
+| is true  | =        | `key=1`      |
+| is false | !=       | `key!=1`     |
+
+### Tag
+
+| Name   | Operator | Query String |
+| ------ | -------- | ------------ |
+| is     | =        | `key=value`  |
+| is not | !=       | `key!=value` |
+
+### Date
+
+| Name      | Operator | Query String  |
+| --------- | -------- | ------------- |
+| is before | <<=      | `key<<=value` |
+| is before | >>=      | `key>>=value` |

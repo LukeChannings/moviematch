@@ -27,14 +27,18 @@ export const handler: RouteHandler = async (
 
   const search = urlFromReqUrl(req.url).searchParams;
 
-  const [readableStream, headers] = await provider.getArtwork(
-    key,
-    search.get("width") ? Number(search.get("width")) : 600,
-  );
+  try {
+    const [readableStream, headers] = await provider.getArtwork(
+      key,
+      search.get("width") ? Number(search.get("width")) : 600,
+    );
 
-  return {
-    status: 200,
-    headers,
-    body: readerFromStreamReader(readableStream.getReader()),
-  };
+    return {
+      status: 200,
+      headers,
+      body: readerFromStreamReader(readableStream.getReader()),
+    };
+  } catch (err) {
+    log.error(err.message);
+  }
 };
