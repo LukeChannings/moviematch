@@ -29,6 +29,8 @@ jobs:
           curl -fsSL https://deno.land/x/install/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
           export PATH="$DENO_INSTALL/bin:$PATH"
+      - name: Install esbuild
+        run: GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
       - name: Get metadata
         run: |
           export VERSION="${{ github.event.inputs.version || github.ref }}"
@@ -41,14 +43,13 @@ jobs:
       - name: Check versions match
         run: |
           if [[ "$(cat VERSION)" != "${{env.VERSION}}" ]]; then
-            echo "Tag version is ${{env.VERSION}}, but the source says it's version $(cat VERSION). These need to match!"
+            echo "Tag version is "${{env.VERSION}}", but the source code version is "$(cat VERSION)". These need to match!"
             exit 1
           fi
         shell: bash
-      - name: Install esbuild
-        run: GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
       - name: Print
         run: |
+          esbuild --version
           echo "${{env.VERSION}}"
           echo "${{env.RELEASE_NOTES}}"
       # - name: bundle
