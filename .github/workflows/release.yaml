@@ -86,7 +86,7 @@ jobs:
             zip -r -j $target.zip $target
             assets+=("-a" "$target.zip")
           done
-          hub release edit "${assets[@]}" -m "${{ env.VERSION }}" "${{ env.VERSION }}"
+          hub release edit "${assets[@]}" -m "${{ env.VERSION }}" "${{ env.VERSION }}" || true
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
