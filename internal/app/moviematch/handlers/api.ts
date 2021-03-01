@@ -15,10 +15,6 @@ export const handler = async (
       ...req,
     });
 
-    if (ctx.config.basicAuth) {
-      
-    }
-
     const client = new Client(webSocket, ctx);
     await client.finished;
   } catch (err) {
