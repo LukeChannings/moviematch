@@ -32,9 +32,7 @@ jobs:
       - name: Install esbuild
         run: |
           GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
-          echo "$PATH"
-          echo "$GOPATH"
-          ls $HOME
+          echo "::add-path::$HOME/go/bin"
       - name: Get metadata
         run: |
           export VERSION="${{ github.event.inputs.version || github.ref }}"
