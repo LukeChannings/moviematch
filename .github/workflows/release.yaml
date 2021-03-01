@@ -84,16 +84,6 @@ jobs:
           release_name: ${{ env.VERSION }}
           body: ${{ env.RELEASE_NOTES }}
           prerelease: ${{ env.PRERELEASE == 'true' }}
-      - name: Update Release
-        id: update_release
-        if: ${{ env.EXISTING_RELEASE == 'true' }}
-        uses: tubone24/update_release@v1.0
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          release_name: ${{ env.VERSION }}
-          body: ${{ env.RELEASE_NOTES }}
-          prerelease: ${{ env.PRERELEASE == 'true' }}
       - name: bundle
         run: ./scripts/bundle.sh
         shell: bash
