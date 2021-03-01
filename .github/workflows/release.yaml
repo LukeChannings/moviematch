@@ -52,7 +52,7 @@ jobs:
         run: |
           $HOME/go/bin/esbuild --version
           echo "${{env.VERSION}}"
-          echo "${{env.RELEASE_NOTES}}"
+          env PATH="$PATH:$HOME/go/bin" echo "${{env.RELEASE_NOTES}}"
       # - name: bundle
       #   run: ./scripts/bundle.sh
       #   shell: bash
