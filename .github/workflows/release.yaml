@@ -69,6 +69,14 @@ jobs:
           echo '${{env.RELEASE_NOTES}}'
           echo "Has existing release? ${{ env.EXISTING_RELEASE }}"
           echo "Is prerelease? ${{ env.PRERELEASE }}"
+      - name: Has existing release
+        if: ${{ env.EXISTING_RELEASE == 'true' }}
+        run: |
+          echo "Already has a release"
+      - name: Does not already have a release
+        if: ${{ env.EXISTING_RELEASE == 'false' }}
+        run: |
+          echo "Does not already have a release"
       # - name: bundle
       #   run: ./scripts/bundle.sh
       #   shell: bash
