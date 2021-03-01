@@ -19,6 +19,7 @@ on:
 jobs:
   build_info:
     name: Get build info
+    runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.metadata.outputs.version }}
       prerelease: ${{ steps.metadata.outputs.prerelease }}
