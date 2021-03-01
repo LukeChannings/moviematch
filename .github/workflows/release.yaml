@@ -24,14 +24,7 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
-      - name: Install Deno
-        run: |-
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          echo "$HOME/.deno/bin" >> $GITHUB_PATH
-          export PATH="$DENO_INSTALL/bin:$PATH"
-      - name: Install esbuild
-        run: GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
-      - name: Get release notes
+      - name: Get metadata
         run: |
           export VERSION="${{ github.event.inputs.version || github.ref }}"
           VERSION="${VERSION#refs/tags/}"
@@ -40,6 +33,20 @@ jobs:
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+      - name: Check versions match
+        run: |
+          if [[ "$(cat VERSION)" != "${{env.VERSION}}" ]]; then
+            echo "Tag version is ${{env.VERSION}}, but the source says it's version $(cat VERSION). These need to match!"
+            exit 1
+          fi
+        shell: bash
+      - name: Install Deno
+        run: |-
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+          export PATH="$DENO_INSTALL/bin:$PATH"
+      - name: Install esbuild
+        run: GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
       - name: Print
         run: |
           echo "${{env.VERSION}}"
