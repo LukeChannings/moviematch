@@ -1,9 +1,20 @@
+# Release Process:
+
+# 1. Update RELEASE_NOTES.markdown and bump VERSION
+# 2. Create a release with the same text as VERSION plus a `v` prefix
+# 3. This workflow with kick in and build a Docker image and upload binaries to the release
+
 name: Release
 
 on:
   push:
     tags:
-      - 'v2*'
+      - "v2*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The MovieMatch version to release
+        required: true
 
 jobs:
   build:
@@ -18,35 +29,16 @@ jobs:
           curl -fsSL https://deno.land/x/install/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
           export PATH="$DENO_INSTALL/bin:$PATH"
-      - name: Install Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-          check-latest: true
-      - name: Upgrade Deno to Canary
-        run: deno upgrade --canary
       - name: Install esbuild
         run: npm install -g esbuild
-      - name: bundle
-        run: ./scripts/bundle.sh
-        shell: bash
-      - name: Print MovieMatch version
-        if: startsWith(matrix.os, 'windows')
-        run: .\moviematch.exe --version
-      - name: Print MovieMatch version
-        if: |
-          !startsWith(matrix.os, 'windows')
-        run: ./moviematch --version
-      - name: Upload binary
-        uses: actions/upload-artifact@v2
-        if: startsWith(matrix.os, 'windows')
-        with:
-          name: moviematch-windows
-          path: moviematch.exe
-      - name: Upload binary
-        uses: actions/upload-artifact@v2
-        if: |
-          !startsWith(matrix.os, 'windows')
-        with:
-          name: moviematch-${{ runner.os }}
-          path: moviematch
+      - name: Get release notes
+        run: |
+          export VERSION="${{ github.event.inputs.version || github.ref }}"
+          VERSION="${VERSION#refs/tags/}"
+          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/## ${VERSION}(?<notes>(?:.|\n)*)##/m)?.groups?.notes?.trim() ?? ''")
+          echo "::set-output name=version::${VERSION}"
+          echo "::set-output name=release_notes::${RELEASE_NOTES}"
+
+      # - name: bundle
+      #   run: ./scripts/bundle.sh
+      #   shell: bash
