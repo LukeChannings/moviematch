@@ -1,4 +1,4 @@
-FROM lukechannings/deno:v1.7.4
+FROM lukechannings/deno:v1.7.5
 
 EXPOSE 8000
 
