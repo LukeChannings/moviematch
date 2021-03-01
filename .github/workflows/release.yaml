@@ -103,5 +103,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            lukechannings/moviematch:${{ env.VERSION }}
-            ${{ env.PRERELEASE == 'false' && 'lukechannings/moviematch:latest' }}
+            lukechannings/moviematch:${{ env.VERSION }}${{ env.PRERELEASE == 'false' && '\nlukechannings/moviematch:latest' }}
