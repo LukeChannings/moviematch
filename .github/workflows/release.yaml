@@ -36,9 +36,14 @@ jobs:
           export VERSION="${{ github.event.inputs.version || github.ref }}"
           VERSION="${VERSION#refs/tags/}"
           RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/## ${VERSION}(?<notes>(?:.|\n)*)##/m)?.groups?.notes?.trim() ?? ''")
-          echo "::set-output name=version::${VERSION}"
-          echo "::set-output name=release_notes::${RELEASE_NOTES}"
-
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "${RELEASE_NOTES}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Print
+        run: |
+          echo "${{env.VERSION}}"
+          echo "${{env.RELEASE_NOTES}}"
       # - name: bundle
       #   run: ./scripts/bundle.sh
       #   shell: bash
