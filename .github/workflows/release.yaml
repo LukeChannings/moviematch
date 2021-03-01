@@ -39,7 +39,7 @@ jobs:
         run: |
           export VERSION="${{ github.event.inputs.version || github.ref }}"
           VERSION="${VERSION#refs/tags/}"
-          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/## ${VERSION}(?<notes>(?:.|\n)*)##/m)?.groups?.notes?.trim() ?? ''")
+          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\s${VERSION}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
@@ -66,7 +66,7 @@ jobs:
           export PATH="$HOME/go/bin:$PATH"
           esbuild --version
           echo "Version: ${{env.VERSION}}"
-          echo "${{env.RELEASE_NOTES}}"
+          echo '${{env.RELEASE_NOTES}}''
           echo "Has existing release? ${{ env.EXISTING_RELEASE }}"
           echo "Is prerelease? ${{ env.PRERELEASE }}"
       # - name: bundle
