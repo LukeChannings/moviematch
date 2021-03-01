@@ -15,6 +15,9 @@ on:
       version:
         description: The MovieMatch version to release
         required: true
+      dry_run:
+        description: Don't actually publish
+        default: true
 
 jobs:
   build:
