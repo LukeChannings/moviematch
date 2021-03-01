@@ -1,7 +1,11 @@
 FROM lukechannings/deno:v1.7.5 AS build
 
+ENV TZ="Europe/London"
+ENV DEBIAN_FRONTEND="noninteractive"
+
 RUN apt-get update -y
-RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/London" apt-get install -y golang ca-certificates
+RUN apt-get install -y apt-utils
+RUN apt-get install -y golang ca-certificates
 
 RUN GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
 
