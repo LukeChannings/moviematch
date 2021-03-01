@@ -99,4 +99,4 @@ jobs:
           push: true
           tags: |
             lukechannings/moviematch:${{ env.VERSION }}
-            ${{ env.PRERELEASE == "false" && "lukechannings/moviematch:latest "|| "" }}
+            ${{ env.PRERELEASE == 'false' && 'lukechannings/moviematch:latest' }}
