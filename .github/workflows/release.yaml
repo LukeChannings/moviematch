@@ -42,7 +42,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
       - name: Check versions match
         run: |
-          if [[ "$(cat VERSION)" != "${{env.VERSION}}" ]]; then
+          if [[ "v$(cat VERSION)" != "${{env.VERSION}}" ]]; then
             echo "Tag version is "${{env.VERSION}}", but the source code version is "$(cat VERSION)". These need to match!"
             exit 1
           fi
