@@ -61,14 +61,6 @@ jobs:
         env:
           TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
-      - name: Print
-        run: |
-          export PATH="$HOME/go/bin:$PATH"
-          esbuild --version
-          echo "Version: ${{env.VERSION}}"
-          echo '${{env.RELEASE_NOTES}}'
-          echo "Has existing release? ${{ env.EXISTING_RELEASE }}"
-          echo "Is prerelease? ${{ env.PRERELEASE }}"
       - name: Has existing release
         if: ${{ env.EXISTING_RELEASE == 'true' }}
         run: |
@@ -85,7 +77,9 @@ jobs:
           body: ${{ env.RELEASE_NOTES }}
           prerelease: ${{ env.PRERELEASE == 'true' }}
       - name: bundle
-        run: ./scripts/bundle.sh
+        run: |
+          export PATH="$HOME/go/bin:$PATH"
+          ./scripts/bundle.sh
         shell: bash
       - run: |
           set -x
