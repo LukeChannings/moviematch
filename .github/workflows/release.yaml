@@ -85,8 +85,8 @@ jobs:
           set -x
           assets=()
           for target in ./build/*; do
-            zip -r -j ./build/$target.zip ./build/$target
-            assets+=("-a" "./build/$target.zip")
+            zip -r -j $target.zip $target
+            assets+=("-a" "$target.zip")
           done
           hub release edit "${assets[@]}" -m "${{ env.VERSION }}" "${{ env.VERSION }}"
         shell: bash
