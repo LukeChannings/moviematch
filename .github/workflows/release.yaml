@@ -50,9 +50,11 @@ jobs:
         shell: bash
       - name: Print
         run: |
-          $HOME/go/bin/esbuild --version
+          export PATH="$HOME/go/bin:$PATH"
+          esbuild --version
           echo "${{env.VERSION}}"
-          env PATH="$PATH:$HOME/go/bin" echo "${{env.RELEASE_NOTES}}"
+          echo "${{env.RELEASE_NOTES}}"
+          ./scripts/bundle.sh
       # - name: bundle
       #   run: ./scripts/bundle.sh
       #   shell: bash
