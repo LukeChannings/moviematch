@@ -73,10 +73,27 @@ jobs:
         if: ${{ env.EXISTING_RELEASE == 'true' }}
         run: |
           echo "Already has a release"
-      - name: Does not already have a release
+      - name: Create Release
+        id: create_release
         if: ${{ env.EXISTING_RELEASE == 'false' }}
-        run: |
-          echo "Does not already have a release"
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: ${{ env.VERSION }}
+          body: ${{ env.RELEASE_NOTES }}
+          prerelease: ${{ env.PRERELEASE == 'true' }}
+      - name: Update Release
+        id: update_release
+        if: ${{ env.EXISTING_RELEASE == 'true' }}
+        uses: tubone24/update_release@v1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          release_name: ${{ env.VERSION }}
+          body: ${{ env.RELEASE_NOTES }}
+          prerelease: ${{ env.PRERELEASE == 'true' }}
       # - name: bundle
       #   run: ./scripts/bundle.sh
       #   shell: bash
