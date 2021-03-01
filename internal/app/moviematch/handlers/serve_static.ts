@@ -1,5 +1,5 @@
 import { Response, ServerRequest } from "http/server.ts";
-import { lookup } from "https://deno.land/x/media_types/mod.ts";
+import { lookup } from "https://deno.land/x/media_types@v2.7.1/mod.ts";
 import { fileExists, readFile } from "pkger";
 import { RouteHandler } from "/internal/app/moviematch/types.ts";
 
