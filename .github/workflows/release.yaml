@@ -30,7 +30,7 @@ jobs:
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
           export PATH="$DENO_INSTALL/bin:$PATH"
       - name: Install esbuild
-        run: npm install -g esbuild
+        run: GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
       - name: Get release notes
         run: |
           export VERSION="${{ github.event.inputs.version || github.ref }}"
