@@ -94,6 +94,17 @@ jobs:
           release_name: ${{ env.VERSION }}
           body: ${{ env.RELEASE_NOTES }}
           prerelease: ${{ env.PRERELEASE == 'true' }}
-      # - name: bundle
-      #   run: ./scripts/bundle.sh
-      #   shell: bash
+      - name: bundle
+        run: ./scripts/bundle.sh
+        shell: bash
+      - run: |
+          set -x
+          assets=()
+          for target in ./build/*; do
+            zip -r -j ./build/$target.zip ./build/$target
+            assets+=("-a" "./build/$target.zip")
+          done
+          hub release edit "${assets[@]}" -m "${{ env.VERSION }}" "${{ env.VERSION }}"
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
