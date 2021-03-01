@@ -13,10 +13,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: The MovieMatch version to release
+        description: Version
         required: true
       dry_run:
-        description: Don't actually publish
+        description: Dry-run
         default: true
 
 jobs:
@@ -44,20 +44,28 @@ jobs:
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-      - name: Check versions match
+          response=$(curl -s -H "Accept: application/json" https://api.github.com/repos/lukechannings/moviematch/releases)
+          EXISTING_RELEASE=$( [[ "$(echo $response | jq ".[]|select(.tag_name==\"${VERSION}\")")" == "" ]] && echo "false" || echo "true" )
+          echo "EXISTING_RELEASE=$EXISTING_RELEASE" >> $GITHUB_ENV
+          PRERELEASE="$([[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]] && echo "true" || echo "false")"
+          echo "PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
+      - name: Check we're building the right version
         run: |
           if [[ "v$(cat VERSION)" != "${{env.VERSION}}" ]]; then
             echo "Tag version is "${{env.VERSION}}", but the source code version is "$(cat VERSION)". These need to match!"
             exit 1
           fi
         shell: bash
+      - name: Run tests
+        run: ./scripts/test.sh
       - name: Print
         run: |
           export PATH="$HOME/go/bin:$PATH"
           esbuild --version
-          echo "${{env.VERSION}}"
+          echo "Version: ${{env.VERSION}}"
           echo "${{env.RELEASE_NOTES}}"
-          ./scripts/bundle.sh
+          echo "Has existing release? ${{ env.EXISTING_RELEASE }}"
+          echo "Is prerelease? ${{ env.PRERELEASE }}"
       # - name: bundle
       #   run: ./scripts/bundle.sh
       #   shell: bash

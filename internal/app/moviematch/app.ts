@@ -20,7 +20,7 @@ export class ProviderUnavailableError extends Error {}
 const routes: Array<readonly [RegExp | string, RouteHandler[]]> = [
   ["/", [basicAuthHandler, rootHandler]],
   ["/health", [healthHandler]],
-  ["/api/ws", [basicAuthHandler, apiHandler]],
+  ["/api/ws", [apiHandler]],
   [
     /^\/api\/poster\/(?<providerIndex>[0-9]+)\/(?<key>[0-9/]+)$/,
     [basicAuthHandler, posterHandler],
