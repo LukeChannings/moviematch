@@ -3,7 +3,7 @@
 **This branch is not yet stable, please see the [v1 branch](https://github.com/LukeChannings/moviematch/tree/v1) for the current stable codebase**
 
 [![Tests](https://github.com/LukeChannings/moviematch/workflows/Tests/badge.svg?branch=main)](https://github.com/LukeChannings/moviematch/actions/workflows/tests.yaml)
-[![Docker Pulls](https://img.shields.io/docker/pulls/lukechannings/moviematch)](https://hub.docker.com/repository/docker/lukechannings/moviematch)
+[![Docker Pulls](https://img.shields.io/docker/pulls/lukechannings/moviematch?label=Docker+Hub)](https://hub.docker.com/repository/docker/lukechannings/moviematch)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/lukechannings/moviematch?label=Latest+release)](https://github.com/LukeChannings/moviematch/releases)
 [![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/lukechannings/moviematch?color=%23E74B4C&include_prereleases&label=Latest%20pre-release)](https://github.com/LukeChannings/moviematch/releases)
 
