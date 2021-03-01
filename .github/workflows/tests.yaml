@@ -2,25 +2,22 @@ name: Tests
 
 on:
   push:
-    branches: [ '*' ]
+    branches: ["*"]
   pull_request:
-    branches: [ '*' ]
+    branches: ["*"]
 
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
-    -
-      name: Checkout
-      uses: actions/checkout@v2
-    - name: Install Deno
-      run: |-
-        curl -fsSL https://deno.land/x/install/install.sh | sh
-        echo "$HOME/.deno/bin" >> $GITHUB_PATH
-    - run: |
-        chmod +x ./scripts/test.sh
-        ./scripts/test.sh
-      env:
-        TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
-        TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Deno
+        run: |-
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+      - run: ./scripts/test.sh
+        env:
+          TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}

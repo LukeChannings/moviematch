@@ -58,6 +58,9 @@ jobs:
         shell: bash
       - name: Run tests
         run: ./scripts/test.sh
+        env:
+          TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Print
         run: |
           export PATH="$HOME/go/bin:$PATH"
