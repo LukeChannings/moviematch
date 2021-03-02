@@ -28,6 +28,11 @@
 - Card details cannot be scrolled
 - Card details does not include useful metadata like rating, genre, actors, etc.
 - Swiping the card stack can sometimes be laggy or get stuck
+- When a third user matches an item the item is duplicated for all users
+- The user needs to join the room each time they launch the app
+- iOS tried to autofill Room Name as a regular name
+- A user leaving a room is not correctly detected
+- UI is broken on Edge for Android
 
 ## v1.10.0
 
