@@ -19,3 +19,4 @@ servers:
     token: abcdef12346
 ```
 
+MovieMatch will read the config from `config.yaml` by default.
