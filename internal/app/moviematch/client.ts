@@ -23,11 +23,11 @@ import {
   UserAlreadyJoinedError,
 } from "/internal/app/moviematch/room.ts";
 import {
-  ConfigReloadError,
   getConfig,
   updateConfiguration,
-  verifyConfig,
-} from "/internal/app/moviematch/config.ts";
+} from "/internal/app/moviematch/config/main.ts";
+import { ConfigReloadError } from "/internal/app/moviematch/config/errors.ts";
+import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 import { RouteContext } from "/internal/app/moviematch/types.ts";
 import { getUser, PlexUser } from "/internal/app/plex/plex_tv.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
@@ -297,21 +297,23 @@ export class Client {
   private async handleSetup(config: Config) {
     const currentConfig = getConfig();
     if (currentConfig.servers.length === 0) {
-      try {
-        verifyConfig(config, true);
+      const configErrors = validateConfig(config);
+      if (configErrors.length) {
+        this.sendMessage({
+          type: "setupError",
+          payload: {
+            "message": JSON.stringify(configErrors),
+            "type": "INVALID_CONFIG",
+          },
+        });
+        log.error(
+          `Tried to setup with an invalid config. ${String(configErrors)}`,
+        );
+      } else {
         await updateConfiguration(config as unknown as Record<string, unknown>);
 
         // the client will reload automatically when the WebSocket is closed
         shutdown();
-      } catch (err) {
-        this.sendMessage({
-          type: "setupError",
-          payload: {
-            "message": String(err),
-            "type": "INVALID_CONFIG",
-          },
-        });
-        log.error(`Tried to setup with an invalid config. ${String(err)}`);
       }
     } else {
       this.sendMessage({

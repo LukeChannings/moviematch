@@ -1,6 +1,6 @@
 import { Response, ServerRequest } from "http/server.ts";
 import { BasicAuth } from "/types/moviematch.ts";
-import { getConfig } from "/internal/app/moviematch/config.ts";
+import { getConfig } from "/internal/app/moviematch/config/main.ts";
 import { RouteHandler } from "/internal/app/moviematch/types.ts";
 
 export const isAuthorized = (

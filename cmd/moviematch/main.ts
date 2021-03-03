@@ -1,15 +1,13 @@
 import { parse } from "flags/mod.ts";
 import * as log from "log/mod.ts";
 import { setLogLevel } from "/internal/app/moviematch/logger.ts";
-import {
-  ConfigReloadError,
-  loadConfig,
-} from "/internal/app/moviematch/config.ts";
+import { loadConfig } from "/internal/app/moviematch/config/main.ts";
 import { getVersion } from "/internal/app/moviematch/version.ts";
 import {
   Application,
   ProviderUnavailableError,
 } from "/internal/app/moviematch/app.ts";
+import { ConfigReloadError } from "/internal/app/moviematch/config/errors.ts";
 
 const flags = parse(Deno.args, { alias: { v: "version" } });
 
@@ -28,7 +26,21 @@ if (flags.dev) {
 let exitCode: number | undefined;
 
 while (typeof exitCode === "undefined") {
-  const config = await loadConfig(CONFIG_PATH);
+  const [config, errors] = await loadConfig(CONFIG_PATH);
+
+  if (errors.length === 1 && errors[0].name === "ServersMustNotBeEmpty") {
+    log.warning(
+      "No default config file found. Starting up with defaults until configured.",
+    );
+  } else if (errors.length) {
+    log.critical(
+      `Found configuration errors: ${
+        errors.map((err) => `\n - ${err.name} - ${err.message}`)
+      }`,
+    );
+    exitCode = 1;
+    break;
+  }
 
   setLogLevel(config.logLevel);
 

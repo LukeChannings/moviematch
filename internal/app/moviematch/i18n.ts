@@ -2,6 +2,7 @@ import { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
 import * as log from "log/mod.ts";
 import { memo, memo1 } from "/internal/app/moviematch/util/memo.ts";
 import { readDir, readTextFile } from "pkger";
+import { Translations } from "/types/moviematch.ts";
 
 const CONFIG_PATH = "/configs/localization";
 
@@ -33,7 +34,7 @@ export const loadTranslation = memo1(
 
 export const getTranslations = async (
   headers: Headers,
-): Promise<Record<string, string>> => {
+): Promise<Translations> => {
   const accept = new Accepts(headers);
   if (!headers.get("accept-language")) {
     log.info(
@@ -54,5 +55,5 @@ export const getTranslations = async (
     language = acceptedLanguage;
   }
 
-  return loadTranslation(language);
+  return await loadTranslation(language) as Translations;
 };
