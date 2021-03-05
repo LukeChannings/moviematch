@@ -19,7 +19,7 @@ export const FilterField = (
   { onChange, filters, getSuggestions }: FilterFieldProps,
 ) => {
   const [key, setKey] = useState<string>("");
-  const [operator, setOperator] = useState<string>("==");
+  const [operator, setOperator] = useState<string>("=");
   const [value, setValue] = useState<FilterValue[]>([]);
   const [suggestions, setSuggestions] = useState<FilterValue[]>([]);
 
