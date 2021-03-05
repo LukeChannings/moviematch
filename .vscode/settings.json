@@ -8,16 +8,16 @@
   "deno.codeLens.references": true,
   "deno.config": "tsconfig.json",
   "[javascript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno-canary"
+    "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "[javascriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno-canary"
+    "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno-canary"
+    "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno-canary"
+    "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
