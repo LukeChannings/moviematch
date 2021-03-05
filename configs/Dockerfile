@@ -1,4 +1,4 @@
-FROM lukechannings/deno:v1.7.5 AS build
+FROM lukechannings/deno:v1.8.0 AS build
 
 ENV TZ="Europe/London"
 ENV DEBIAN_FRONTEND="noninteractive"
@@ -14,7 +14,7 @@ ADD . .
 
 RUN PATH="$HOME/go/bin:$PATH" ./scripts/bundle.sh -e
 
-FROM lukechannings/deno:v1.7.5
+FROM lukechannings/deno:v1.8.0
 
 EXPOSE 8000
 
