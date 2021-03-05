@@ -27,7 +27,7 @@ Deno.test("Config -> loadConfig", async () => {
       {
         hostname: "0.0.0.0",
         port: 8000,
-        logLevel: "INFO",
+        logLevel: "DEBUG",
         basePath: "",
         servers: [
           {
@@ -50,7 +50,7 @@ servers:
       {
         hostname: "0.0.0.0",
         port: 8888,
-        logLevel: "INFO",
+        logLevel: "DEBUG",
         basePath: "",
         servers: [
           {
@@ -73,7 +73,7 @@ servers:
       {
         hostname: "0.0.0.0",
         port: 9000,
-        logLevel: "INFO",
+        logLevel: "DEBUG",
         basePath: "",
         servers: [
           {

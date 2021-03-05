@@ -7,21 +7,21 @@ Deno.test("Config -> applyDefaults", () => {
     [{}, {
       hostname: "0.0.0.0",
       port: 8000,
-      logLevel: "INFO",
+      logLevel: "DEBUG",
       basePath: "",
       servers: [],
     }],
     [{ hostname: "127.0.0.1" }, {
       hostname: "127.0.0.1",
       port: 8000,
-      logLevel: "INFO",
+      logLevel: "DEBUG",
       basePath: "",
       servers: [],
     }],
     [{ hostname: "127.0.0.1", port: 8888 }, {
       hostname: "127.0.0.1",
       port: 8888,
-      logLevel: "INFO",
+      logLevel: "DEBUG",
       basePath: "",
       servers: [],
     }],
@@ -52,7 +52,7 @@ Deno.test("Config -> applyDefaults", () => {
     }, {
       hostname: "127.0.0.1",
       port: 8888,
-      logLevel: "INFO",
+      logLevel: "DEBUG",
       basePath: "",
       servers: [
         {
