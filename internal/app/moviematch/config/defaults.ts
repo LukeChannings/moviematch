@@ -8,7 +8,8 @@ const defaultServerConfig: Partial<Config["servers"][number]> = {
 const defaultConfig: Partial<Config> = {
   hostname: "0.0.0.0",
   port: 8000,
-  logLevel: "INFO",
+  // TODO: Set this to INFO when 2.0.0 is stable
+  logLevel: "DEBUG",
   basePath: "",
   servers: [],
 };
