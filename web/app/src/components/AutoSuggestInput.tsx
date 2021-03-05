@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useRef,
   useState,
 } from "https://cdn.skypack.dev/react@17.0.1?dts";
 
@@ -7,7 +8,10 @@ import {
   useCombobox,
   useMultipleSelection,
 } from "https://cdn.skypack.dev/downshift?dts";
-import { FilterValue } from "../../../../types/moviematch.ts";
+import { usePopper } from "https://cdn.skypack.dev/react-popper?dts";
+import { FilterValue } from "/types/moviematch.ts";
+
+import "./AutoSuggestInput.css";
 
 interface AutoSuggestInputProps {
   items: FilterValue[];
@@ -26,6 +30,19 @@ export const AutoSuggestInput = (
     removeSelectedItem,
     selectedItems,
   } = useMultipleSelection({ initialSelectedItems: [] as FilterValue[] });
+  const referenceElement = useRef<HTMLDivElement>();
+  const popperElement = useRef<HTMLDivElement>();
+  const arrowElement = useRef<HTMLDivElement>();
+  const { styles, attributes } = usePopper(
+    referenceElement.current,
+    popperElement.current,
+    {
+      modifiers: [{
+        name: "arrow",
+        options: { element: arrowElement.current },
+      }],
+    },
+  );
 
   useEffect(() => {
     onChange(selectedItems);
@@ -46,7 +63,7 @@ export const AutoSuggestInput = (
     getItemProps,
   } = useCombobox({
     inputValue,
-    defaultHighlightedIndex: 0, // after selection, highlight the first item.
+    defaultHighlightedIndex: 0,
     selectedItem: null,
     items: getFilteredItems(),
     stateReducer: (state, actionAndChanges) => {
@@ -56,7 +73,7 @@ export const AutoSuggestInput = (
         case useCombobox.stateChangeTypes.ItemClick:
           return {
             ...changes,
-            isOpen: true, // keep the menu open after selection.
+            isOpen: false,
           };
       }
       return changes;
@@ -79,9 +96,10 @@ export const AutoSuggestInput = (
       }
     },
   });
+  console.log({ isOpen, selectedItems });
   return (
-    <div>
-      <div>
+    <>
+      <div ref={referenceElement}>
         {selectedItems.map((selectedItem, index) => (
           <span
             key={`selected-item-${index}`}
@@ -100,16 +118,28 @@ export const AutoSuggestInput = (
         ))}
         <div {...getComboboxProps()}>
           <input
+            className="AutoSuggestInput"
             {...getInputProps(
               getDropdownProps({ preventKeyAction: isOpen }),
             )}
           />
         </div>
       </div>
-      <ul {...getMenuProps()}>
-        {isOpen &&
-          getFilteredItems().slice(0, 10).map((item, index) => (
+      {isOpen &&
+        <ul
+          {...getMenuProps()}
+          ref={popperElement}
+          style={styles.popper}
+          className="AutoSuggestSuggestions"
+        >
+          <div
+            ref={arrowElement}
+            className="AutoSuggestSuggestionsArrow"
+            style={styles.arrow}
+          />
+          {getFilteredItems().slice(0, 10).map((item, index) => (
             <li
+              className="AutoSuggestSuggestion"
               style={highlightedIndex === index
                 ? { backgroundColor: "#bde4ff" }
                 : {}}
@@ -119,7 +149,7 @@ export const AutoSuggestInput = (
               {item.title}
             </li>
           ))}
-      </ul>
-    </div>
+        </ul>}
+    </>
   );
 };

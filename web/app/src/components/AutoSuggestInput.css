@@ -1,0 +1,41 @@
+.AutoSuggestInput {
+  width: 100%;
+  height: 3rem;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--mm-black);
+  background-color: transparent;
+  border-radius: var(--s1);
+  padding: var(--s2);
+  box-shadow: none;
+}
+
+.AutoSuggestSuggestions {
+  background-color: var(--mm-black);
+  border: 1px solid var(--mm-white);
+  border-radius: var(--s1);
+  padding: var(--s2);
+  margin: 0;
+}
+
+.AutoSuggestSuggestionsArrow,
+.AutoSuggestSuggestionsArrow::before {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  z-index: -1;
+}
+
+.AutoSuggestSuggestionsArrow::before {
+  content: "";
+  transform: rotate(45deg);
+  background-color: rgb(255, 255, 255);
+  top: 0px;
+  left: 0px;
+}
+
+.AutoSuggestSuggestion {
+  list-style: none;
+  color: var(--mm-white);
+  cursor: pointer;
+}
