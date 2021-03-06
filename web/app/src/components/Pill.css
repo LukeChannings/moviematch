@@ -1,0 +1,43 @@
+.Pill {
+  padding: 0.35rem 0.35rem 0.15rem 0.35rem;
+  background-color: var(--mm-black);
+  border-radius: var(--s1);
+  color: var(--mm-white);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 100ms ease-in-out;
+  display: flex;
+  align-items: center;
+  place-content: center;
+  justify-content: center;
+  position: relative;
+  padding-right: 1.2rem;
+}
+
+.Pill:focus,
+.Pill:hover {
+  background-color: var(--mm-failure-color);
+}
+
+.Pill:focus .PillCloseIcon,
+.Pill:hover .PillCloseIcon {
+  color: var(--mm-white);
+}
+
+.PillLabel {
+  font-size: 0.8rem;
+  font-weight: bold;
+  font-family: system-ui;
+  line-height: 1.1;
+  display: inline-block;
+}
+
+.PillCloseIcon {
+  color: var(--mm-dark-red);
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: color 100ms ease-in-out;
+  position: absolute;
+  top: 0px;
+  right: var(--s1);
+}

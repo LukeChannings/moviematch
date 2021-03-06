@@ -12,7 +12,6 @@
 
 .TextInput:focus {
   border: 2px solid var(--mm-blue);
-  outline: none;
 }
 
 .TextInput.--invalid {

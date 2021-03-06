@@ -25,6 +25,11 @@
   --s8: 3.5rem; /* 56px */
   --s9: 4rem; /* 64px */
 
+  --z-far: 0;
+  --z-normal: 1;
+  --z-near: 2;
+  --z-modal: 5;
+
   --mm-transition-duration: 100ms;
 }
 
@@ -43,4 +48,12 @@ body {
   color: var(--mm-black);
   min-height: calc(var(--vh) * 100);
   font-family: Helvetica Neue, system-ui, Helvetica, sans-serif;
+}
+
+body:not(.show-focus-ring) *:focus {
+  outline: none;
+}
+
+* {
+  font-family: inherit;
 }
