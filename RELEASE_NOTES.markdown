@@ -1,5 +1,11 @@
 # Release Notes
 
+## v2.0.0-alpha.2
+
+- Rewrite configuration handling with extensive testing and stability improvements
+- Default log level to `DEBUG`
+- Upgrade to Deno v1.8.0
+
 ## v2.0.0-alpha.1
 
 ### New features
