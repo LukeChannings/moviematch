@@ -23,6 +23,12 @@
   transition: background-color var(--mm-transition-duration) ease-in-out;
 }
 
+.ButtonPrimary:focus {
+  background-color: var(--mm-pale-blue);
+  outline: 5px auto Highlight;
+  outline: 5px auto -webkit-focus-ring-color;
+}
+
 @media (hover: hover) {
   .ButtonPrimary:hover {
     background-color: var(--mm-pale-blue);
@@ -38,6 +44,13 @@
     border-color var(--mm-transition-duration) ease-in-out;
 }
 
+.ButtonSecondary:focus {
+  color: var(--mm-pale-blue);
+  border-color: var(--mm-pale-blue);
+  outline: 5px auto Highlight;
+  outline: 5px auto -webkit-focus-ring-color;
+}
+
 @media (hover: hover) {
   .ButtonSecondary:hover {
     color: var(--mm-pale-blue);
@@ -51,6 +64,12 @@
   padding: var(--s1);
   color: var(--mm-blue);
   transition: background-color var(--mm-transition-duration) ease-in-out;
+}
+
+.ButtonTertiary:focus {
+  background-color: hsl(var(--mm-blue-hue), 20%, 75%);
+  outline: 5px auto Highlight;
+  outline: 5px auto -webkit-focus-ring-color;
 }
 
 @media (hover: hover) {

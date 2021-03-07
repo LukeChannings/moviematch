@@ -66,6 +66,7 @@ export const FilterField = (
             onChange={(e) => setOperator(e.target.value)}
           />
           <AutoSuggestInput
+            inputName={`${key}-input`}
             items={suggestions}
             onChange={setValue}
           />

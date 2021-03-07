@@ -5,6 +5,7 @@
   --mm-red-hue: 360;
 
   --mm-black: hsl(var(--mm-blue-hue) 0% 20%);
+  --mm-black-lighter: hsl(var(--mm-blue-hue) 0% 40%);
   --mm-light-red: hsl(var(--mm-red-hue) 76% 60%);
   --mm-dark-red: hsl(var(--mm-red-hue) 76% 55%);
   --mm-blue: hsl(var(--mm-blue-hue) 48% 55%);
@@ -14,6 +15,10 @@
   --mm-line-color: hsl(var(--mm-blue-hue) 22% 90%);
   --mm-success-color: hsl(110 40% 40%);
   --mm-failure-color: hsl(var(--mm-red-hue) 50% 50%);
+  --mm-add-color: hsl(var(--mm-blue-hue), 46%, 82%);
+  --mm-add-highlight-color: hsl(var(--mm-blue-hue), 76%, 90%);
+  --mm-remove-color: hsl(var(--mm-red-hue), 56%, 72%);
+  --mm-remove-highlight-color: hsl(var(--mm-red-hue), 59%, 84%);
 
   --s1: 0.25rem; /* 4px */
   --s2: 0.5rem; /* 8px */
@@ -24,6 +29,11 @@
   --s7: 3rem; /* 48px */
   --s8: 3.5rem; /* 56px */
   --s9: 4rem; /* 64px */
+
+  --z-far: 0;
+  --z-normal: 1;
+  --z-near: 2;
+  --z-modal: 5;
 
   --mm-transition-duration: 100ms;
 }
@@ -43,4 +53,12 @@ body {
   color: var(--mm-black);
   min-height: calc(var(--vh) * 100);
   font-family: Helvetica Neue, system-ui, Helvetica, sans-serif;
+}
+
+body:not(.show-focus-ring) *:focus {
+  outline: none;
+}
+
+* {
+  font-family: inherit;
 }

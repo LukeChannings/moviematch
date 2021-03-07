@@ -4,10 +4,8 @@
 
 .Select::after {
   position: absolute;
-  top: 50%;
+  top: 1.2rem;
   right: var(--s2);
-  width: 14px;
-  height: 15px;
   font-size: 1.2rem;
   content: "⌄";
   line-height: 0;

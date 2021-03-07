@@ -67,3 +67,13 @@ if (
     document.body.style.setProperty("--vh", window.innerHeight / 100 + "px");
   });
 }
+
+window.addEventListener("keyup", (e) => {
+  if (e.key === "Tab") {
+    document.body.classList.add("show-focus-ring");
+  }
+});
+
+window.addEventListener("mouseup", () => {
+  document.body.classList.remove("show-focus-ring");
+});

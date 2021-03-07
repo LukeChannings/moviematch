@@ -23,8 +23,6 @@ import { useAsyncEffect } from "../hooks/useAsyncEffect.ts";
 
 import "./Create.css";
 
-// TODO - Move this into root types
-
 export const CreateScreen = ({
   navigate,
   dispatch,

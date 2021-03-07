@@ -20,7 +20,7 @@ export const Select = (
       onChange={onChange}
       onBlur={onBlur}
     >
-      <option value="">-- Select --</option>
+      <option value="">&mdash; Select &mdash;</option>
       {options && Object.entries(options).map(([optionValue, label]) => (
         <option
           value={optionValue}
