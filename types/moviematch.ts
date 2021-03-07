@@ -189,6 +189,7 @@ export interface Media {
 }
 
 export interface Match {
+  matchedAt: number;
   media: Media;
   users: string[];
 }

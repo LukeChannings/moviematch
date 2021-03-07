@@ -106,14 +106,32 @@ function reducer(state: Store, action: Actions): Store {
       return { ...state, room: action.payload };
     case "setTranslations":
       return { ...state, translations: action.payload };
-    case "match":
-      return {
-        ...state,
-        room: {
-          ...state.room!,
-          matches: [...(state.room?.matches ?? []), action.payload],
-        },
-      };
+    case "match": {
+      const existingMatchindex = state.room?.matches?.findIndex((match) =>
+        match.media.id === action.payload.media.id
+      );
+      if (existingMatchindex !== -1) {
+        return {
+          ...state,
+          room: {
+            ...state.room!,
+            matches: state.room?.matches?.map((match, index) =>
+              (index === existingMatchindex)
+                ? action.payload
+                : match
+            ) ?? [],
+          },
+        };
+      } else {
+        return {
+          ...state,
+          room: {
+            ...state.room!,
+            matches: [...(state.room?.matches ?? []), action.payload],
+          },
+        };
+      }
+    }
     case "addToast":
       return {
         ...state,

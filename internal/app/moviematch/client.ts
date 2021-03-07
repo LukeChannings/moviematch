@@ -200,7 +200,7 @@ export class Client {
       this.sendMessage({
         type: "createRoomSuccess",
         payload: {
-          previousMatches: await this.room.getMatches(this.userName!, true),
+          previousMatches: await this.room.getMatches(this.userName!, false),
           media: await this.room.getMediaForUser(this.userName),
         },
       });
@@ -233,7 +233,7 @@ export class Client {
       this.sendMessage({
         type: "joinRoomSuccess",
         payload: {
-          previousMatches: await this.room.getMatches(this.userName!, true),
+          previousMatches: await this.room.getMatches(this.userName!, false),
           media: await this.room.getMediaForUser(this.userName),
         },
       });
@@ -267,7 +267,7 @@ export class Client {
       log.debug(
         `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`,
       );
-      this.room?.storeRating(this.userName, rate);
+      this.room?.storeRating(this.userName, rate, Date.now());
     }
   }
 

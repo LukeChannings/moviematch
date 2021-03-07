@@ -41,7 +41,7 @@ export class Room {
   media: Promise<Map</*mediaId */ string, Media>>;
   ratings = new Map<
     /* mediaId */ string,
-    Array<[userName: string, rating: Rate["rating"]]>
+    Array<[userName: string, rating: Rate["rating"], time: number]>
   >();
 
   constructor(req: CreateRoomRequest, ctx: RouteContext) {
@@ -81,22 +81,23 @@ export class Room {
     });
   };
 
-  storeRating = async (userName: string, rating: Rate) => {
+  storeRating = async (userName: string, rating: Rate, matchedAt: number) => {
     const existingRatings = this.ratings.get(rating.mediaId);
     if (existingRatings) {
-      existingRatings.push([userName, rating.rating]);
+      existingRatings.push([userName, rating.rating, matchedAt]);
       const likes = existingRatings.filter(([, rating]) => rating === "like");
       if (likes.length > 1) {
         const media = (await this.media).get(rating.mediaId);
         if (media) {
           this.notifyMatch({
+            matchedAt,
             media,
             users: likes.map(([userName]) => userName),
           });
         }
       }
     } else {
-      this.ratings.set(rating.mediaId, [[userName, rating.rating]]);
+      this.ratings.set(rating.mediaId, [[userName, rating.rating, matchedAt]]);
     }
   };
 
@@ -108,6 +109,10 @@ export class Room {
 
     for (const [mediaId, rating] of this.ratings.entries()) {
       const likes = rating.filter(([, rating]) => rating === "like");
+      const matchedAt = likes.reduce(
+        (lastTime, [, , time]) => (time > lastTime ? time : lastTime),
+        0,
+      );
       if (
         likes.length > 1 &&
         (allLikes || !!likes.find(([_userName]) => userName === _userName))
@@ -115,6 +120,7 @@ export class Room {
         const media = (await this.media).get(mediaId);
         if (media) {
           matches.push({
+            matchedAt,
             media,
             users: likes.map(([userName]) => userName),
           });
