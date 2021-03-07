@@ -90,6 +90,7 @@ export const AutoSuggestInput = (
           if (typeof selectedItem?.value === "string") {
             setInputValue("");
             addSelectedItem(selectedItem);
+            updatePopper();
           }
           break;
         default:
@@ -147,11 +148,6 @@ export const AutoSuggestInput = (
               inputProps.ref(el);
             }}
             onFocus={() => {
-              console.log(
-                referenceElement,
-                popperElement,
-                updatePopper,
-              );
               if (!isOpen) {
                 openMenu();
               }
