@@ -14,6 +14,10 @@
   --mm-line-color: hsl(var(--mm-blue-hue) 22% 90%);
   --mm-success-color: hsl(110 40% 40%);
   --mm-failure-color: hsl(var(--mm-red-hue) 50% 50%);
+  --mm-add-color: hsl(var(--mm-blue-hue), 46%, 82%);
+  --mm-add-highlight-color: hsl(var(--mm-blue-hue), 76%, 90%);
+  --mm-remove-color: hsl(var(--mm-red-hue), 56%, 72%);
+  --mm-remove-highlight-color: hsl(var(--mm-red-hue), 59%, 84%);
 
   --s1: 0.25rem; /* 4px */
   --s2: 0.5rem; /* 8px */

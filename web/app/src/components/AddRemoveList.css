@@ -44,19 +44,19 @@
 }
 
 .AddRemoveList_Subtract {
-  background: #e09090;
+  background: var(--mm-remove-color);
 }
 
 .AddRemoveList_Add {
-  background: #bcbce6;
+  background: var(--mm-add-color);
   grid-column: 2;
 }
 
 @media (hover: hover) {
   .AddRemoveList_Subtract:hover {
-    background: #eebebe;
+    background: var(--mm-remove-highlight-color);
   }
   .AddRemoveList_Add:hover {
-    background: #d3d3f9;
+    background: var(--mm-add-highlight-color);
   }
 }

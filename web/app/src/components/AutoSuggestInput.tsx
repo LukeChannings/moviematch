@@ -82,7 +82,6 @@ export const AutoSuggestInput = (
           break;
         case useCombobox.stateChangeTypes.InputKeyDownEnter:
         case useCombobox.stateChangeTypes.ItemClick:
-        case useCombobox.stateChangeTypes.InputBlur:
           if (typeof selectedItem?.value === "string") {
             setInputValue("");
             addSelectedItem(selectedItem);
@@ -97,6 +96,7 @@ export const AutoSuggestInput = (
 
   const {
     isOpen,
+    openMenu,
     getMenuProps,
     getInputProps,
     getComboboxProps,
@@ -110,7 +110,7 @@ export const AutoSuggestInput = (
     getDropdownProps({ preventKeyAction: isOpen }),
   );
 
-  console.log(attributes);
+  console.log(comboBox);
 
   return (
     <>
@@ -166,17 +166,19 @@ export const AutoSuggestInput = (
             {...attributes.arrow}
           >
           </div>
-          {getFilteredItems().slice(0, 5).map((item, index) => (
-            <li
-              className={`AutoSuggestSuggestion ${
-                index === highlightedIndex ? "--highlighted" : ""
-              }`}
-              key={`${item.value}${index}`}
-              {...getItemProps({ item, index })}
-            >
-              {item.title}
-            </li>
-          ))}
+          <div className="AutoSuggestSuggestionsScrollBox">
+            {getFilteredItems().map((item, index) => (
+              <li
+                className={`AutoSuggestSuggestion ${
+                  index === highlightedIndex ? "--highlighted" : ""
+                }`}
+                key={`${item.value}${index}`}
+                {...getItemProps({ item, index })}
+              >
+                {item.title}
+              </li>
+            ))}
+          </div>
         </ul>}
     </>
   );

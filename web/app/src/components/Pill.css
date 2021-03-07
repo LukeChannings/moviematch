@@ -14,14 +14,16 @@
   padding-right: 1.2rem;
 }
 
-.Pill:focus,
-.Pill:hover {
-  background-color: var(--mm-failure-color);
-}
+@media (hover: hover) {
+  .Pill:focus,
+  .Pill:hover {
+    background-color: var(--mm-failure-color);
+  }
 
-.Pill:focus .PillCloseIcon,
-.Pill:hover .PillCloseIcon {
-  color: var(--mm-white);
+  .Pill:focus .PillCloseIcon,
+  .Pill:hover .PillCloseIcon {
+    color: var(--mm-white);
+  }
 }
 
 .PillLabel {
