@@ -132,9 +132,17 @@ export const createProvider = (
       const filterValues = await api.getFilterValues(key);
 
       if (filterValues.size) {
-        return filterValues.Directory.map((filterValue) => ({
-          title: filterValue.title,
-          value: filterValue.key,
+        const deduplicatedFilterValues = new Map<string, string>();
+
+        for (const filterValue of filterValues.Directory) {
+          deduplicatedFilterValues.set(filterValue.key, filterValue.title);
+        }
+
+        return [...deduplicatedFilterValues.entries()].map((
+          [value, title],
+        ) => ({
+          value,
+          title,
         }));
       }
 
