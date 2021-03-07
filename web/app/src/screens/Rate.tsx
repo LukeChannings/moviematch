@@ -11,6 +11,10 @@ import { RoomInfoBar } from "../components/RoomInfoBar.tsx";
 import { ScreenProps } from "../components/Screen.ts";
 import { Tr } from "../components/Tr.tsx";
 import { Version } from "../components/Version.tsx";
+import {
+  SegmentedControlOption,
+  SegmentedControls,
+} from "../components/SegmentedControls.tsx";
 import { MovieMatchContext } from "../store.ts";
 
 import "./Rate.css";
@@ -18,6 +22,7 @@ import "./Rate.css";
 export const RateScreen = ({ dispatch }: ScreenProps) => {
   const state = useContext(MovieMatchContext);
   const [currentIndex, setIndex] = useState<number>(0);
+  const [matchOrder, setMatchOrder] = useState<string>("mostRecent");
 
   if (!state.room || !state.room.media) {
     return <ErrorMessage message="No Room!" />;
@@ -56,20 +61,39 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
           dispatch({ type: "navigate", payload: { path: "join" } });
         }}
       />
+      <SegmentedControls
+        name="sortMatches"
+        value={matchOrder}
+        onChange={setMatchOrder}
+        paddingTop="s4"
+      >
+        <SegmentedControlOption value="mostRecent">
+          Most Recent
+        </SegmentedControlOption>
+        <SegmentedControlOption value="mostLikes">
+          Most Likes
+        </SegmentedControlOption>
+      </SegmentedControls>
       <MatchesList>
-        {state.room.matches?.map((match) => (
-          <Card
-            media={match.media}
-            href={match.media.linkUrl}
-            title={<Tr
-              name="MATCHES_SECTION_CARD_LIKERS"
-              context={{
-                users: match.users.join(" & "),
-                movie: match.media.title,
-              }}
-            />}
-          />
-        ))}
+        {state.room.matches && (
+          state.room.matches.sort((a, b) =>
+            matchOrder === "mostLikes"
+              ? b.users.length - a.users.length
+              : b.matchedAt - a.matchedAt
+          ).map((match) => (
+            <Card
+              media={match.media}
+              href={match.media.linkUrl}
+              title={<Tr
+                name="MATCHES_SECTION_CARD_LIKERS"
+                context={{
+                  users: match.users.join(" & "),
+                  movie: match.media.title,
+                }}
+              />}
+            />
+          ))
+        )}
       </MatchesList>
       <Version />
     </Layout>
