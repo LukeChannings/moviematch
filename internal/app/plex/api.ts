@@ -117,7 +117,20 @@ export class PlexApi {
     if (sections.size === 0) {
       return [];
     } else {
-      return sections.Directory;
+      let filteredLibraries = sections.Directory;
+
+      if (this.options.libraryTypeFilter?.length) {
+        filteredLibraries = filteredLibraries.filter(({ type }) =>
+          this.options.libraryTypeFilter!.includes(type)
+        );
+      }
+
+      if (this.options.libraryTitleFilter?.length) {
+        filteredLibraries = filteredLibraries.filter(({ title }) =>
+          this.options.libraryTitleFilter!.includes(title)
+        );
+      }
+      return filteredLibraries;
     }
   }
 
