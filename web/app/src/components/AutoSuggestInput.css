@@ -14,7 +14,10 @@
   width: 100%;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: var(--s1);
+}
+
+.AutoSuggestInputSelections > * {
+  margin: calc(var(--s1) / 2);
 }
 
 .AutoSuggestInputSelectionsDelimiterLabel {
@@ -37,7 +40,7 @@
 }
 
 .AutoSuggestInput:focus {
-  border-bottom: 2px solid var(--mm-line-color);
+  border-bottom: 2px solid var(--mm-black-lighter);
 }
 
 .AutoSuggestSuggestions {
