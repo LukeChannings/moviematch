@@ -15,12 +15,13 @@ import "./AutoSuggestInput.css";
 import { Pill } from "./Pill.tsx";
 
 interface AutoSuggestInputProps {
+  inputName: string;
   items: FilterValue[];
   onChange: (value: FilterValue[]) => void;
 }
 
 export const AutoSuggestInput = (
-  { items, onChange }: AutoSuggestInputProps,
+  { inputName, items, onChange }: AutoSuggestInputProps,
 ) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
@@ -29,12 +30,16 @@ export const AutoSuggestInput = (
     removeSelectedItem,
     selectedItems,
   } = useMultipleSelection({ initialSelectedItems: [] as FilterValue[] });
-  const referenceElement = useRef<HTMLDivElement>();
-  const popperElement = useRef<HTMLUListElement>();
+  const [referenceElement, setReferenceElement] = useState<
+    HTMLDivElement | null
+  >();
+  const [popperElement, setPopperElement] = useState<
+    HTMLULListElement | null
+  >();
 
   const { styles, attributes, update: updatePopper } = usePopper(
-    referenceElement.current,
-    popperElement.current,
+    referenceElement,
+    popperElement,
     {
       modifiers: [
         {
@@ -85,7 +90,6 @@ export const AutoSuggestInput = (
           if (typeof selectedItem?.value === "string") {
             setInputValue("");
             addSelectedItem(selectedItem);
-            updatePopper();
           }
           break;
         default:
@@ -109,8 +113,6 @@ export const AutoSuggestInput = (
   const inputProps = getInputProps(
     getDropdownProps({ preventKeyAction: isOpen }),
   );
-
-  console.log(comboBox);
 
   return (
     <>
@@ -136,22 +138,33 @@ export const AutoSuggestInput = (
               </Pill>
             </>
           ))}
+          <input
+            className="AutoSuggestInput"
+            name={inputName}
+            {...inputProps}
+            ref={(el) => {
+              setReferenceElement(el);
+              inputProps.ref(el);
+            }}
+            onFocus={() => {
+              console.log(
+                referenceElement,
+                popperElement,
+                updatePopper,
+              );
+              if (!isOpen) {
+                openMenu();
+              }
+            }}
+          />
         </div>
-        <input
-          className="AutoSuggestInput"
-          {...inputProps}
-          ref={(el) => {
-            referenceElement.current = (el);
-            inputProps.ref(el);
-          }}
-        />
       </div>
       {(isOpen && filteredItems.length !== 0) &&
         <ul
           {...menuProps}
           ref={(menuEl) => {
             if (menuEl) {
-              popperElement.current = menuEl;
+              setPopperElement(menuEl);
               menuProps.ref(menuEl);
             }
           }}
