@@ -1,5 +1,4 @@
 import { parse } from "encoding/yaml.ts";
-import * as log from "log/mod.ts";
 import { join } from "path/posix.ts";
 import { Config } from "/types/moviematch.ts";
 import { isRecord } from "/internal/app/moviematch/util/assert.ts";

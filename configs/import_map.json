@@ -3,16 +3,16 @@
     "/internal/": "../internal/",
     "/types/": "../types/",
     "pkger": "../internal/app/moviematch/util/pkger.ts",
-    "http/": "https://deno.land/std@0.88.0/http/",
-    "ws/": "https://deno.land/std@0.88.0/ws/",
-    "log/": "https://deno.land/std@0.88.0/log/",
-    "util/": "https://deno.land/std@0.88.0/_util/",
-    "path/": "https://deno.land/std@0.88.0/path/",
-    "encoding/": "https://deno.land/std@0.88.0/encoding/",
-    "flags/": "https://deno.land/std@0.88.0/flags/",
-    "async/": "https://deno.land/std@0.88.0/async/",
-    "testing/": "https://deno.land/std@0.88.0/testing/",
-    "hash/": "https://deno.land/std@0.88.0/hash/",
-    "io/": "https://deno.land/std@0.88.0/io/"
+    "http/": "https://deno.land/std@0.89.0/http/",
+    "ws/": "https://deno.land/std@0.89.0/ws/",
+    "log/": "https://deno.land/std@0.89.0/log/",
+    "util/": "https://deno.land/std@0.89.0/_util/",
+    "path/": "https://deno.land/std@0.89.0/path/",
+    "encoding/": "https://deno.land/std@0.89.0/encoding/",
+    "flags/": "https://deno.land/std@0.89.0/flags/",
+    "async/": "https://deno.land/std@0.89.0/async/",
+    "testing/": "https://deno.land/std@0.89.0/testing/",
+    "hash/": "https://deno.land/std@0.89.0/hash/",
+    "io/": "https://deno.land/std@0.89.0/io/"
   }
 }
