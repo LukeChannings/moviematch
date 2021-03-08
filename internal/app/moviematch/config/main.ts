@@ -7,7 +7,10 @@ import { loadFromEnv } from "/internal/app/moviematch/config/load_env.ts";
 import { loadFromYaml } from "/internal/app/moviematch/config/load_yaml.ts";
 import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 import { MovieMatchError } from "/internal/app/moviematch/util/assert.ts";
-import { requestRead, requestWrite } from "/internal/app/moviematch/util/permission.ts";
+import {
+  requestRead,
+  requestWrite,
+} from "/internal/app/moviematch/util/permission.ts";
 
 let configPath: string;
 let cachedConfig: Config;

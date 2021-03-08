@@ -40,7 +40,7 @@ export const getUser = async ({
     "X-Plex-Token": plexToken,
   });
 
-  if (!await requestNet('plex.tv')) {
+  if (!await requestNet("plex.tv")) {
     throw new Error(`Net access was denied for plex.tv`);
   }
 
