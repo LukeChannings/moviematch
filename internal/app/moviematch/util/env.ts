@@ -1,27 +1,7 @@
-let envPermissionGranted: boolean | undefined;
-
-export const hasEnvPermissions = async () => {
-  if (Deno.permissions && typeof envPermissionGranted === "undefined") {
-    let envPermission = await Deno.permissions.query({ name: "env" });
-    if (envPermission.state === "prompt") {
-      envPermission = await Deno.permissions.request({ name: "env" });
-    }
-
-    if (envPermission.state === "denied") {
-      envPermissionGranted = false;
-      return;
-    } else if (envPermission.state === "granted") {
-      envPermissionGranted = true;
-    }
-  }
-
-  return envPermissionGranted;
-};
+import { requestEnv } from "/internal/app/moviematch/util/permission.ts";
 
 export const getEnv = async (name: string): Promise<string | undefined> => {
-  if (!await hasEnvPermissions()) {
-    return;
+  if (await requestEnv()) {
+    return Deno.env.get(name);
   }
-
-  return Deno.env.get(name);
 };
