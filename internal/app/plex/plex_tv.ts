@@ -3,6 +3,8 @@
  * See - https://forums.plex.tv/t/authenticating-with-plex/609370
  */
 
+import { requestNet } from "/internal/app/moviematch/util/permission.ts";
+
 const APP_NAME = "MovieMatch";
 
 export interface PlexUser {
@@ -37,6 +39,10 @@ export const getUser = async ({
     "X-Plex-Client-Identifier": clientId,
     "X-Plex-Token": plexToken,
   });
+
+  if (!await requestNet('plex.tv')) {
+    throw new Error(`Net access was denied for plex.tv`);
+  }
 
   const req = await fetch(`https://plex.tv/api/v2/user?${String(search)}`, {
     headers: {
