@@ -36,6 +36,7 @@ for TARGET in "${TARGETS[@]}"; do
   if [ "$TARGET" == "x86_64-pc-windows-msvc" ]; then
     mv ./moviematch ./moviematch.exe
   fi
+  zip -r -j "../$TARGET.zip" ./*
   popd
 done
 

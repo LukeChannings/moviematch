@@ -45,8 +45,8 @@ jobs:
             exit 1
           fi
         shell: bash
-  build_binaries:
-    name: Build and publish binaries
+  build:
+    name: Build and publish
     runs-on: ubuntu-latest
     needs: build_info
     timeout-minutes: 60
@@ -91,23 +91,15 @@ jobs:
       - name: Upload binaries
         run: |
           set -x
-          assets=(build/moviematch.bundle.js)
-          for target in ./build/*; do
-            zip -r -j $target.zip $target
-            assets+=("-a" "$target.zip")
+          assets=()
+          for target in ./build/*.zip; do
+            assets+=("-a" "$target")
           done
+          assets+=("-a" "./build/moviematch.bundle.js")
           hub release edit "${assets[@]}" -m "${{ needs.build_info.outputs.version }}" "${{ needs.build_info.outputs.version }}" || true
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  build_docker:
-    name: Build and publish Docker images
-    runs-on: ubuntu-latest
-    needs: build_info
-    timeout-minutes: 60
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Set up QEMU
@@ -117,13 +109,15 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build & Push
+      - name: Build & Push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./configs/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args:
+            - VERSION=${{needs.build_info.outputs.version}}
           tags: |
             lukechannings/moviematch:${{ needs.build_info.outputs.version }}
             ${{ needs.build_info.outputs.prerelease == 'false' && 'lukechannings/moviematch:latest' || '' }}
