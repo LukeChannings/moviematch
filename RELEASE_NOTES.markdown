@@ -1,5 +1,10 @@
 # Release Notes
 
+## v2.0.0-alpha.3
+
+- Publish the JS bundle to the release artefacts (Fixes an issue with Docker images not building for ARM64 under QEMU)
+- Ask for permission before using read/write/env/net if run with `deno run` without any permission flags
+
 ## v2.0.0-alpha.2
 
 - Rewrite configuration handling with extensive testing and stability improvements
