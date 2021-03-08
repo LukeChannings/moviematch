@@ -4,10 +4,10 @@
 
 - Rewrite configuration handling with extensive testing and stability improvements
 - Default log level to `DEBUG`
-- Upgrade to Deno v1.8.0
 - Implement AutoSuggest input for filter values
-- Disable focus ring until a user presses the tab key (that'd be the first thing a keyboard user work press), disable focus ring again when a pointer is used
-- Implement match sorting based on most recent or most likes (#20)
+- Disable focus ring until a user presses the tab key (that'd be the first thing a keyboard user would press), and disable focus ring again when a pointer is used
+- Implement match sorting based on "most recent" or "most likes" (#20)
+- Upgrade to Deno v1.8.0
 
 ## v2.0.0-alpha.1
 
