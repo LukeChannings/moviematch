@@ -68,7 +68,7 @@ jobs:
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Get Release Notes
         run: |
-          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\s${VERSION}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
+          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\s${{steps.metadata.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
