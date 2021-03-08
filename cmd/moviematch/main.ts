@@ -49,7 +49,7 @@ while (typeof exitCode === "undefined") {
 
   const abortController = new AbortController();
 
-  if (Deno.build.os !== "windows") {
+  if (Deno.signal) {
     Deno.signal(Deno.Signal.SIGINT).then(() => abortController.abort());
   }
 

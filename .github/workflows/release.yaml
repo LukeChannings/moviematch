@@ -91,7 +91,7 @@ jobs:
       - name: Upload binaries
         run: |
           set -x
-          assets=()
+          assets=(build/moviematch.bundle.js)
           for target in ./build/*; do
             zip -r -j $target.zip $target
             assets+=("-a" "$target.zip")

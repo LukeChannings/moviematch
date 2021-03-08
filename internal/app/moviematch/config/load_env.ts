@@ -1,3 +1,4 @@
+import { requestEnv } from "/internal/app/moviematch/util/permission.ts";
 import { Config } from "/types/moviematch.ts";
 
 const EnvBool = (value: string) => value === "1";
@@ -22,10 +23,7 @@ const getTrimmedEnv = (
 };
 
 export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
-  if (
-    Deno.permissions &&
-    (await Deno.permissions.query({ name: "env" })).state !== "granted"
-  ) {
+  if (!await requestEnv()) {
     return {};
   }
 

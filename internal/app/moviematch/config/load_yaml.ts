@@ -1,21 +1,27 @@
 import { parse } from "encoding/yaml.ts";
-import { join } from "path/posix.ts";
+import * as log from "log/mod.ts";
 import { Config } from "/types/moviematch.ts";
 import { isRecord } from "/internal/app/moviematch/util/assert.ts";
 import { ConfigFileNotFoundError } from "/internal/app/moviematch/config/errors.ts";
+import { requestRead } from "/internal/app/moviematch/util/permission.ts";
 
 export const loadFromYaml = async (
   path: string,
 ): Promise<Partial<Config>> => {
   let config: Partial<Config> = {};
 
-  const yamlConfigPath = path ?? join(Deno.cwd(), "config.yaml");
-  const configStat = await Deno.stat(yamlConfigPath);
+  if (!await requestRead(".")) {
+    log.error(
+      "Unable to load config file. Permission was denied for reading the current directory.",
+    );
+  }
+
+  const configStat = await Deno.stat(path);
   if (configStat.isFile) {
-    const yamlConfigRaw = await Deno.readTextFile(yamlConfigPath);
+    const yamlConfigRaw = await Deno.readTextFile(path);
 
     const yamlConfig = parse(yamlConfigRaw);
-    isRecord(yamlConfig, yamlConfigPath);
+    isRecord(yamlConfig, path);
 
     config = yamlConfig;
   } else {

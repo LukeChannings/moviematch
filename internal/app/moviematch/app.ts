@@ -12,6 +12,7 @@ import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 
 import { createProvider as createPlexProvider } from "/internal/app/moviematch/providers/plex.ts";
 import type { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
+import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { RouteHandler } from "./types.ts";
 import { Deferred, deferred } from "async/deferred.ts";
 
@@ -72,6 +73,12 @@ export const Application = (
     }
 
     try {
+      if (!await requestNet(`${config.hostname}:${config.port}`)) {
+        log.critical(
+          `Permission denied: Cannot start MovieMatch on ${config.hostname}:${config.port}`,
+        );
+        Deno.exit(1);
+      }
       server = config.tlsConfig
         ? serveTLS({ ...config.tlsConfig, ...config })
         : serve(config);

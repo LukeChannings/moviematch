@@ -7,6 +7,7 @@ import { loadFromEnv } from "/internal/app/moviematch/config/load_env.ts";
 import { loadFromYaml } from "/internal/app/moviematch/config/load_yaml.ts";
 import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 import { MovieMatchError } from "/internal/app/moviematch/util/assert.ts";
+import { requestRead, requestWrite } from "/internal/app/moviematch/util/permission.ts";
 
 let configPath: string;
 let cachedConfig: Config;
@@ -21,17 +22,18 @@ export function getConfig() {
 export async function loadConfig(
   path?: string,
 ): Promise<[config: Config, errors: MovieMatchError[]]> {
-  const yamlConfigPath = path ?? join(Deno.cwd(), "config.yaml");
-
-  log.info(`Looking for config in ${yamlConfigPath}`);
-
   const envConfig = await loadFromEnv();
   let yamlConfig: Partial<Config> | undefined;
 
   try {
-    yamlConfig = yamlConfigPath !== "/dev/null"
-      ? await loadFromYaml(yamlConfigPath)
-      : {};
+    if (await requestRead(".")) {
+      const yamlConfigPath = path ?? join(Deno.cwd(), "config.yaml");
+
+      log.info(`Looking for config in ${yamlConfigPath}`);
+      yamlConfig = yamlConfigPath !== "/dev/null"
+        ? await loadFromYaml(yamlConfigPath)
+        : {};
+    }
   } catch (err) {
     if (path) {
       throw err;
@@ -69,8 +71,13 @@ export async function loadConfig(
 export async function updateConfiguration(config: Record<string, unknown>) {
   cachedConfig = config as unknown as Config;
   const yamlConfig = stringify(config, { indent: 2 });
-  await Deno.writeTextFile(
-    configPath ?? join(Deno.cwd(), "config.yaml"),
-    yamlConfig,
-  );
+
+  const defaultConfigPath = join(Deno.cwd(), "config.yaml");
+
+  if (await requestWrite(configPath ?? defaultConfigPath)) {
+    await Deno.writeTextFile(
+      configPath ?? join(Deno.cwd(), "config.yaml"),
+      yamlConfig,
+    );
+  }
 }

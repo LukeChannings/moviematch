@@ -1,4 +1,5 @@
 import * as log from "log/mod.ts";
+import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { FilterValue, FilterValues } from "./types/library_filter_values.ts";
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
 import { Identity } from "/internal/app/plex/types/identity.ts";
@@ -37,6 +38,11 @@ export class PlexApi {
 
     for (const [key, value] of Object.entries(searchParams)) {
       url.searchParams.set(key, value);
+    }
+
+    if (!await requestNet(url.host)) {
+      log.critical(`Permission was denied to ${url.href}. Cannot continue!`);
+      Deno.exit(1);
     }
 
     log.debug(`Fetching: ${url.href}`);
