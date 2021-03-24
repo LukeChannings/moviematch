@@ -3,6 +3,7 @@
 ## v2.0.0-alpha.3
 
 - Fix a regression in room creation filters
+- Fixes to the CI pipeline
 
 ## v2.0.0-alpha.2
 
