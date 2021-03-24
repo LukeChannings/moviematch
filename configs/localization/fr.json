@@ -1,0 +1,21 @@
+{
+  "LANG": "fr",
+  "LOGIN_NAME": "Nom",
+  "LOGIN_ROOM_NAME": "Nom de salle",
+  "LOGIN_SIGN_IN": "Connexion",
+  "LOGIN_SIGN_IN_PLEX": "Connexion avec Plex",
+  "CREATE_ROOM": "Créer une salle",
+  "JOIN_ROOM": "Rejoindre",
+  "LOGOUT": "Déconnexion",
+  "RATE_SECTION_LOADING": "Chargement des films ...",
+  "RATE_SECTION_EXHAUSTED_CARDS": "C'est fini ✌️",
+  "MATCHES_SECTION_TITLE": "Matchs",
+  "MATCHES_SECTION_NO_MATCHES": "Aucun match pour l'instant... avez vous essayé de revoir à la baisse vos implacables exigences ?",
+  "MATCHES_SECTION_CARD_LIKERS": "${users} veulent regarder ${movie}",
+  "LIST_CONJUNCTION": "et",
+  "BACK": "Retour",
+  "SHARE_ROOM_TITLE": "Choisissons un film à regarder ensemble!",
+  "FIELD_REQUIRED_ERROR": "Ce champs est requis",
+  "COPY_LINK_SUCCESS": "Lien copié vers le presse-papier",
+  "COPY_LINK_FAILURE": "Le lien n'a pas pu être copié vers le presse-papier"
+}
