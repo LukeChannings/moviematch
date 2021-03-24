@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.0.0-alpha.3
+
+- Fix a regression in room creation filters
+
 ## v2.0.0-alpha.2
 
 - Rewrite configuration handling with extensive testing and stability improvements
