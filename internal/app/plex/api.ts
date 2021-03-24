@@ -147,10 +147,14 @@ export class PlexApi {
 
     for (const { key } of libraries) {
       const result = await this.fetch<LibraryItems>(
-        `/library/sections/${key}/filters`,
+        `/library/sections/${key}/all`,
         {
           searchParams: {
+            "type": "1",
             "includeMeta": "1",
+            "includeAdvanced": "1",
+            "includeCollections": "1",
+            "includeExternalMedia": "0"
           },
         },
       );
