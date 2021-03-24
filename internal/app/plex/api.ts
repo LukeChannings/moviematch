@@ -154,7 +154,7 @@ export class PlexApi {
             "includeMeta": "1",
             "includeAdvanced": "1",
             "includeCollections": "1",
-            "includeExternalMedia": "0"
+            "includeExternalMedia": "0",
           },
         },
       );
