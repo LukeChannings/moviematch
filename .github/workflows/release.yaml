@@ -31,7 +31,7 @@ jobs:
         id: metadata
         run: |
           export VERSION="${{ github.event.inputs.version || github.ref }}"
-          VERSION="${VERSION#refs/tags/}"
+          VERSION="${VERSION#refs/tags/v}"
           echo "::set-output name=version::${VERSION}"
           PRERELEASE="$([[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]] && echo "true" || echo "false")"
           echo "::set-output name=prerelease::${PRERELEASE}"
@@ -40,7 +40,7 @@ jobs:
           echo "::set-output name=existing_release::${EXISTING_RELEASE}"
       - name: Check we're building the right version
         run: |
-          if [[ "v$(cat VERSION)" != "${{steps.metadata.outputs.version}}" ]]; then
+          if [[ "$(cat VERSION)" != "${{steps.metadata.outputs.version}}" ]]; then
             echo "Tag version is "${{steps.metadata.outputs.version}}", but the source code version is "$(cat VERSION)". These need to match!"
             exit 1
           fi
@@ -68,7 +68,7 @@ jobs:
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Get Release Notes
         run: |
-          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\s${{steps.metadata.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
+          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\sv${{steps.metadata.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -79,8 +79,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.build_info.outputs.version }}
-          release_name: ${{ needs.build_info.outputs.version }}
+          tag_name: "v${{ needs.build_info.outputs.version }}"
+          release_name: "v${{ needs.build_info.outputs.version }}"
           body: ${{ env.RELEASE_NOTES }}
           prerelease: ${{ needs.build_info.outputs.prerelease == 'true' }}
       - name: Compile MovieMatch
@@ -96,7 +96,7 @@ jobs:
             assets+=("-a" "$target")
           done
           assets+=("-a" "./build/moviematch.bundle.js")
-          hub release edit "${assets[@]}" -m "${{ needs.build_info.outputs.version }}" "${{ needs.build_info.outputs.version }}" || true
+          hub release edit "${assets[@]}" -m "v${{ needs.build_info.outputs.version }}" "v${{ needs.build_info.outputs.version }}" || true
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -117,7 +117,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            VERSION=${{needs.build_info.outputs.version}}
+            VERSION="v${{needs.build_info.outputs.version}}"
           tags: |
             lukechannings/moviematch:${{ needs.build_info.outputs.version }}
             ${{ needs.build_info.outputs.prerelease == 'false' && 'lukechannings/moviematch:latest' || '' }}
