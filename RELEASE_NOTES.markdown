@@ -1,5 +1,10 @@
 # Release Notes
 
+## v2.0.0-alpha.4
+
+- Upgrade Deno to 1.8.2
+- Don't fail entire test suite if TEST_PLEX_URL and TEST_PLEX_TOKEN are missing (fixes failing tests on PRs)
+
 ## v2.0.0-alpha.3
 
 - Publish the JS bundle to the release artefacts (Fixes an issue with Docker images not building for ARM64 under QEMU)

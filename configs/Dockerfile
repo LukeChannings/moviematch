@@ -1,4 +1,4 @@
-FROM lukechannings/deno:v1.8.0
+FROM lukechannings/deno:v1.8.2
 
 ARG VERSION
 
