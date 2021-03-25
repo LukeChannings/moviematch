@@ -87,40 +87,40 @@ try {
   });
 
   Deno.test("plexApi -> getLibraries", async () => {
-    const librarySchema = object().shape({
-      allowSync: boolean().required(),
-      art: string().required(),
-      composite: string().required(),
-      filters: boolean().required(),
-      refreshing: boolean().required(),
-      thumb: string().required(),
-      key: string().required(),
-      type: string().matches(/^(movie|show|artist|photo)$/).required(),
-      title: string().required(),
-      agent: string().required(),
-      scanner: string().required(),
-      language: string().required(),
-      uuid: string().required(),
-      updatedAt: number().required(),
-      createdAt: number().required(),
-      scannedAt: number().required(),
-      content: boolean().required(),
-      directory: boolean().required(),
-      contentChangedAt: number().required(),
-      hidden: number().required(),
-      Location: array(
-        object().shape({
-          id: number().required(),
-          path: string().required(),
-        }).required(),
-      ).required(),
-    });
+    const librarySchema = array(
+      object().shape({
+        allowSync: boolean().required(),
+        art: string().required(),
+        composite: string().required(),
+        filters: boolean().required(),
+        refreshing: boolean().required(),
+        thumb: string().required(),
+        key: string().required(),
+        type: string().matches(/^(movie|show|artist|photo)$/).required(),
+        title: string().required(),
+        agent: string().required(),
+        scanner: string().required(),
+        language: string().required(),
+        uuid: string().required(),
+        updatedAt: number().required(),
+        createdAt: number().required(),
+        scannedAt: number().required(),
+        content: boolean().required(),
+        directory: boolean().required(),
+        contentChangedAt: number().required(),
+        hidden: number().required(),
+        Location: array(
+          object().shape({
+            id: number().required(),
+            path: string().required(),
+          }).required(),
+        ).required(),
+      }),
+    ).required().min(1);
 
     const libraries = await plexApi.getLibraries();
 
-    for (const library of libraries) {
-      await librarySchema.validate(library);
-    }
+    await librarySchema.validate(libraries);
   });
 
   Deno.test("plexApi -> getAllFilters", async () => {
@@ -143,7 +143,7 @@ try {
             }).required(),
           ),
         }),
-      ),
+      ).min(1),
       FieldType: array(
         object().shape({
           type: string().required(),
@@ -154,11 +154,8 @@ try {
             }),
           ),
         }),
-      ),
+      ).min(1),
     });
-
-    assertNotEquals(filters.Type.length, 0, "Filters cannot be empty");
-    assertNotEquals(filters.FieldType.length, 0, "Filters cannot be empty");
 
     await filtersSchema.validate(filters);
   });
@@ -184,7 +181,7 @@ try {
           key: string().required(),
           title: string().required(),
         }),
-      ).required(),
+      ).required().min(1),
     });
 
     await filterValueSchema.validate(filterValues);
