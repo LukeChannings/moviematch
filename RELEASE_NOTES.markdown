@@ -4,6 +4,8 @@
 
 - Publish the JS bundle to the release artefacts (Fixes an issue with Docker images not building for ARM64 under QEMU)
 - Ask for permission before using read/write/env/net if run with `deno run` without any permission flags
+- Fix a regression in room creation filters
+- Fixes to the CI pipeline
 
 ## v2.0.0-alpha.2
 

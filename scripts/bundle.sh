@@ -33,9 +33,6 @@ for TARGET in "${TARGETS[@]}"; do
   mkdir -p "$TARGET"
   pushd "$TARGET"
   deno compile --unstable --lite --allow-read --allow-write --allow-env --allow-net --target "$TARGET" --output ./moviematch ../moviematch.bundle.js
-  if [ "$TARGET" == "x86_64-pc-windows-msvc" ]; then
-    mv ./moviematch ./moviematch.exe
-  fi
   zip -r -j "../$TARGET.zip" ./*
   popd
 done
