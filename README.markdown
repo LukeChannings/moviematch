@@ -25,11 +25,13 @@ If two (or more) people swipe right on the same movie, it'll show up in everyone
 
 ## Getting started
 
-`docker run -it -e PLEX_URL=<Plex URL> -e PLEX_TOKEN=<Your Token> -p 8000:8000 lukechannings/moviematch`
+`docker run -it -e PLEX_URL=<Plex URL> -e PLEX_TOKEN=<Your Token> -p 8000:8000 --pull always lukechannings/moviematch:latest`
 
 **Note**: There is also documentation for **docker-compose** over [here](./docs/docker-compose.markdown) 👈
 
 ## Configuration
+
+⚠️ If you're using MovieMatch v1 please refer to [**these options**](https://github.com/LukeChannings/moviematch/tree/v1#configuration). ⚠️
 
 The following variables are supported via a `.env` file or environment variables.
 
