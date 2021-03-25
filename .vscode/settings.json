@@ -7,6 +7,8 @@
   "deno.codeLens.referencesAllFunctions": true,
   "deno.codeLens.references": true,
   "deno.config": "tsconfig.json",
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
   "[javascript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
