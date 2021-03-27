@@ -8,7 +8,7 @@ interface PillProps {
 }
 
 export const Pill = ({ children, onRemove }: PillProps) =>
-  <div className="Pill" onClick={onRemove}>
+  <div className={`Pill ${onRemove ? "--has-remove" : ""}`} onClick={onRemove}>
     <span className="PillLabel">{children}</span>
     {onRemove && <span className="PillCloseIcon">&times;</span>}
   </div>;

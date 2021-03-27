@@ -7,15 +7,24 @@ import { Media } from "../../../../types/moviematch.ts";
 
 import "./Card.css";
 import { InfoIcon } from "./InfoIcon.tsx";
+import { Pill } from "./Pill.tsx";
+import { ContentRatingSymbol } from "./ContentRatingSymbol.tsx";
 
 export interface CardProps {
   title?: ReactNode;
   href?: string;
   media: Media;
+
+  style?: React.CSSProperties;
 }
 
+const formatTime = (milliseconds: number) =>
+  `${Math.round((milliseconds / 1000) / 60)} minutes`;
+
+const formatList = (list: string[]) => list.join("&");
+
 export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
-  ({ media, title, href }, ref) => {
+  ({ media, title, href, style }, ref) => {
     const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
     const srcSet = [
@@ -53,8 +62,25 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
         {showMoreInfo
           ? (
             <div className="Card_MoreInfo">
-              <p className="Card_MoreInfo_Title">{mediaTitle}</p>
-              <p className="Card_MoreInfo_Description">{media.description}</p>
+              <div className="Card_MoreInfo_Header">
+                <p className="Card_MoreInfo_Title">{mediaTitle}</p>
+                <div className="Card_MoreInfo_Metadata">
+                  <Pill>{media.year}</Pill>
+                  <Pill>{formatTime(+media.duration)}</Pill>
+                  <Pill>{media.rating} ⭐️</Pill>
+                  <Pill>
+                    <ContentRatingSymbol
+                      rating={media.contentRating!}
+                      size="1.5em"
+                    />
+                  </Pill>
+                  {media.genres.map((genre) => <Pill>{genre}</Pill>)}
+                </div>
+              </div>
+              <p className="Card_MoreInfo_Description">
+                {media.description}
+                {media.description}
+              </p>
             </div>
           )
           : (

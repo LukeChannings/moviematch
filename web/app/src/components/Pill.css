@@ -4,24 +4,25 @@
   border-radius: var(--s1);
   color: var(--mm-white);
   line-height: 1;
-  cursor: pointer;
   transition: background-color 100ms ease-in-out;
   display: flex;
   align-items: center;
   place-content: center;
   justify-content: center;
-  position: relative;
-  padding-right: 1.2rem;
+}
+
+.Pill.--has-remove {
+  cursor: pointer;
 }
 
 @media (hover: hover) {
-  .Pill:focus,
-  .Pill:hover {
+  .--has-remove .Pill:focus,
+  .--has-remove .Pill:hover {
     background-color: var(--mm-failure-color);
   }
 
-  .Pill:focus .PillCloseIcon,
-  .Pill:hover .PillCloseIcon {
+  .--has-remove .Pill:focus .PillCloseIcon,
+  .--has-remove .Pill:hover .PillCloseIcon {
     color: var(--mm-white);
   }
 }
@@ -39,7 +40,7 @@
   font-weight: bold;
   font-size: 1.2rem;
   transition: color 100ms ease-in-out;
-  position: absolute;
-  top: 0px;
-  right: var(--s1);
+  position: relative;
+  margin-left: var(--s2);
+  top: -4px;
 }
