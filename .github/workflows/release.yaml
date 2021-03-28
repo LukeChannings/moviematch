@@ -114,7 +114,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            VERSION="v${{needs.build_info.outputs.version}}"
+            VERSION=v${{needs.build_info.outputs.version}}
           tags: |
             lukechannings/moviematch:${{ needs.build_info.outputs.version }}
             ${{ needs.build_info.outputs.prerelease == 'false' && 'lukechannings/moviematch:latest' || '' }}
