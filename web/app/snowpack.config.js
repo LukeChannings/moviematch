@@ -1,10 +1,10 @@
-const { NODE_ENV, VERSION } = process.env;
+const { VERSION = "dev" } = process.env;
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   env: {
-    API_URI: NODE_ENV === "production" ? undefined : "http://localhost:8000",
-    VERSION: NODE_ENV === "production" ? VERSION : "dev",
+    API_URI: VERSION === "dev" ? "http://localhost:8000" : undefined,
+    VERSION,
   },
   mount: {
     static: { url: "/", static: true },

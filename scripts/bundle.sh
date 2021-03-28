@@ -14,7 +14,6 @@ done
 rm -rf ./build ./web/app/{node_modules,dist,build}
 
 export VERSION="$(cat VERSION)"
-export NODE_ENV="production"
 
 cd web/app
   npm install
