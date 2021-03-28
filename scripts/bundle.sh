@@ -15,7 +15,7 @@ export VERSION="$(cat VERSION)"
 export NODE_ENV="production"
 
 cd web/app
-  npm ci
+  npm install
   npm run build
 cd -
 
