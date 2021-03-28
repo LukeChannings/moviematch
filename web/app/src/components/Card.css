@@ -107,6 +107,7 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
+  touch-action: pan-y;
 }
 
 .Card_MoreInfo_Title,
@@ -131,7 +132,11 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: var(--s1);
   margin-left: calc(var(--s1) * -1);
   margin-bottom: var(--s2);
+}
+
+.Card_MoreInfo_Metadata > * {
+  margin-bottom: var(--s1);
+  margin-right: var(--s1);
 }
