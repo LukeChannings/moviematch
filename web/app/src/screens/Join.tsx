@@ -1,23 +1,18 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import "./Join.css";
-import { Field } from "../components/Field.tsx";
-import { Spinner } from "../components/Spinner.tsx";
-import { Button } from "../components/Button.tsx";
-import { ButtonContainer } from "../components/ButtonContainer.tsx";
-import { ScreenProps } from "../components/Screen.ts";
-import { MovieMatchContext } from "../store.ts";
-import {
+import { Field } from "../components/Field";
+import { Spinner } from "../components/Spinner";
+import { Button } from "../components/Button";
+import { ButtonContainer } from "../components/ButtonContainer";
+import type { ScreenProps } from "../components/Screen";
+import { MovieMatchContext } from "../store";
+import type {
   JoinRoomError,
   JoinRoomSuccess,
-} from "../../../../types/moviematch.ts";
-import { Layout } from "../components/Layout.tsx";
-import { ErrorMessage } from "../components/ErrorMessage.tsx";
-import { Tr } from "../components/Tr.tsx";
+} from "../../../../types/moviematch";
+import { Layout } from "../components/Layout";
+import { ErrorMessage } from "../components/ErrorMessage";
+import { Tr } from "../components/Tr";
 
 export const JoinScreen = ({
   navigate,

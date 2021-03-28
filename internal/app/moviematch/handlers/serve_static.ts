@@ -33,4 +33,4 @@ export const serveStatic = (basePaths: string[]): RouteHandler =>
     return response;
   };
 
-export const handler = serveStatic(["/web/static", "/web/app/dist"]);
+export const handler = serveStatic(["/web/app/build"]);

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { ReactNode } from "react";
 
 import "./ButtonContainer.css";
 

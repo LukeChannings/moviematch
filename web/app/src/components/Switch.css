@@ -5,7 +5,7 @@
   --switchEyeColor: var(--colorText4);
 }
 
-.Switch {
+.switch {
   appearance: none;
   display: inline-flex;
   align-items: center;
@@ -17,7 +17,7 @@
   border-radius: rem(12px);
 }
 
-.Switch::after {
+.switch::after {
   display: block;
   content: "";
   width: 1rem;
@@ -29,19 +29,19 @@
   transition: left ease-out 100ms, background-color ease-in-out 100ms;
 }
 
-.Switch:disabled {
+.switch:disabled {
   --switchBackgroundColor: var(--colorBrand4);
   --switchEyeColor: var(--colorBrand3);
   --switchHighlight: var(--colorPrimary3);
 }
 
-.Switch:not(:disabled):hover {
+.switch:not(:disabled):hover {
   --switchBorderColor: var(--switchHighlight);
 
   cursor: pointer;
 }
 
-.Switch:checked::after {
+.switch:checked::after {
   left: rem(18px);
 
   --switchEyeColor: var(--switchHighlight);

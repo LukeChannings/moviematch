@@ -1,14 +1,12 @@
 {
   "editor.formatOnSave": true,
-  "deno.enable": true,
+  "deno.enable": false,
   "deno.unstable": true,
   "deno.lint": false,
   "deno.importMap": "configs/import_map.json",
   "deno.codeLens.referencesAllFunctions": true,
   "deno.codeLens.references": true,
   "deno.config": "tsconfig.json",
-  "typescript.validate.enable": false,
-  "javascript.validate.enable": false,
   "[javascript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },

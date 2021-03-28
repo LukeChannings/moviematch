@@ -1,9 +1,6 @@
-import React, {
-  memo,
-  useContext,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { TranslationKey } from "../../../../types/moviematch.ts";
-import { MovieMatchContext, Store } from "../store.ts";
+import React, { memo, useContext } from "react";
+import type { TranslationKey } from "../../../../types/moviematch";
+import { MovieMatchContext } from "../store";
 
 interface TranslationProps {
   name: TranslationKey;

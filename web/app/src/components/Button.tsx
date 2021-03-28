@@ -1,5 +1,5 @@
-import React, { ReactNode } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Color, Spacing } from "../types.ts";
+import React, { ReactNode } from "react";
+import type { Color, Spacing } from "../types";
 import "./Button.css";
 
 interface ButtonProps {

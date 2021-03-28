@@ -1,6 +1,6 @@
-import React from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Layout } from "../components/Layout.tsx";
-import { Spinner } from "../components/Spinner.tsx";
+import React from "react";
+import { Layout } from "../components/Layout";
+import { Spinner } from "../components/Spinner";
 
 export const Loading = () => (
   <Layout>

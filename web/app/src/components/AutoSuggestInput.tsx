@@ -1,18 +1,11 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { useEffect, useState } from "react";
 
-import {
-  useCombobox,
-  useMultipleSelection,
-} from "https://cdn.skypack.dev/downshift?dts";
-import { usePopper } from "https://cdn.skypack.dev/react-popper?dts";
-import { FilterValue } from "/types/moviematch.ts";
+import { useCombobox, useMultipleSelection } from "downshift";
+import { usePopper } from "react-popper";
+import type { FilterValue } from "../../../../types/moviematch";
 
 import "./AutoSuggestInput.css";
-import { Pill } from "./Pill.tsx";
+import { Pill } from "./Pill";
 
 interface AutoSuggestInputProps {
   inputName: string;
@@ -20,9 +13,11 @@ interface AutoSuggestInputProps {
   onChange: (value: FilterValue[]) => void;
 }
 
-export const AutoSuggestInput = (
-  { inputName, items, onChange }: AutoSuggestInputProps,
-) => {
+export const AutoSuggestInput = ({
+  inputName,
+  items,
+  onChange,
+}: AutoSuggestInputProps) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
     getDropdownProps,
@@ -30,12 +25,11 @@ export const AutoSuggestInput = (
     removeSelectedItem,
     selectedItems,
   } = useMultipleSelection({ initialSelectedItems: [] as FilterValue[] });
-  const [referenceElement, setReferenceElement] = useState<
-    HTMLDivElement | null
-  >();
-  const [popperElement, setPopperElement] = useState<
-    HTMLULListElement | null
-  >();
+  const [
+    referenceElement,
+    setReferenceElement,
+  ] = useState<HTMLDivElement | null>();
+  const [popperElement, setPopperElement] = useState<HTMLUListElement | null>();
 
   const { styles, attributes, update: updatePopper } = usePopper(
     referenceElement,
@@ -90,7 +84,9 @@ export const AutoSuggestInput = (
           if (typeof selectedItem?.value === "string") {
             setInputValue("");
             addSelectedItem(selectedItem);
-            updatePopper();
+            if (updatePopper) {
+              updatePopper();
+            }
           }
           break;
         default:
@@ -117,17 +113,15 @@ export const AutoSuggestInput = (
 
   return (
     <>
-      <div
-        {...getComboboxProps()}
-        className="AutoSuggestInputContainer"
-      >
+      <div {...getComboboxProps()} className="AutoSuggestInputContainer">
         <div className="AutoSuggestInputSelections">
           {selectedItems.map((selectedItem, index) => (
             <>
-              {index !== 0 &&
+              {index !== 0 && (
                 <span className="AutoSuggestInputSelectionsDelimiterLabel">
                   or
-                </span>}
+                </span>
+              )}
               <Pill
                 key={`selected-item-${index}`}
                 onRemove={(e) => {
@@ -155,7 +149,7 @@ export const AutoSuggestInput = (
           />
         </div>
       </div>
-      {(isOpen && filteredItems.length !== 0) &&
+      {isOpen && filteredItems.length !== 0 && (
         <ul
           {...menuProps}
           ref={(menuEl) => {
@@ -173,8 +167,7 @@ export const AutoSuggestInput = (
             className="AutoSuggestSuggestionsArrow"
             style={styles.arrow}
             {...attributes.arrow}
-          >
-          </div>
+          ></div>
           <div className="AutoSuggestSuggestionsScrollBox">
             {getFilteredItems().map((item, index) => (
               <li
@@ -188,7 +181,8 @@ export const AutoSuggestInput = (
               </li>
             ))}
           </div>
-        </ul>}
+        </ul>
+      )}
     </>
   );
 };

@@ -2,7 +2,7 @@
  * plex.tv Authentication
  * See - https://forums.plex.tv/t/authenticating-with-plex/609370
  */
-import { Login } from "../../../../types/moviematch.ts";
+import type { Login } from "../../../../types/moviematch";
 
 const APP_NAME = "MovieMatch";
 const CLIENT_ID = localStorage.getItem("plexClientId") ?? generateClientId();

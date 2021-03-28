@@ -1,19 +1,19 @@
-import React, { useCallback } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { render } from "https://cdn.skypack.dev/react-dom@17.0.1?dts";
+import React, { StrictMode, useCallback } from "react";
+import { render } from "react-dom";
 
+import "modern-css-reset/dist/reset.css";
 import "./main.css";
+import "./components/Screen";
 
-import "./components/Screen.ts";
-
-import { LoginScreen } from "./screens/Login.tsx";
-import { JoinScreen } from "./screens/Join.tsx";
-import { CreateScreen } from "./screens/Create.tsx";
-import { RateScreen } from "./screens/Rate.tsx";
-import { MovieMatchContext, Routes, useStore } from "./store.ts";
-import { ScreenProps } from "./components/Screen.ts";
-import { Loading } from "./screens/Loading.tsx";
-import { ToastList } from "./components/Toast.tsx";
-import { ConfigScreen } from "./screens/Config.tsx";
+import { LoginScreen } from "./screens/Login";
+import { JoinScreen } from "./screens/Join";
+import { CreateScreen } from "./screens/Create";
+import { RateScreen } from "./screens/Rate";
+import { MovieMatchContext, Routes, useStore } from "./store";
+import type { ScreenProps } from "./components/Screen";
+import { Loading } from "./screens/Loading";
+import { ToastList } from "./components/Toast";
+import { ConfigScreen } from "./screens/Config";
 
 const MovieMatch = () => {
   const [store, dispatch] = useStore();
@@ -49,18 +49,24 @@ const MovieMatch = () => {
         <ToastList
           toasts={store.toasts}
           removeToast={(toast) =>
-            dispatch({ type: "removeToast", payload: toast })}
+            dispatch({ type: "removeToast", payload: toast })
+          }
         />
       </>
     </MovieMatchContext.Provider>
   );
 };
 
-render(<MovieMatch />, document.getElementById("app"));
+render(
+  <StrictMode>
+    <MovieMatch />
+  </StrictMode>,
+  document.getElementById("app"),
+);
 
 if (
   window.innerHeight !==
-    document.querySelector("body")?.getBoundingClientRect().height
+  document.querySelector("body")?.getBoundingClientRect().height
 ) {
   document.body.style.setProperty("--vh", window.innerHeight / 100 + "px");
   window.addEventListener("resize", () => {

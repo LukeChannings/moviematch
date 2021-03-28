@@ -1,4 +1,4 @@
-import React from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React from "react";
 
 import "./Avatar.css";
 
@@ -20,10 +20,11 @@ export const Avatar = ({ userName, avatarUrl }: AvatarProps) => {
   return (
     <img
       className="Avatar"
-      src={avatarUrl ||
-        `data:image/svg+xml;utf8,${encodeURIComponent(defaultImage(userName))}`}
+      src={
+        avatarUrl ||
+        `data:image/svg+xml;utf8,${encodeURIComponent(defaultImage(userName))}`
+      }
       alt={`${userName}'s avatar`}
-    >
-    </img>
+    ></img>
   );
 };

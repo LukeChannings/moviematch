@@ -1,5 +1,5 @@
-import React, { ReactNode } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Logo } from "./Logo.tsx";
+import React, { ReactNode } from "react";
+import { Logo } from "./Logo";
 
 interface LayoutProps {
   hideLogo?: boolean;

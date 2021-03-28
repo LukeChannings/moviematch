@@ -1,7 +1,4 @@
-import React, {
-  ReactNode,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { ReactNode, useState } from "react";
 
 import "./AddRemoveList.css";
 

@@ -1,6 +1,6 @@
-import React, { ReactNode } from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { ReactNode } from "react";
 import "./Field.css";
-import { TextInput } from "./TextInput.tsx";
+import { TextInput } from "./TextInput";
 
 interface FieldProps {
   name?: string;
@@ -34,14 +34,18 @@ export const Field = ({
         {label}
       </label>
     )}
-    {children ? children : <TextInput
-      name={name!}
-      value={String(value)}
-      autoComplete={autoComplete}
-      onChange={onChange}
-      onBlur={onBlur}
-      paddingTop="s2"
-    />}
+    {children ? (
+      children
+    ) : (
+      <TextInput
+        name={name!}
+        value={String(value)}
+        autoComplete={autoComplete}
+        onChange={onChange}
+        onBlur={onBlur}
+        paddingTop="s2"
+      />
+    )}
     {errorMessage && <p className="Field_Error">{errorMessage}</p>}
   </div>
 );

@@ -1,13 +1,14 @@
-import React, {
-  useEffect,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Filter, Filters, FilterValue } from "../../../../types/moviematch.ts";
-import { Select } from "./Select.tsx";
+import React, { useEffect, useState } from "react";
+import type {
+  Filter,
+  Filters,
+  FilterValue,
+} from "../../../../types/moviematch";
+import { Select } from "./Select";
 
 import "./FilterField.css";
-import { AutoSuggestInput } from "./AutoSuggestInput.tsx";
-import { useAsyncEffect } from "../hooks/useAsyncEffect.ts";
+import { AutoSuggestInput } from "./AutoSuggestInput";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
 
 interface FilterFieldProps {
   filters: Filters;
@@ -15,9 +16,11 @@ interface FilterFieldProps {
   getSuggestions: (key: string) => Promise<FilterValue[]>;
 }
 
-export const FilterField = (
-  { onChange, filters, getSuggestions }: FilterFieldProps,
-) => {
+export const FilterField = ({
+  onChange,
+  filters,
+  getSuggestions,
+}: FilterFieldProps) => {
   const [key, setKey] = useState<string>("");
   const [operator, setOperator] = useState<string>("=");
   const [value, setValue] = useState<FilterValue[]>([]);

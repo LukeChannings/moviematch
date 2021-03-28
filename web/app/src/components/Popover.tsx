@@ -1,9 +1,4 @@
-import React, {
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 
 import "./Popover.css";
 

@@ -1,16 +1,13 @@
-import React, {
-  useContext,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { useContext, useState } from "react";
 import "./Login.css";
-import { Field } from "../components/Field.tsx";
-import { Button } from "../components/Button.tsx";
-import { ButtonContainer } from "../components/ButtonContainer.tsx";
-import { getPlexCredentials } from "../api/plex_tv.ts";
-import { MovieMatchContext } from "../store.ts";
-import { ScreenProps } from "../components/Screen.ts";
-import { Layout } from "../components/Layout.tsx";
-import { Tr } from "../components/Tr.tsx";
+import { Field } from "../components/Field";
+import { Button } from "../components/Button";
+import { ButtonContainer } from "../components/ButtonContainer";
+import { getPlexCredentials } from "../api/plex_tv";
+import { MovieMatchContext } from "../store";
+import type { ScreenProps } from "../components/Screen";
+import { Layout } from "../components/Layout";
+import { Tr } from "../components/Tr";
 
 export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
   const { client, config, translations } = useContext(MovieMatchContext);

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "https://cdn.skypack.dev/react@17.0.1?dts";
+import { useEffect, useRef } from "react";
 
 export const useAnimationFrame = (
   callback: (deltaTime: number) => unknown,

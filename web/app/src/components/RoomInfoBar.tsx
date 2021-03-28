@@ -1,12 +1,12 @@
-import React, { useContext } from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { MovieMatchContext } from "../store.ts";
-import { ShareIcon } from "./ShareIcon.tsx";
-import { Avatar } from "./Avatar.tsx";
+import React, { useContext } from "react";
+import { MovieMatchContext } from "../store";
+import { ShareIcon } from "./ShareIcon";
+import { Avatar } from "./Avatar";
 
 import "./RoomInfoBar.css";
-import { Tr } from "./Tr.tsx";
-import { Toast } from "./Toast.tsx";
-import { Popover, PopoverButton, PopoverMenuButton } from "./Popover.tsx";
+import { Tr } from "./Tr";
+import type { Toast } from "./Toast";
+import { Popover, PopoverButton, PopoverMenuButton } from "./Popover";
 
 interface RoomInfoBarProps {
   logout: () => void;

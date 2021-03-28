@@ -1,4 +1,4 @@
-import { useEffect, useState } from "https://cdn.skypack.dev/react@17.0.1?dts";
+import { useEffect, useState } from "react";
 
 export const usePromise = <T>(promise: Promise<T>, deps: unknown[]) => {
   const [loading, setLoading] = useState<boolean>(true);

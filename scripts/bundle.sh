@@ -11,8 +11,11 @@ e) EXIT_EARLY=1;;
 esac
 done
 
-esbuild web/app/src/main.tsx --bundle --minify --outdir=web/app/dist --format=esm --sourcemap=external --target=es2019
-deno run --unstable -A ./cmd/moviematch/pkger.ts web/static web/template web/app/dist configs/localization VERSION
+export VERSION="$(cat VERSION)"
+export NODE_ENV="production"
+
+cd web/app; npm run build; cd -
+deno run --unstable -A ./cmd/moviematch/pkger.ts web/app/build web/template/index.html configs/localization VERSION
 
 rm -rf build
 mkdir -p build

@@ -58,9 +58,6 @@ jobs:
           curl -fsSL https://deno.land/x/install/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
           export PATH="$DENO_INSTALL/bin:$PATH"
-      - name: Install esbuild
-        run: |
-          GO111MODULE=on go get github.com/evanw/esbuild/cmd/esbuild@v0.8.54
       - name: Tests
         run: ./scripts/test.sh
         env:

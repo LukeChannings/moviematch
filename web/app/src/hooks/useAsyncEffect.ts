@@ -1,4 +1,4 @@
-import { useEffect } from "https://cdn.skypack.dev/react@17.0.1?dts";
+import { useEffect } from "react";
 
 export const useAsyncEffect = (
   fn: (...args: unknown[]) => Promise<unknown>,

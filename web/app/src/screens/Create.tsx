@@ -1,25 +1,20 @@
-import React, {
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
-import {
+import React, { useCallback, useContext, useRef, useState } from "react";
+import type {
   Filter,
   Filters,
   JoinRoomSuccess,
-} from "../../../../types/moviematch.ts";
-import { Button } from "../components/Button.tsx";
-import { ButtonContainer } from "../components/ButtonContainer.tsx";
-import { ErrorMessage } from "../components/ErrorMessage.tsx";
-import { Field } from "../components/Field.tsx";
-import { FilterField } from "../components/FilterField.tsx";
-import { AddRemoveList } from "../components/AddRemoveList.tsx";
-import { Layout } from "../components/Layout.tsx";
-import { ScreenProps } from "../components/Screen.ts";
-import { Tr } from "../components/Tr.tsx";
-import { MovieMatchContext } from "../store.ts";
-import { useAsyncEffect } from "../hooks/useAsyncEffect.ts";
+} from "../../../../types/moviematch";
+import { Button } from "../components/Button";
+import { ButtonContainer } from "../components/ButtonContainer";
+import { ErrorMessage } from "../components/ErrorMessage";
+import { Field } from "../components/Field";
+import { FilterField } from "../components/FilterField";
+import { AddRemoveList } from "../components/AddRemoveList";
+import { Layout } from "../components/Layout";
+import type { ScreenProps } from "../components/Screen";
+import { Tr } from "../components/Tr";
+import { MovieMatchContext } from "../store";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
 
 import "./Create.css";
 
@@ -94,7 +89,9 @@ export const CreateScreen = ({
             >
               {(i) => (
                 <FilterField
-                  onChange={(filter) => filters.current.set(i, filter)}
+                  onChange={(filter) =>
+                    filter && filters.current.set(i, filter)
+                  }
                   filters={availableFilters}
                   getSuggestions={async (key: string) => {
                     return await client.getFilterValues(key);

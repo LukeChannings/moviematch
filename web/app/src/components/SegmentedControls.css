@@ -34,13 +34,14 @@
 .SegmentedControlOption {
   position: relative;
   font-size: var(--scItemFontSize);
-  color: var(--scTextColor);
-  font-weight: 500;
+  font-weight: inherit;
   white-space: nowrap;
   cursor: pointer;
   margin: 0;
   display: inline-block;
   width: 100%;
+  touch-action: manipulation;
+  pointer-events: all;
 }
 
 .SegmentedControlsListItem:last-child {
@@ -68,10 +69,8 @@
 }
 
 .SegmentedControlsListItemSelected {
-  border-color: var(--mm-blue);
-}
-
-.SegmentedControlsListItemSelected .SegmentedControlsListItem {
-  background-color: var(--mm-blue);
+  background-color: var(--mm-pale-blue);
   color: var(--mm-white);
+  border-color: var(--mm-pale-blue);
+  font-weight: 500;
 }

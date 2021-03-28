@@ -1,4 +1,4 @@
-import {
+import type {
   ClientMessage,
   Config,
   CreateRoomRequest,
@@ -8,10 +8,10 @@ import {
   Login,
   Rate,
   ServerMessage,
-} from "../../../../types/moviematch.ts";
+} from "../../../../types/moviematch";
 
 const API_URL = (() => {
-  const url = new URL(location.href);
+  const url = new URL(import.meta.env.API_URI ?? location.href);
   url.pathname = document.body.dataset.basePath + "/api/ws";
   url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
   return url.href;
@@ -19,7 +19,7 @@ const API_URL = (() => {
 
 type FilterClientMessageByType<
   A extends ClientMessage,
-  ClientMessageType extends string,
+  ClientMessageType extends string
 > = A extends { type: ClientMessageType } ? A : never;
 
 export class MovieMatchClient extends EventTarget {

@@ -8,5 +8,6 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  min-height: calc(var(--vh, 1vh) * 100);
+  /* window.innerHeight doesn't include safe-area-inset-top on iOS for an unknown reason... */
+  min-height: calc(var(--vh, 1vh) * 100 + env(safe-area-inset-top));
 }

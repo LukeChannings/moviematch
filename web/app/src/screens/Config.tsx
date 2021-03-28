@@ -1,17 +1,13 @@
-import React, {
-  useRef,
-  useState,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Formik } from "https://cdn.skypack.dev/formik?dts";
-import { Config } from "../../../../types/moviematch.ts";
-import { AddRemoveList } from "../components/AddRemoveList.tsx";
-import { Field } from "../components/Field.tsx";
-import { Layout } from "../components/Layout.tsx";
-import { ScreenProps } from "../components/Screen.ts";
-import { Select } from "../components/Select.tsx";
-import { Switch } from "../components/Switch.tsx";
-import { Button } from "../components/Button.tsx";
-import { ErrorMessage } from "../components/ErrorMessage.tsx";
+import React, { useRef, useState } from "react";
+import { Formik } from "formik";
+import type { Config } from "../../../../types/moviematch";
+import { AddRemoveList } from "../components/AddRemoveList";
+import { Field } from "../components/Field";
+import { Layout } from "../components/Layout";
+import type { ScreenProps } from "../components/Screen";
+import { Select } from "../components/Select";
+import { Button } from "../components/Button";
+import { ErrorMessage } from "../components/ErrorMessage";
 
 import "./Config.css";
 
@@ -22,7 +18,7 @@ export const ConfigScreenFmk = () => (
       initialValues={{ email: "", password: "" }}
       validate={(values) => {
         console.log(values);
-        const errors = {};
+        const errors: Record<string, string> = {};
         if (!values.email) {
           errors.email = "Required";
         } else if (
@@ -135,11 +131,11 @@ export const ConfigScreen = ({
                 name="logLevel"
                 value={values.logLevel!}
                 options={{
-                  "DEBUG": "Debug",
-                  "INFO": "Info",
-                  "WARNING": "Warning",
-                  "ERROR": "Error",
-                  "CRITICAL": "Critical",
+                  DEBUG: "Debug",
+                  INFO: "Info",
+                  WARNING: "Warning",
+                  ERROR: "Error",
+                  CRITICAL: "Critical",
                 }}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -174,41 +170,48 @@ export const ConfigScreen = ({
                       <AddRemoveList
                         initialChildren={0}
                         onRemove={(i) => {
-                          const newValue = values.servers![index]
-                            .libraryTitleFilter!.flatMap((value, index) =>
-                              index !== i ? value : []
-                            );
+                          const newValue = values.servers![
+                            index
+                          ].libraryTitleFilter!.flatMap((value, index) =>
+                            index !== i ? value : [],
+                          );
                           setFieldValue(
                             `servers.${index}.libraryTitleFilter`,
                             newValue,
                           );
                         }}
                       >
-                        {(i) =>
+                        {(i) => (
                           <Field
                             name={`servers.${index}.libraryTitleFilter.${i}`}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            value={((values.servers![index] ?? {})
-                              .libraryTitleFilter ?? [])[i] ?? ""}
-                          />}
+                            value={
+                              ((values.servers![index] ?? {})
+                                .libraryTitleFilter ?? [])[i] ?? ""
+                            }
+                          />
+                        )}
                       </AddRemoveList>
                     </Field>
 
                     <Field label="Library Type Filter">
                       <AddRemoveList initialChildren={0}>
-                        {(i) =>
+                        {(i) => (
                           <Select
                             name={`servers.${index}.libraryTypeFilter.${i}`}
-                            value={((values.servers![index] ?? {})
-                              .libraryTypeFilter ?? [])[i] ?? ""}
+                            value={
+                              ((values.servers![index] ?? {})
+                                .libraryTypeFilter ?? [])[i] ?? ""
+                            }
                             options={{
-                              "movie": "Movies",
-                              "show": "TV Shows",
-                              "artist": "Music",
-                              "photo": "Photos",
+                              movie: "Movies",
+                              show: "TV Shows",
+                              artist: "Music",
+                              photo: "Photos",
                             }}
-                          />}
+                          />
+                        )}
                       </AddRemoveList>
                     </Field>
                     <Field label="Link Type">
@@ -216,9 +219,9 @@ export const ConfigScreen = ({
                         name={`servers.${index}.linkType`}
                         value={values.servers![index]?.linkType ?? ""}
                         options={{
-                          "app": "App",
-                          "webLocal": "Local Web app",
-                          "webExternal": "External Web app (plex.tv)",
+                          app: "App",
+                          webLocal: "Local Web app",
+                          webExternal: "External Web app (plex.tv)",
                         }}
                       />
                     </Field>
@@ -226,11 +229,9 @@ export const ConfigScreen = ({
                 )}
               </AddRemoveList>
             </Field>
-            {
-              /* <Field name="requirePlexTvLogin" label="Require Plex TV login">
+            {/* <Field name="requirePlexTvLogin" label="Require Plex TV login">
               <Switch />
-            </Field> */
-            }
+            </Field> */}
             <Button appearance="Primary" onPress={() => handleSubmit()}>
               Configure
             </Button>

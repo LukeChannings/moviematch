@@ -1,20 +1,16 @@
-import {
-  createContext,
-  useEffect,
-  useReducer,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
-import {
+import { createContext, useEffect, useReducer } from "react";
+import type {
   AppConfig,
   ClientMessage,
   Login,
   Match,
   Media,
   Translations,
-} from "../../../types/moviematch.ts";
-import { getClient, MovieMatchClient } from "./api/moviematch.ts";
-import { checkPin, PlexPIN, PlexPINExpiredError } from "./api/plex_tv.ts";
-import { Toast } from "./components/Toast.tsx";
-import { useAsyncEffect } from "./hooks/useAsyncEffect.ts";
+} from "../../../types/moviematch";
+import { getClient, MovieMatchClient } from "./api/moviematch";
+import { checkPin, PlexPIN, PlexPINExpiredError } from "./api/plex_tv";
+import type { Toast } from "./components/Toast";
+import { useAsyncEffect } from "./hooks/useAsyncEffect";
 
 interface User {
   userName: string;
@@ -68,11 +64,12 @@ const initialState: Store = {
 
     return {
       userName: userName,
-      plexAuth: plexToken && clientId
-        ? { plexToken, clientId }
-        : pin
-        ? { pin }
-        : undefined,
+      plexAuth:
+        plexToken && clientId
+          ? { plexToken, clientId }
+          : pin
+          ? { pin }
+          : undefined,
     };
   })(),
   toasts: [],
@@ -107,19 +104,18 @@ function reducer(state: Store, action: Actions): Store {
     case "setTranslations":
       return { ...state, translations: action.payload };
     case "match": {
-      const existingMatchindex = state.room?.matches?.findIndex((match) =>
-        match.media.id === action.payload.media.id
+      const existingMatchindex = state.room?.matches?.findIndex(
+        (match) => match.media.id === action.payload.media.id,
       );
       if (existingMatchindex !== -1) {
         return {
           ...state,
           room: {
             ...state.room!,
-            matches: state.room?.matches?.map((match, index) =>
-              (index === existingMatchindex)
-                ? action.payload
-                : match
-            ) ?? [],
+            matches:
+              state.room?.matches?.map((match, index) =>
+                index === existingMatchindex ? action.payload : match,
+              ) ?? [],
           },
         };
       } else {
@@ -158,29 +154,32 @@ export const MovieMatchContext = createContext<Store>(initialState);
 export const useStore = () => {
   const [store, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(function configureClient() {
-    store.client.setLocale({ language: navigator.language });
+  useEffect(
+    function configureClient() {
+      store.client.setLocale({ language: navigator.language });
 
-    const handleMessage = (e: Event) => {
-      const msg: ClientMessage = (e as MessageEvent).data;
-      switch (msg.type) {
-        case "config":
-          dispatch({ type: "setConfig", payload: msg.payload });
-          break;
-        case "match":
-          dispatch({ type: "match", payload: msg.payload });
-          break;
-        case "translations":
-          dispatch({ type: "setTranslations", payload: msg.payload });
-      }
-    };
+      const handleMessage = (e: Event) => {
+        const msg: ClientMessage = (e as MessageEvent).data;
+        switch (msg.type) {
+          case "config":
+            dispatch({ type: "setConfig", payload: msg.payload });
+            break;
+          case "match":
+            dispatch({ type: "match", payload: msg.payload });
+            break;
+          case "translations":
+            dispatch({ type: "setTranslations", payload: msg.payload });
+        }
+      };
 
-    store.client.addEventListener("message", handleMessage);
+      store.client.addEventListener("message", handleMessage);
 
-    return () => {
-      store.client.removeEventListener("message", handleMessage);
-    };
-  }, [store.client]);
+      return () => {
+        store.client.removeEventListener("message", handleMessage);
+      };
+    },
+    [store.client],
+  );
 
   useAsyncEffect(async () => {
     if (store.user?.plexAuth && "pin" in store.user.plexAuth) {
@@ -215,21 +214,24 @@ export const useStore = () => {
     }
   }, []);
 
-  useEffect(function setInitialScreen() {
-    if (store.config) {
-      let path: Routes["path"];
+  useEffect(
+    function setInitialScreen() {
+      if (store.config) {
+        let path: Routes["path"];
 
-      if (store.config.requiresConfiguration) {
-        path = "config";
-      } else if (store.user?.userName) {
-        path = "join";
-      } else {
-        path = "login";
+        if (store.config.requiresConfiguration) {
+          path = "config";
+        } else if (store.user?.userName) {
+          path = "join";
+        } else {
+          path = "login";
+        }
+
+        dispatch({ type: "navigate", payload: { path } });
       }
-
-      dispatch({ type: "navigate", payload: { path } });
-    }
-  }, [store.user, store.config]);
+    },
+    [store.user, store.config],
+  );
 
   return [store, dispatch] as const;
 };

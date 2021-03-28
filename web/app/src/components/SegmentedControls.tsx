@@ -4,10 +4,10 @@ import React, {
   ReactElement,
   ReactNode,
   useContext,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+} from "react";
 
 import "./SegmentedControls.css";
-import { VisuallyHidden } from "./VisuallyHidden.tsx";
+import { VisuallyHidden } from "./VisuallyHidden";
 
 export interface SegmentedControlsProps extends AriaAttributes {
   name: string;

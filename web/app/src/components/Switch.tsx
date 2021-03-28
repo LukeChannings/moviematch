@@ -1,9 +1,6 @@
-import React, {
-  HTMLInputElement,
-  InputHTMLAttributes,
-} from "https://cdn.skypack.dev/react@17.0.1?dts";
+import React, { InputHTMLAttributes } from "react";
 
-import "./Switch.css";
+import styles from "./Switch.css";
 
 export interface SwitchProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> {
@@ -11,9 +8,13 @@ export interface SwitchProps
   paddingTop?: "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
 }
 
-export const Switch = (
-  { checked, onChange, disabled, name, ...props }: SwitchProps,
-) => (
+export const Switch = ({
+  checked,
+  onChange,
+  disabled,
+  name,
+  ...props
+}: SwitchProps) => (
   <input
     type="checkbox"
     checked={checked}

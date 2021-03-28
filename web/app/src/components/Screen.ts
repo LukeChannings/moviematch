@@ -1,5 +1,4 @@
-import React from "https://cdn.skypack.dev/react@17.0.1?dts";
-import { Actions, Routes, Store } from "../store.ts";
+import type { Actions, Routes, Store } from "../store";
 
 import "./Screen.css";
 
