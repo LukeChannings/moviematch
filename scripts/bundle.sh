@@ -14,7 +14,11 @@ done
 export VERSION="$(cat VERSION)"
 export NODE_ENV="production"
 
-cd web/app; npm run build; cd -
+cd web/app
+  npm ci
+  npm run build
+cd -
+
 deno run --unstable -A ./cmd/moviematch/pkger.ts web/app/build web/template/index.html configs/localization VERSION
 
 rm -rf build
