@@ -11,6 +11,8 @@ e) EXIT_EARLY=1;;
 esac
 done
 
+rm -rf ./build ./web/app/{node_modules,dist,build}
+
 export VERSION="$(cat VERSION)"
 export NODE_ENV="production"
 
