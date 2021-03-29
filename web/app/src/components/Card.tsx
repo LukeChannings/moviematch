@@ -40,11 +40,11 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
         className={`Card ${href ? "--link" : ""}`}
         {...(href
           ? {
-              href,
-              target: /(iPhone|iPad)/.test(navigator.userAgent)
-                ? "_self"
-                : "_blank",
-            }
+            href,
+            target: /(iPhone|iPad)/.test(navigator.userAgent)
+              ? "_self"
+              : "_blank",
+          }
           : {})}
       >
         <img
@@ -53,35 +53,36 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
           srcSet={srcSet.join(", ")}
           alt={`${media.title} poster`}
         />
-        {showMoreInfo ? (
-          <div className="Card_MoreInfo">
-            <div className="Card_MoreInfo_Header">
-              <p className="Card_MoreInfo_Title">{mediaTitle}</p>
-              <div className="Card_MoreInfo_Metadata">
-                <Pill>{media.year}</Pill>
-                <Pill>{formatTime(+media.duration)}</Pill>
-                <Pill>{media.rating} ⭐️</Pill>
-                <Pill>
-                  <ContentRatingSymbol
-                    rating={media.contentRating!}
-                    size="1.5em"
-                  />
-                </Pill>
-                {media.genres.map((genre) => (
-                  <Pill>{genre}</Pill>
-                ))}
+        {showMoreInfo
+          ? (
+            <div className="Card_MoreInfo">
+              <div className="Card_MoreInfo_Header">
+                <p className="Card_MoreInfo_Title">{mediaTitle}</p>
+                <div className="Card_MoreInfo_Metadata">
+                  <Pill>{media.year}</Pill>
+                  <Pill>{formatTime(+media.duration)}</Pill>
+                  <Pill>{media.rating} ⭐️</Pill>
+                  <Pill>
+                    <ContentRatingSymbol
+                      rating={media.contentRating!}
+                      size="1.5em"
+                    />
+                  </Pill>
+                  {media.genres.map((genre) => (
+                    <Pill key={genre}>{genre}</Pill>
+                  ))}
+                </div>
               </div>
+              <p className="Card_MoreInfo_Description">
+                {media.description}
+              </p>
             </div>
-            <p className="Card_MoreInfo_Description">
-              {media.description}
-              {media.description}
-            </p>
-          </div>
-        ) : (
-          <div className="Card_Info">
-            <p className="Card_Info_Title">{title ?? mediaTitle}</p>
-          </div>
-        )}
+          )
+          : (
+            <div className="Card_Info">
+              <p className="Card_Info_Title">{title ?? mediaTitle}</p>
+            </div>
+          )}
         <button
           className="Card_MoreInfoButton"
           onClick={(e) => {
