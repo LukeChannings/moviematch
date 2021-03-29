@@ -173,7 +173,7 @@ export const ConfigScreen = ({
                           const newValue = values.servers![
                             index
                           ].libraryTitleFilter!.flatMap((value, index) =>
-                            index !== i ? value : [],
+                            index !== i ? value : []
                           );
                           setFieldValue(
                             `servers.${index}.libraryTitleFilter`,
@@ -186,10 +186,8 @@ export const ConfigScreen = ({
                             name={`servers.${index}.libraryTitleFilter.${i}`}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            value={
-                              ((values.servers![index] ?? {})
-                                .libraryTitleFilter ?? [])[i] ?? ""
-                            }
+                            value={((values.servers![index] ?? {})
+                              .libraryTitleFilter ?? [])[i] ?? ""}
                           />
                         )}
                       </AddRemoveList>
@@ -200,10 +198,8 @@ export const ConfigScreen = ({
                         {(i) => (
                           <Select
                             name={`servers.${index}.libraryTypeFilter.${i}`}
-                            value={
-                              ((values.servers![index] ?? {})
-                                .libraryTypeFilter ?? [])[i] ?? ""
-                            }
+                            value={((values.servers![index] ?? {})
+                              .libraryTypeFilter ?? [])[i] ?? ""}
                             options={{
                               movie: "Movies",
                               show: "TV Shows",
@@ -229,9 +225,11 @@ export const ConfigScreen = ({
                 )}
               </AddRemoveList>
             </Field>
-            {/* <Field name="requirePlexTvLogin" label="Require Plex TV login">
+            {
+              /* <Field name="requirePlexTvLogin" label="Require Plex TV login">
               <Switch />
-            </Field> */}
+            </Field> */
+            }
             <Button appearance="Primary" onPress={() => handleSubmit()}>
               Configure
             </Button>

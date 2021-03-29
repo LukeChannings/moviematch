@@ -64,12 +64,11 @@ const initialState: Store = {
 
     return {
       userName: userName,
-      plexAuth:
-        plexToken && clientId
-          ? { plexToken, clientId }
-          : pin
-          ? { pin }
-          : undefined,
+      plexAuth: plexToken && clientId
+        ? { plexToken, clientId }
+        : pin
+        ? { pin }
+        : undefined,
     };
   })(),
   toasts: [],
@@ -112,10 +111,11 @@ function reducer(state: Store, action: Actions): Store {
           ...state,
           room: {
             ...state.room!,
-            matches:
-              state.room?.matches?.map((match, index) =>
-                index === existingMatchindex ? action.payload : match,
-              ) ?? [],
+            matches: state.room?.matches?.map((match, index) =>
+              index === existingMatchindex
+                ? action.payload
+                : match
+            ) ?? [],
           },
         };
       } else {

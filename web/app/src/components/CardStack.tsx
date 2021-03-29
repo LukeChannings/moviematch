@@ -77,9 +77,9 @@ export const CardStack = memo(
         action:
           | { type: "add" }
           | {
-              type: "remove";
-              payload: { id: string; direction: "left" | "right" };
-            }
+            type: "remove";
+            payload: { id: string; direction: "left" | "right" };
+          }
           | { type: "finalizeRemove"; payload: { id: string } },
       ) {
         let newIndex = index;
@@ -129,12 +129,10 @@ export const CardStack = memo(
                 });
 
               newItems = items.map((item, i) =>
-                item.id === action.payload.id
-                  ? { ...item, removed: true }
-                  : {
-                      ...item,
-                      index: i > itemIndex ? item.index - 1 : item.index,
-                    },
+                item.id === action.payload.id ? { ...item, removed: true } : {
+                  ...item,
+                  index: i > itemIndex ? item.index - 1 : item.index,
+                }
               );
             }
             break;
@@ -209,8 +207,7 @@ export const CardStack = memo(
                   });
                   isAfterId = true;
                 } else {
-                  const yz =
-                    p * (isAfterId ? -YZ_SIZE : YZ_SIZE) +
+                  const yz = p * (isAfterId ? -YZ_SIZE : YZ_SIZE) +
                     index * YZ_SIZE +
                     YZ_OFFSET;
                   controller.set({ y: yz, z: yz });

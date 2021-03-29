@@ -20,6 +20,6 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "importsNotUsedAsValues": "error",
-    "isolatedModules": true,
+    "isolatedModules": true
   }
 }

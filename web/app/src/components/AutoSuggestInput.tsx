@@ -167,7 +167,8 @@ export const AutoSuggestInput = ({
             className="AutoSuggestSuggestionsArrow"
             style={styles.arrow}
             {...attributes.arrow}
-          ></div>
+          >
+          </div>
           <div className="AutoSuggestSuggestionsScrollBox">
             {getFilteredItems().map((item, index) => (
               <li

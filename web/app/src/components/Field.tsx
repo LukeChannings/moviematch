@@ -34,18 +34,20 @@ export const Field = ({
         {label}
       </label>
     )}
-    {children ? (
-      children
-    ) : (
-      <TextInput
-        name={name!}
-        value={String(value)}
-        autoComplete={autoComplete}
-        onChange={onChange}
-        onBlur={onBlur}
-        paddingTop="s2"
-      />
-    )}
+    {children
+      ? (
+        children
+      )
+      : (
+        <TextInput
+          name={name!}
+          value={String(value)}
+          autoComplete={autoComplete}
+          onChange={onChange}
+          onBlur={onBlur}
+          paddingTop="s2"
+        />
+      )}
     {errorMessage && <p className="Field_Error">{errorMessage}</p>}
   </div>
 );

@@ -20,11 +20,9 @@ export const Avatar = ({ userName, avatarUrl }: AvatarProps) => {
   return (
     <img
       className="Avatar"
-      src={
-        avatarUrl ||
-        `data:image/svg+xml;utf8,${encodeURIComponent(defaultImage(userName))}`
-      }
+      src={avatarUrl ||
+        `data:image/svg+xml;utf8,${encodeURIComponent(defaultImage(userName))}`}
       alt={`${userName}'s avatar`}
-    ></img>
+    />
   );
 };

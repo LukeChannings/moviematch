@@ -69,22 +69,20 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
             .sort((a, b) =>
               matchOrder === "mostLikes"
                 ? b.users.length - a.users.length
-                : b.matchedAt - a.matchedAt,
+                : b.matchedAt - a.matchedAt
             )
             .map((match) => (
               <Card
                 media={match.media}
                 href={match.media.linkUrl}
                 key={match.media.id}
-                title={
-                  <Tr
-                    name="MATCHES_SECTION_CARD_LIKERS"
-                    context={{
-                      users: match.users.join(" & "),
-                      movie: match.media.title,
-                    }}
-                  />
-                }
+                title={<Tr
+                  name="MATCHES_SECTION_CARD_LIKERS"
+                  context={{
+                    users: match.users.join(" & "),
+                    movie: match.media.title,
+                  }}
+                />}
               />
             ))}
       </MatchesList>
