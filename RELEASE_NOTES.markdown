@@ -1,5 +1,10 @@
 # Release Notes
 
+## v2.0.0-alpha.5
+
+- [Bugfix]: min-height regression in iOS
+- [Bugfix]: Movie card text was duplicated
+
 ## v2.0.0-alpha.4
 
 - Upgrade Deno to 1.8.2
