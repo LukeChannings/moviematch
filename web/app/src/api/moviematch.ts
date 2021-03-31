@@ -11,7 +11,7 @@ import type {
 } from "../../../../types/moviematch";
 
 const API_URL = (() => {
-  const url = new URL(import.meta.env.API_URI ?? location.href);
+  const url = new URL(location.href);
   url.pathname = document.body.dataset.basePath + "/api/ws";
   url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
   return url.href;
@@ -54,7 +54,7 @@ export class MovieMatchClient extends EventTarget {
   };
 
   private handleClose = () => {
-    location.reload();
+    console.error(`Connection closed`);
   };
 
   waitForMessage = <K extends ClientMessage["type"]>(
