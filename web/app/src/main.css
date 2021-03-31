@@ -38,8 +38,6 @@
 
 html {
   height: -webkit-fill-available;
-  margin: 0;
-  overscroll-behavior: none;
 }
 
 body {
@@ -53,6 +51,8 @@ body {
   color: var(--mm-black);
   min-height: calc(var(--vh) * 100);
   font-family: Helvetica Neue, system-ui, Helvetica, sans-serif;
+  overscroll-behavior: none;
+  scroll-behavior: smooth;
 }
 
 body:not(.show-focus-ring) *:focus {
