@@ -16,7 +16,7 @@ export const resetEnv = (newEnv: Record<string, string>) => {
     "HOST",
     "PORT",
     "LOG_LEVEL",
-    "BASE_PATH",
+    "ROOT_PATH",
     "REQUIRE_PLEX_LOGIN",
   ];
 
@@ -81,7 +81,7 @@ Deno.test("Config -> loadFromEnv", async () => {
     [{ "LOG_LEVEL": "INFO" }, {
       logLevel: "INFO",
     }],
-    [{ "BASE_PATH": "/moviematch" }, {
+    [{ "ROOT_PATH": "/moviematch" }, {
       basePath: "/moviematch",
     }],
     [{ "REQUIRE_PLEX_LOGIN": "1" }, {
