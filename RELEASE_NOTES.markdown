@@ -4,6 +4,16 @@
 
 - [Bugfix]: min-height regression in iOS
 - [Bugfix]: Movie card text was duplicated
+- [Bugfix] Ensure all references work with `x-forwarded-prefix` and `ROOT_PATH`
+- [Bugfix] Don't show the card description twice
+- [CI] Compile the bundle before creating a release
+- [Bugfix] Don't delay rendering of the Create Room filters `+` button
+- [Bugfix] Don't allow an item to be rated twice by the same user.
+- [Housekeeping] Remove built-in dev server (using Snowpack now)
+- [Testing] Validate plexApi.getLibraryItems()
+- [Config] Rename `BASE_PATH` back to `ROOT_PATH` (it was causing too much confusion)
+- [Feat] Don't overscroll the page (`overscroll-behavior` isn't supported in Safari yet)
+- [Feat] Scroll to the beginning of the matches list when the sort type is changed
 
 ## v2.0.0-alpha.4
 
