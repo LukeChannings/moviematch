@@ -23,13 +23,13 @@ export const Select = ({
       name={name}
       onChange={onChange}
       onBlur={onBlur}
+      value={value}
     >
       <option value="">&mdash; Select &mdash;</option>
       {options &&
         Object.entries(options).map(([optionValue, label]) => (
           <option
             value={optionValue}
-            selected={optionValue === value}
             key={optionValue}
           >
             {label}
