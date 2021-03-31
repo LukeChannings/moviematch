@@ -19,11 +19,6 @@ if (flags.version) {
   Deno.exit(0);
 }
 
-if (flags.dev) {
-  import("/internal/app/moviematch/dev_server.ts")
-    .then(({ watchAndBuild }) => watchAndBuild());
-}
-
 let exitCode: number | undefined;
 
 while (typeof exitCode === "undefined") {
