@@ -69,6 +69,11 @@ jobs:
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+      - name: Compile MovieMatch
+        run: |
+          export PATH="$HOME/go/bin:$PATH"
+          ./scripts/bundle.sh
+        shell: bash
       - name: Create Release
         id: create_release
         if: ${{ needs.build_info.outputs.existing_release == 'false' }}
@@ -80,11 +85,6 @@ jobs:
           release_name: "v${{ needs.build_info.outputs.version }}"
           body: ${{ env.RELEASE_NOTES }}
           prerelease: ${{ needs.build_info.outputs.prerelease == 'true' }}
-      - name: Compile MovieMatch
-        run: |
-          export PATH="$HOME/go/bin:$PATH"
-          ./scripts/bundle.sh
-        shell: bash
       - name: Upload binaries
         run: |
           set -x
