@@ -10,6 +10,7 @@ import { Pill } from "./Pill";
 interface AutoSuggestInputProps {
   inputName: string;
   items: FilterValue[];
+  value: FilterValue[];
   onChange: (value: FilterValue[]) => void;
 }
 
@@ -17,6 +18,7 @@ export const AutoSuggestInput = ({
   inputName,
   items,
   onChange,
+  value,
 }: AutoSuggestInputProps) => {
   const [inputValue, setInputValue] = useState<string>("");
   const {
@@ -24,7 +26,7 @@ export const AutoSuggestInput = ({
     addSelectedItem,
     removeSelectedItem,
     selectedItems,
-  } = useMultipleSelection({ initialSelectedItems: [] as FilterValue[] });
+  } = useMultipleSelection({ defaultSelectedItems: value });
   const [
     referenceElement,
     setReferenceElement,
