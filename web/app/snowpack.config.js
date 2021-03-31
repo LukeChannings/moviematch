@@ -3,14 +3,7 @@ const { VERSION = "dev" } = process.env;
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
-  env: {
-    API_URI: VERSION === "dev"
-      ? `http://${
-        networkInterfaces().en0.find((_) => _.family === "IPv4").address
-      }:8000`
-      : undefined,
-    VERSION,
-  },
+  env: { VERSION },
   mount: {
     static: { url: "/", static: true },
     src: { url: "/dist" },
@@ -34,7 +27,7 @@ module.exports = {
     /* ... */
   },
   devOptions: {
-    /* ... */
+    open: false,
   },
   buildOptions: {
     /* ... */
