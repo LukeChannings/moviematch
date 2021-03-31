@@ -41,6 +41,8 @@ export const FilterField = ({
     }
   }, [key, operator, value]);
 
+  const filter = filters.filters.find((_) => _.key === key);
+
   return (
     <fieldset className="FilterField">
       <Select
@@ -48,31 +50,36 @@ export const FilterField = ({
         value={key}
         options={filters.filters.reduce(
           (acc, filter) => ({ ...acc, [filter.key]: filter.title }),
-          {},
+          {}
         )}
-        onChange={(e) => setKey(e.target.value)}
+        onChange={(e) => {
+          setKey(e.target.value);
+          setOperator("=");
+          setValue([]);
+        }}
       />
-      {key && (
+      {filter && (
         <>
           <Select
             name="operator"
             value={operator}
-            options={filters.filterTypes[
-              filters.filters.find((_) => _.key === key)!.type
-            ]?.reduce(
+            options={filters.filterTypes[filter.type]?.reduce(
               (acc, filterType) => ({
                 ...acc,
                 [filterType.key]: filterType.title,
               }),
-              {},
+              {}
             )}
             onChange={(e) => setOperator(e.target.value)}
           />
-          <AutoSuggestInput
-            inputName={`${key}-input`}
-            items={suggestions}
-            onChange={setValue}
-          />
+          {filter.type !== "boolean" && (
+            <AutoSuggestInput
+              inputName={`${key}-input`}
+              items={suggestions}
+              onChange={setValue}
+              value={value}
+            />
+          )}
         </>
       )}
     </fieldset>

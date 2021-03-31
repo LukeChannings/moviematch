@@ -82,23 +82,25 @@ export const CreateScreen = ({
 
         <div className="CreateScreen_Filter">
           <h2 className="CreateScreen_Filters_Title">Filters</h2>
-          {availableFilters && (
-            <AddRemoveList
-              initialChildren={0}
-              onRemove={(i) => filters.current.delete(i)}
-            >
-              {(i) => (
+          <AddRemoveList
+            initialChildren={0}
+            onRemove={(i) => filters.current.delete(i)}
+          >
+            {(i) =>
+              availableFilters && (
                 <FilterField
+                  key={i}
                   onChange={(filter) =>
-                    filter && filters.current.set(i, filter)}
+                    filter && filters.current.set(i, filter)
+                  }
                   filters={availableFilters}
                   getSuggestions={async (key: string) => {
                     return await client.getFilterValues(key);
                   }}
                 />
-              )}
-            </AddRemoveList>
-          )}
+              )
+            }
+          </AddRemoveList>
         </div>
 
         <ButtonContainer reverseMobile paddingTop="s3">
