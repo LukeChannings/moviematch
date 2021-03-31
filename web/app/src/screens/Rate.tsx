@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Card } from "../components/Card";
 import { CardStack } from "../components/CardStack";
 import { ErrorMessage } from "../components/ErrorMessage";
@@ -18,6 +18,7 @@ import "./Rate.css";
 
 export const RateScreen = ({ dispatch }: ScreenProps) => {
   const state = useContext(MovieMatchContext);
+  const matchesEl = useRef<HTMLUListElement>(null);
   const [matchOrder, setMatchOrder] = useState<string>("mostRecent");
   const [media] = useState(state.room?.media);
 
@@ -53,7 +54,12 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
       <SegmentedControls
         name="sortMatches"
         value={matchOrder}
-        onChange={setMatchOrder}
+        onChange={(value) => {
+          if (matchesEl.current) {
+            matchesEl.current.scrollTo({ left: 0, behavior: "smooth" });
+          }
+          setMatchOrder(value);
+        }}
         paddingTop="s4"
       >
         <SegmentedControlOption value="mostRecent">
@@ -63,7 +69,7 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
           Most Likes
         </SegmentedControlOption>
       </SegmentedControls>
-      <MatchesList>
+      <MatchesList ref={matchesEl}>
         {state.room.matches &&
           state.room.matches
             .sort((a, b) =>
