@@ -91,15 +91,13 @@ export const CreateScreen = ({
                 <FilterField
                   key={i}
                   onChange={(filter) =>
-                    filter && filters.current.set(i, filter)
-                  }
+                    filter && filters.current.set(i, filter)}
                   filters={availableFilters}
                   getSuggestions={async (key: string) => {
                     return await client.getFilterValues(key);
                   }}
                 />
-              )
-            }
+              )}
           </AddRemoveList>
         </div>
 

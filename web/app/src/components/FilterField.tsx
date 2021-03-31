@@ -50,7 +50,7 @@ export const FilterField = ({
         value={key}
         options={filters.filters.reduce(
           (acc, filter) => ({ ...acc, [filter.key]: filter.title }),
-          {}
+          {},
         )}
         onChange={(e) => {
           setKey(e.target.value);
@@ -68,7 +68,7 @@ export const FilterField = ({
                 ...acc,
                 [filterType.key]: filterType.title,
               }),
-              {}
+              {},
             )}
             onChange={(e) => setOperator(e.target.value)}
           />
