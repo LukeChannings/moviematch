@@ -84,6 +84,15 @@ export class Room {
   storeRating = async (userName: string, rating: Rate, matchedAt: number) => {
     const existingRatings = this.ratings.get(rating.mediaId);
     if (existingRatings) {
+      const existingRatingByUser = existingRatings.find(([_userName]) =>
+        _userName === userName
+      );
+
+      if (existingRatingByUser) {
+        log.warning(`${userName} has already rated ${rating.mediaId}.`);
+        return;
+      }
+
       existingRatings.push([userName, rating.rating, matchedAt]);
       const likes = existingRatings.filter(([, rating]) => rating === "like");
       if (likes.length > 1) {
