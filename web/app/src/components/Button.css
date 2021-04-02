@@ -1,5 +1,7 @@
 .Button {
   --bg-color: var(--mm-blue);
+  --bg-highlight-color: var(--mm-pale-blue);
+
   appearance: none;
   -webkit-appearance: none;
   font-size: 1.25rem;
@@ -24,14 +26,14 @@
 }
 
 .ButtonPrimary:focus {
-  background-color: var(--mm-pale-blue);
+  background-color: var(--bg-highlight-color);
   outline: 5px auto Highlight;
   outline: 5px auto -webkit-focus-ring-color;
 }
 
 @media (hover: hover) {
   .ButtonPrimary:hover {
-    background-color: var(--mm-pale-blue);
+    background-color: var(--bg-highlight-color);
   }
 }
 
@@ -45,16 +47,16 @@
 }
 
 .ButtonSecondary:focus {
-  color: var(--mm-pale-blue);
-  border-color: var(--mm-pale-blue);
+  color: var(--bg-highlight-color);
+  border-color: var(--bg-highlight-color);
   outline: 5px auto Highlight;
   outline: 5px auto -webkit-focus-ring-color;
 }
 
 @media (hover: hover) {
   .ButtonSecondary:hover {
-    color: var(--mm-pale-blue);
-    border-color: var(--mm-pale-blue);
+    color: var(--bg-highlight-color);
+    border-color: var(--bg-highlight-color);
   }
 }
 

@@ -5,4 +5,5 @@ export type Color =
   | "dark-red"
   | "blue"
   | "white"
-  | "plex-color";
+  | "plex-color"
+  | "plex-highlight-color";

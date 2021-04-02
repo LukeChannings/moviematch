@@ -1,6 +1,7 @@
 {
   "name": "MovieMatch",
   "short_name": "MovieMatch",
+  "start_url": "/",
   "display": "fullscreen",
   "background_color": "#e64747",
   "theme_color": "#e64747",

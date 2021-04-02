@@ -59,6 +59,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
           <Button
             appearance="Primary"
             color="plex-color"
+            highlightColor="plex-highlight-color"
             onPress={async () => {
               if (!userName) {
                 setUserNameError(translations?.FIELD_REQUIRED_ERROR!);
