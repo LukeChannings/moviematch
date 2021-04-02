@@ -1,7 +1,8 @@
-import { Response, ServerRequest } from "/deps.ts";
-import { lookup } from "https://deno.land/x/media_types@v2.7.1/mod.ts";
+import { lookupMimeType, Response, ServerRequest } from "/deps.ts";
 import { fileExists, readFile } from "pkger";
 import { RouteHandler } from "/internal/app/moviematch/types.ts";
+
+const isGzipped = (bytes: Uint8Array) => bytes[0] === 31 && bytes[1] === 139;
 
 export const serveStatic = (basePaths: string[]): RouteHandler =>
   async (req: ServerRequest): Promise<Response | void> => {
@@ -16,13 +17,18 @@ export const serveStatic = (basePaths: string[]): RouteHandler =>
         const path = basePath + req.url;
         if (await fileExists(path)) {
           const file = await readFile(path);
+          const headers = new Headers([
+            ["content-type", lookupMimeType(path) ?? "text/plain"],
+          ]);
+
+          if (isGzipped(file)) {
+            headers.append("content-encoding", "gzip");
+          }
+
           response = {
             status: 200,
             body: file,
-            headers: new Headers([[
-              "content-type",
-              lookup(path) ?? "text/plain",
-            ]]),
+            headers,
           };
         }
       } catch (err) {

@@ -38,3 +38,4 @@ export { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
 export * as yup from "https://cdn.skypack.dev/yup?dts";
 export * as base64 from "https://deno.land/x/base64@v0.2.1/mod.ts";
 export { gzip } from "https://deno.land/x/compress@v0.3.6/mod.ts";
+export { lookup as lookupMimeType } from "https://deno.land/x/media_types@v2.7.1/mod.ts";

@@ -18,11 +18,9 @@ import { base64, extname, gzip, joinPath, resolvePath, walk } from "/deps.ts";
 const pkg: Record<string, string> = {};
 
 const EXTENSIONS_TO_COMPRESS = [
-  ".html",
   ".css",
   ".js",
   ".map",
-  ".html",
   ".png",
   ".svg",
   ".ico",
@@ -35,6 +33,8 @@ const bundleFile = async (
   let rawData = await Deno.readFile(fileName);
 
   if (EXTENSIONS_TO_COMPRESS.includes(extname(fileName))) {
+    // Deno doesn't yet have native support for zlib,
+    // so I'm preferring to compress what I can upfront.
     rawData = gzip(rawData);
   }
 
