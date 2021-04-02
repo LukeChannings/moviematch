@@ -1,5 +1,4 @@
-import { Response, ServerRequest } from "/deps.ts";
-import { assert, assertEquals } from "testing/asserts.ts";
+import { assert, assertEquals, Response, ServerRequest } from "/deps.ts";
 import {
   isAuthorized,
   respondRequiringAuth,

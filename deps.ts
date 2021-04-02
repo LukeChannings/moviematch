@@ -16,6 +16,7 @@ export { LogRecord } from "https://deno.land/std@0.92.0/log/logger.ts";
 export {
   assert,
   assertEquals,
+  assertNotEquals,
 } from "https://deno.land/std@0.92.0/testing/asserts.ts";
 export { acceptWebSocket } from "https://deno.land/std@0.92.0/ws/mod.ts";
 export { join as joinPath } from "https://deno.land/std@0.92.0/path/posix.ts";
@@ -30,3 +31,4 @@ export { walk } from "https://deno.land/std@0.92.0/fs/walk.ts";
 
 // Third-party dependencies
 export { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
+export * as yup from "https://cdn.skypack.dev/yup?dts";

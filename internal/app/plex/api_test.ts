@@ -1,13 +1,7 @@
-import {
-  array,
-  boolean,
-  mixed,
-  number,
-  object,
-  string,
-} from "https://cdn.skypack.dev/yup?dts";
-import { assert, assertEquals, assertNotEquals } from "testing/asserts.ts";
+import { assert, assertEquals, assertNotEquals, yup } from "/deps.ts";
 import { PlexApi } from "/internal/app/plex/api.ts";
+
+const { array, boolean, mixed, number, object, string } = yup;
 
 const TEST_PLEX_URL = Deno.env.get("TEST_PLEX_URL");
 const TEST_PLEX_TOKEN = Deno.env.get("TEST_PLEX_TOKEN");
