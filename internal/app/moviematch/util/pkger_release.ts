@@ -1,4 +1,5 @@
 import { base64 } from "/deps.ts";
+// ts-ignore
 import { pkg } from "/build/pkg.ts";
 
 export const isRelease = true;
