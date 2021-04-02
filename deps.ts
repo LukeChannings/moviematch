@@ -19,7 +19,11 @@ export {
   assertNotEquals,
 } from "https://deno.land/std@0.92.0/testing/asserts.ts";
 export { acceptWebSocket } from "https://deno.land/std@0.92.0/ws/mod.ts";
-export { join as joinPath } from "https://deno.land/std@0.92.0/path/posix.ts";
+export {
+  extname,
+  join as joinPath,
+  resolve as resolvePath,
+} from "https://deno.land/std@0.92.0/path/posix.ts";
 export {
   parse as parseYaml,
   stringify as stringifyYaml,
@@ -32,3 +36,5 @@ export { walk } from "https://deno.land/std@0.92.0/fs/walk.ts";
 // Third-party dependencies
 export { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
 export * as yup from "https://cdn.skypack.dev/yup?dts";
+export * as base64 from "https://deno.land/x/base64@v0.2.1/mod.ts";
+export { gzip } from "https://deno.land/x/compress@v0.3.6/mod.ts";

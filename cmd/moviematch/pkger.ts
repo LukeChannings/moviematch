@@ -13,38 +13,56 @@
 //
 // This module is a quickly hacked together bundler reminiscent of Golang's pkger - https://github.com/markbates/pkger
 
-import { joinPath, walk } from "/deps.ts";
+import { base64, extname, gzip, joinPath, resolvePath, walk } from "/deps.ts";
 
-const pkg = new Map<string, Uint8Array>();
+const pkg: Record<string, string> = {};
+
+const EXTENSIONS_TO_COMPRESS = [
+  ".html",
+  ".css",
+  ".js",
+  ".map",
+  ".html",
+  ".png",
+  ".svg",
+  ".ico",
+  ".webmanifest",
+];
+
+const bundleFile = async (
+  fileName: string,
+): Promise<[path: string, data: string]> => {
+  let rawData = await Deno.readFile(fileName);
+
+  if (EXTENSIONS_TO_COMPRESS.includes(extname(fileName))) {
+    rawData = gzip(rawData);
+  }
+
+  const data = base64.fromUint8Array(rawData);
+
+  const path = fileName.replace(Deno.cwd(), "").replace(/\\/g, "/");
+  return [path, data];
+};
 
 for (const path of Deno.args) {
-  const fullPath = joinPath(Deno.cwd(), path);
+  const fullPath = resolvePath(path);
 
-  const stat = await Deno.stat(fullPath);
+  try {
+    const stat = await Deno.stat(fullPath);
 
-  if (stat.isDirectory) {
-    for await (const entry of walk(fullPath, { includeDirs: false })) {
-      const data = await Deno.readFile(entry.path);
-      const path = entry.path.replace(Deno.cwd(), "").replace(/\\/g, "/");
-      pkg.set(path, data);
-      console.log(path);
+    if (stat.isDirectory) {
+      for await (const entry of walk(fullPath, { includeDirs: false })) {
+        const [finalPath, data] = await bundleFile(entry.path);
+        pkg[finalPath] = data;
+      }
+    } else if (stat.isFile) {
+      const [finalPath, data] = await bundleFile(fullPath);
+      pkg[finalPath] = data;
     }
-  } else if (stat.isFile) {
-    const data = await Deno.readFile(fullPath);
-    const path = fullPath.replace(Deno.cwd(), "").replace(/\\/g, "/");
-    pkg.set(path, data);
-    console.log(path);
+  } catch (err) {
+    console.error(`${fullPath}: ${String(err)}`);
+    Deno.exit(1);
   }
 }
 
-let out = "export const pkg = new Map<string, Uint8Array>([\n";
-
-for (const [path, data] of pkg.entries()) {
-  out += `  ["${path}", new Uint8Array([${String(data)}])],\n`;
-}
-
-out += "])";
-
-const encoder = new TextEncoder();
-
-Deno.writeFile("internal/pkg.ts", encoder.encode(out));
+console.log(`export const pkg: Record<string,string> = ${JSON.stringify(pkg)}`);

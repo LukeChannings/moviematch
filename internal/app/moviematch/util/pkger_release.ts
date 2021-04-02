@@ -1,10 +1,18 @@
-import { pkg } from "/internal/pkg.ts";
+import { base64 } from "/deps.ts";
+import { pkg } from "/build/pkg.ts";
 
 export const isRelease = true;
 
-export const fileExists = (path: string): boolean => pkg.has(path);
+export const fileExists = (path: string): boolean => !!pkg[path];
 
-export const readFile = (path: string): Uint8Array => pkg.get(path)!;
+export const readFile = (path: string): Uint8Array => {
+  const value = pkg[path];
+  if (typeof value !== "string") {
+    throw new Error(`${path} not found`);
+  }
+
+  return base64.toUint8Array(value);
+};
 
 export const readTextFile = (path: string): string => {
   const data = readFile(path);
@@ -13,7 +21,7 @@ export const readTextFile = (path: string): string => {
 };
 
 export const readDir = (path: string): AsyncIterable<Deno.DirEntry> => {
-  const files = [...pkg.keys()].filter((name) => name.startsWith(path));
+  const files = Object.keys(pkg).filter((name) => name.startsWith(path));
   return {
     async *[Symbol.asyncIterator]() {
       for (const match of files) {

@@ -53,13 +53,12 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
-      - name: Install Deno
-        run: |-
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          echo "$HOME/.deno/bin" >> $GITHUB_PATH
-          export PATH="$DENO_INSTALL/bin:$PATH"
+      - name: Setup Just
+        uses: extractions/setup-just@v1
+      - name: Setup Deno
+        uses: denolib/setup-deno@v2
       - name: Tests
-        run: ./scripts/test.sh
+        run: just lint test
         env:
           TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
@@ -71,8 +70,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
       - name: Compile MovieMatch
         run: |
-          export PATH="$HOME/go/bin:$PATH"
-          ./scripts/bundle.sh
+          just build-prod
         shell: bash
       - name: Create Release
         id: create_release

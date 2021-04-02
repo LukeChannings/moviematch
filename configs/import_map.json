@@ -2,6 +2,7 @@
   "imports": {
     "/internal/": "../internal/",
     "/types/": "../types/",
+    "/build/": "../build/",
     "/deps.ts": "../deps.ts",
     "pkger": "../internal/app/moviematch/util/pkger.ts"
   }
