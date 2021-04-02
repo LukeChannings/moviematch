@@ -1,7 +1,6 @@
-import { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
-import * as log from "log/mod.ts";
-import { memo, memo1 } from "/internal/app/moviematch/util/memo.ts";
+import { Accepts, log } from "/deps.ts";
 import { readDir, readTextFile } from "pkger";
+import { memo, memo1 } from "/internal/app/moviematch/util/memo.ts";
 import { Translations } from "/types/moviematch.ts";
 
 const CONFIG_PATH = "/configs/localization";

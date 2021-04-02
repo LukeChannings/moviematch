@@ -13,13 +13,12 @@
 //
 // This module is a quickly hacked together bundler reminiscent of Golang's pkger - https://github.com/markbates/pkger
 
-import { join } from "https://deno.land/std@0.86.0/path/mod.ts";
-import { walk } from "https://deno.land/std@0.86.0/fs/walk.ts";
+import { joinPath, walk } from "/deps.ts";
 
 const pkg = new Map<string, Uint8Array>();
 
 for (const path of Deno.args) {
-  const fullPath = join(Deno.cwd(), path);
+  const fullPath = joinPath(Deno.cwd(), path);
 
   const stat = await Deno.stat(fullPath);
 

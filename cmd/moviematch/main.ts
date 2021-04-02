@@ -1,5 +1,4 @@
-import { parse } from "flags/mod.ts";
-import * as log from "log/mod.ts";
+import { log, parseFlags } from "/deps.ts";
 import { setLogLevel } from "/internal/app/moviematch/logger.ts";
 import { loadConfig } from "/internal/app/moviematch/config/main.ts";
 import { getVersion } from "/internal/app/moviematch/version.ts";
@@ -10,7 +9,7 @@ import {
 import { ConfigReloadError } from "/internal/app/moviematch/config/errors.ts";
 import { getEnv } from "/internal/app/moviematch/util/env.ts";
 
-const flags = parse(Deno.args, { alias: { v: "version" } });
+const flags = parseFlags(Deno.args, { alias: { v: "version" } });
 
 const CONFIG_PATH = flags.config ?? await getEnv("CONFIG_PATH");
 

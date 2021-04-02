@@ -1,5 +1,5 @@
+import { assert } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
-import { assert } from "testing/asserts.ts";
 import { applyDefaults } from "/internal/app/moviematch/config/defaults.ts";
 
 Deno.test("Config -> applyDefaults", () => {

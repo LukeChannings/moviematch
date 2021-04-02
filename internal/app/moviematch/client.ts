@@ -1,6 +1,4 @@
-import { WebSocket } from "ws/mod.ts";
-import * as log from "log/mod.ts";
-import { Deferred, deferred } from "async/deferred.ts";
+import { Deferred, deferred, log, WebSocket } from "/deps.ts";
 import {
   ClientMessage,
   Config,

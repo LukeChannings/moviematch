@@ -1,4 +1,4 @@
-import { Response, ServerRequest } from "http/server.ts";
+import { Response, ServerRequest } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
 import { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
 

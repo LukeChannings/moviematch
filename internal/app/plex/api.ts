@@ -1,4 +1,4 @@
-import * as log from "log/mod.ts";
+import { log } from "/deps.ts";
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { FilterValue, FilterValues } from "./types/library_filter_values.ts";
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";

@@ -1,4 +1,4 @@
-import { ServerRequest } from "http/server.ts";
+import { ServerRequest } from "/deps.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 import { getConfig } from "/internal/app/moviematch/config/main.ts";

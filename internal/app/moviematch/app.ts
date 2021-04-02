@@ -1,5 +1,4 @@
-import { serve, Server, serveTLS } from "http/server.ts";
-import * as log from "log/mod.ts";
+import { Deferred, deferred, log, serve, Server, serveTLS } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
 import { handler as serveStaticHandler } from "/internal/app/moviematch/handlers/serve_static.ts";
 import { handler as rootHandler } from "/internal/app/moviematch/handlers/template.ts";
@@ -14,7 +13,6 @@ import { createProvider as createPlexProvider } from "/internal/app/moviematch/p
 import type { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { RouteHandler } from "./types.ts";
-import { Deferred, deferred } from "async/deferred.ts";
 
 export class ProviderUnavailableError extends Error {}
 

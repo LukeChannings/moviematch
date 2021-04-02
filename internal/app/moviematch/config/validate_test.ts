@@ -1,4 +1,4 @@
-import { assert } from "testing/asserts.ts";
+import { assert } from "/deps.ts";
 import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 
 Deno.test("validateConfig", () => {

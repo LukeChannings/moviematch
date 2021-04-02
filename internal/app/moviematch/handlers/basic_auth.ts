@@ -1,4 +1,4 @@
-import { Response, ServerRequest } from "http/server.ts";
+import { Response, ServerRequest } from "/deps.ts";
 import { BasicAuth } from "/types/moviematch.ts";
 import { getConfig } from "/internal/app/moviematch/config/main.ts";
 import { RouteHandler } from "/internal/app/moviematch/types.ts";

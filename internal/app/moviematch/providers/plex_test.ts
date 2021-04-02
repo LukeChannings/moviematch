@@ -1,4 +1,4 @@
-import { assert } from "util/assert.ts";
+import { assert } from "/deps.ts";
 import { createProvider } from "/internal/app/moviematch/providers/plex.ts";
 
 try {

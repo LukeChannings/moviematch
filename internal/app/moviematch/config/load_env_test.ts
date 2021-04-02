@@ -1,4 +1,4 @@
-import { assert } from "testing/asserts.ts";
+import { assert } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
 import { loadFromEnv } from "/internal/app/moviematch/config/load_env.ts";
 

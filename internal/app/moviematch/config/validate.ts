@@ -1,4 +1,4 @@
-import * as log from "log/mod.ts";
+import { log } from "/deps.ts";
 import { LibaryTypes, LibraryType } from "/types/moviematch.ts";
 import { addRedaction } from "/internal/app/moviematch/logger.ts";
 import {

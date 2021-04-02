@@ -1,4 +1,4 @@
-import * as log from "log/mod.ts";
+import { log } from "/deps.ts";
 import {
   CreateRoomRequest,
   Filter,

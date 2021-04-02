@@ -1,6 +1,6 @@
-import { ServerRequest } from "http/server.ts";
-import * as log from "log/mod.ts";
-import { acceptWebSocket } from "ws/mod.ts";
+import { ServerRequest } from "/deps.ts";
+import { log } from "/deps.ts";
+import { acceptWebSocket } from "/deps.ts";
 import { RouteContext } from "/internal/app/moviematch/types.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
 

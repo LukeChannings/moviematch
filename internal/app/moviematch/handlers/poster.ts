@@ -1,6 +1,4 @@
-import { ServerRequest } from "http/server.ts";
-import { readerFromStreamReader } from "io/streams.ts";
-import * as log from "log/mod.ts";
+import { log, readerFromStreamReader, ServerRequest } from "/deps.ts";
 import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 import { RouteContext, RouteHandler } from "/internal/app/moviematch/types.ts";
 

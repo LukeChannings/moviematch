@@ -1,6 +1,4 @@
-import { stringify } from "encoding/yaml.ts";
-import * as log from "log/mod.ts";
-import { join } from "path/posix.ts";
+import { joinPath, log, stringifyYaml } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
 import { applyDefaults } from "/internal/app/moviematch/config/defaults.ts";
 import { loadFromEnv } from "/internal/app/moviematch/config/load_env.ts";
@@ -30,7 +28,7 @@ export async function loadConfig(
 
   try {
     if (await requestRead(".")) {
-      const yamlConfigPath = path ?? join(Deno.cwd(), "config.yaml");
+      const yamlConfigPath = path ?? joinPath(Deno.cwd(), "config.yaml");
 
       log.info(`Looking for config in ${yamlConfigPath}`);
       yamlConfig = yamlConfigPath !== "/dev/null"
@@ -73,13 +71,13 @@ export async function loadConfig(
 
 export async function updateConfiguration(config: Record<string, unknown>) {
   cachedConfig = config as unknown as Config;
-  const yamlConfig = stringify(config, { indent: 2 });
+  const yamlConfig = stringifyYaml(config, { indent: 2 });
 
-  const defaultConfigPath = join(Deno.cwd(), "config.yaml");
+  const defaultConfigPath = joinPath(Deno.cwd(), "config.yaml");
 
   if (await requestWrite(configPath ?? defaultConfigPath)) {
     await Deno.writeTextFile(
-      configPath ?? join(Deno.cwd(), "config.yaml"),
+      configPath ?? joinPath(Deno.cwd(), "config.yaml"),
       yamlConfig,
     );
   }

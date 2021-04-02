@@ -1,4 +1,4 @@
-import { ServerRequest } from "http/server.ts";
+import { ServerRequest } from "/deps.ts";
 import { RouteContext, RouteHandler } from "/internal/app/moviematch/types.ts";
 
 export const handler: RouteHandler = async (

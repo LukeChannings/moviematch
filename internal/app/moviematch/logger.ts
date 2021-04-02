@@ -1,6 +1,4 @@
-import * as log from "log/mod.ts";
-import { ConsoleHandler } from "log/handlers.ts";
-import { LogRecord } from "log/logger.ts";
+import { ConsoleHandler, log, LogRecord } from "/deps.ts";
 import { getEnv } from "/internal/app/moviematch/util/env.ts";
 
 const redactions: string[] = [];

@@ -1,5 +1,4 @@
-import { parse } from "encoding/yaml.ts";
-import * as log from "log/mod.ts";
+import { log, parseYaml } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
 import { isRecord } from "/internal/app/moviematch/util/assert.ts";
 import { ConfigFileNotFoundError } from "/internal/app/moviematch/config/errors.ts";
@@ -20,7 +19,7 @@ export const loadFromYaml = async (
   if (configStat.isFile) {
     const yamlConfigRaw = await Deno.readTextFile(path);
 
-    const yamlConfig = parse(yamlConfigRaw);
+    const yamlConfig = parseYaml(yamlConfigRaw);
     isRecord(yamlConfig, path);
 
     config = yamlConfig;
