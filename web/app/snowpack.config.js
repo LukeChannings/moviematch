@@ -1,4 +1,3 @@
-const { networkInterfaces } = require("os");
 const { VERSION = "dev" } = process.env;
 
 /** @type {import("snowpack").SnowpackUserConfig } */
@@ -13,23 +12,13 @@ module.exports = {
     "@snowpack/plugin-dotenv",
     "@snowpack/plugin-typescript",
   ],
-  routes: [
-    /* Enable an SPA Fallback in development: */
-    // {"match": "routes", "src": ".*", "dest": "/index.html"},
-  ],
   optimize: {
     bundle: true,
     minify: true,
     treeshake: true,
     target: "es2018",
   },
-  packageOptions: {
-    /* ... */
-  },
   devOptions: {
     open: "none",
-  },
-  buildOptions: {
-    /* ... */
   },
 };
