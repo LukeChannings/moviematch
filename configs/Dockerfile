@@ -10,6 +10,6 @@ USER deno
 
 WORKDIR /app
 
-RUN curl -OL "https://github.com/LukeChannings/moviematch/releases/download/${VERSION}/moviematch.bundle.js"
+RUN curl -OL "https://github.com/LukeChannings/moviematch/releases/download/${VERSION}/moviematch.js"
 
-CMD ["run", "--allow-net", "--allow-read=.", "--allow-write=.", "--allow-env", "--unstable", "moviematch.bundle.js"]
+CMD ["run", "--allow-net", "--allow-read=.", "--allow-write=.", "--allow-env", "--unstable", "moviematch.js"]

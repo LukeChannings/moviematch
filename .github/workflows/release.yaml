@@ -90,7 +90,7 @@ jobs:
           for target in ./build/*.zip; do
             assets+=("-a" "$target")
           done
-          assets+=("-a" "./build/moviematch.bundle.js")
+          assets+=("-a" "./build/moviematch.js")
           hub release edit "${assets[@]}" -m "v${{ needs.build_info.outputs.version }}" "v${{ needs.build_info.outputs.version }}" || true
         shell: bash
         env:

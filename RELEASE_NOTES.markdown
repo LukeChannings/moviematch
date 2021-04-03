@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.0.0-alpha.6
+
+- Fix and issue with the release artefact for alpha 5
+
 ## v2.0.0-alpha.5
 
 - [Bugfix]: min-height regression in iOS
