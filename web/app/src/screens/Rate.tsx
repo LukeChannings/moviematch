@@ -43,10 +43,12 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
         addToast={(toast) => {
           dispatch({ type: "addToast", payload: toast });
         }}
-        logout={() => {
+        logout={async () => {
+          await state.client.leaveRoom();
           dispatch({ type: "logout", payload: null });
         }}
-        leaveRoom={() => {
+        leaveRoom={async () => {
+          await state.client.leaveRoom();
           dispatch({ type: "setRoom", payload: undefined });
           dispatch({ type: "navigate", payload: { path: "join" } });
         }}

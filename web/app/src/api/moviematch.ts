@@ -11,10 +11,14 @@ import type {
 } from "../../../../types/moviematch";
 
 const API_URL = (() => {
-  const url = new URL(location.href);
-  url.pathname = document.body.dataset.basePath + "/api/ws";
-  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-  return url.href;
+  if (import.meta.env.API_URI) {
+    return import.meta.env.API_URI;
+  } else {
+    const url = new URL(location.href);
+    url.pathname = document.body.dataset.basePath + "/api/ws";
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    return url.href;
+  }
 })();
 
 type FilterClientMessageByType<
@@ -113,6 +117,21 @@ export class MovieMatchClient extends EventTarget {
 
     return msg.payload;
   };
+
+  leaveRoom = async () => {
+    this.sendMessage({
+      type: "leaveRoom"
+    })
+
+    const msg = await Promise.race([
+      this.waitForMessage("leaveRoomSuccess"),
+      this.waitForMessage("leaveRoomError"),
+    ])
+
+    if (msg.type === "leaveRoomError") {
+      throw new Error(JSON.stringify(msg.payload));
+    }
+  }
 
   createRoom = async (createRoomRequest: CreateRoomRequest) => {
     await this.waitForConnected();

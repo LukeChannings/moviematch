@@ -96,6 +96,9 @@ export class Client {
               case "joinRoom":
                 await this.handleJoinRoom(message.payload);
                 break;
+              case "leaveRoom":
+                await this.handleLeaveRoom();
+                break;
               case "rate":
                 await this.handleRate(message.payload);
                 break;
@@ -260,6 +263,27 @@ export class Client {
     );
   }
 
+  private handleLeaveRoom() {
+    log.debug(
+      `${this?.userName} is leaving ${this.room?.roomName}`,
+    );
+
+    if (this.room && this.userName) {
+      this.room.users.delete(this.userName);
+
+      return this.sendMessage({
+        type: "leaveRoomSuccess",
+      });
+    } else {
+      return this.sendMessage({
+        type: "leaveRoomError",
+        payload: {
+          errorType: "NOT_JOINED",
+        },
+      });
+    }
+  }
+
   private handleRate(rate: Rate) {
     if (this.userName) {
       log.debug(
@@ -285,9 +309,7 @@ export class Client {
   private handleClose() {
     log.info(`${this.userName ?? "Unknown user"} left.`);
 
-    if (this.room && this.userName) {
-      this.room.users.delete(this.userName);
-    }
+    this.handleLeaveRoom();
 
     this.finished.resolve();
   }

@@ -30,16 +30,19 @@ export interface Config {
 
 export type Message = ServerMessage | ClientMessage;
 
+// Messages intended for the Server
 export type ServerMessage =
   | { type: "login"; payload: Login }
   | { type: "createRoom"; payload: CreateRoomRequest }
   | { type: "joinRoom"; payload: JoinRoomRequest }
+  | { type: "leaveRoom" }
   | { type: "rate"; payload: Rate }
   | { type: "setLocale"; payload: Locale }
   | { type: "setup"; payload: Config }
   | { type: "requestFilters" }
   | { type: "requestFilterValues"; payload: FilterValueRequest };
 
+// Messages intended for the UI
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
   | { type: "loginSuccess"; payload: LoginSuccess }
@@ -47,6 +50,8 @@ export type ClientMessage =
   | { type: "createRoomSuccess"; payload: JoinRoomSuccess }
   | { type: "joinRoomError"; payload: JoinRoomError }
   | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
+  | { type: "leaveRoomSuccess"; }
+  | { type: "leaveRoomError"; payload: LeaveRoomError }
   | { type: "match"; payload: Match }
   | { type: "media"; payload: Media[] }
   | { type: "config"; payload: AppConfig }
@@ -169,6 +174,13 @@ export interface JoinRoomError {
 export interface JoinRoomSuccess {
   previousMatches: Match[];
   media: Media[];
+}
+
+// Leave
+
+export interface LeaveRoomError {
+  errorType:
+    'NOT_JOINED' // Can't leave a room you're not in
 }
 
 // In-Room
