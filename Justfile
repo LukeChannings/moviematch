@@ -27,21 +27,21 @@ start: install
   while true; do sleep 60; done
 
 start-server:
-  denon run {{ deno_options }} ./cmd/moviematch/main.ts
+  denon -c configs/denon.config.json run {{ deno_options }} ./cmd/moviematch/main.ts
 
 start-ui:
+  rm -rf {{ui_build_dir}}
   cd {{ui_dir}} && npx snowpack dev
 
 build-ui: install-node-modules
-  cd {{ui_dir}} && npx snowpack build
+  cd {{ui_dir}} && VERSION={{version}} npx snowpack build
 
 build: clean build-ui
   mkdir -p {{build_dir}}
   deno run {{ deno_options }} ./cmd/moviematch/pkger.ts {{ui_build_dir}}/dist/main.* {{ui_build_dir}}/icons {{ui_build_dir}}/manifest.webmanifest web/template/index.html configs/localization VERSION > {{build_dir}}/pkg.ts
   sed 's/pkger.ts/pkger_release.ts/' < configs/import_map.json > {{build_dir}}/import_map.json
   deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js 
-
-build-prod: build compile-all
+  @just compile-all
   rm {{build_dir}}/pkg.ts {{build_dir}}/import_map.json
 
 compile-all: (compile "x86_64-unknown-linux-gnu") (compile "x86_64-pc-windows-msvc") (compile "x86_64-apple-darwin") (compile "aarch64-apple-darwin")

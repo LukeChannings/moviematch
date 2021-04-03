@@ -1,0 +1,6 @@
+{
+  "watcher": {
+    "exts": ["ts", "json"],
+    "match": ["internal/**/*.*", "configs/*.*", "cmd/**/*.*", "types/*.*", "*.ts"]
+  }
+}
