@@ -50,7 +50,7 @@ export type ClientMessage =
   | { type: "createRoomSuccess"; payload: JoinRoomSuccess }
   | { type: "joinRoomError"; payload: JoinRoomError }
   | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
-  | { type: "leaveRoomSuccess"; }
+  | { type: "leaveRoomSuccess" }
   | { type: "leaveRoomError"; payload: LeaveRoomError }
   | { type: "match"; payload: Match }
   | { type: "media"; payload: Media[] }
@@ -179,8 +179,7 @@ export interface JoinRoomSuccess {
 // Leave
 
 export interface LeaveRoomError {
-  errorType:
-    'NOT_JOINED' // Can't leave a room you're not in
+  errorType: "NOT_JOINED"; // Can't leave a room you're not in
 }
 
 // In-Room

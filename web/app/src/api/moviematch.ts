@@ -120,18 +120,18 @@ export class MovieMatchClient extends EventTarget {
 
   leaveRoom = async () => {
     this.sendMessage({
-      type: "leaveRoom"
-    })
+      type: "leaveRoom",
+    });
 
     const msg = await Promise.race([
       this.waitForMessage("leaveRoomSuccess"),
       this.waitForMessage("leaveRoomError"),
-    ])
+    ]);
 
     if (msg.type === "leaveRoomError") {
       throw new Error(JSON.stringify(msg.payload));
     }
-  }
+  };
 
   createRoom = async (createRoomRequest: CreateRoomRequest) => {
     await this.waitForConnected();
