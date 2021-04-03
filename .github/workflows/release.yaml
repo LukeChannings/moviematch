@@ -70,7 +70,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
       - name: Compile MovieMatch
         run: |
-          just build-prod
+          just build
         shell: bash
       - name: Create Release
         id: create_release
