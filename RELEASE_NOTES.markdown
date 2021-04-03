@@ -14,6 +14,8 @@
 - [Config] Rename `BASE_PATH` back to `ROOT_PATH` (it was causing too much confusion)
 - [Feat] Don't overscroll the page (`overscroll-behavior` isn't supported in Safari yet)
 - [Feat] Scroll to the beginning of the matches list when the sort type is changed
+- [Bugfix] The server is notified when a user leaves a room deliberately
+- [CI] Now using [Just](https://github.com/casey/just) for scripting
 
 ## v2.0.0-alpha.4
 
