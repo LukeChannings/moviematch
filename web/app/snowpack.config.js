@@ -1,14 +1,17 @@
+const os = require('os');
 const { VERSION = "dev" } = process.env;
 
 console.log(`Building version ${VERSION}`);
 
-process.env.SNOWPACK_PUBLIC_BASE_PATH = "http://localhost:8000";
+const ip = Object.values(os.networkInterfaces()).flat().find(_ => _.family == 'IPv4' && !_.internal).address;
+
+process.env.SNOWPACK_PUBLIC_BASE_PATH = `http://${ip}:8000`;
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   env: {
     VERSION,
-    API_URI: VERSION === "dev" ? "ws://localhost:8000/api/ws" : undefined,
+    API_URI: VERSION === "dev" ? `ws://${ip}:8000/api/ws` : undefined,
   },
   mount: {
     static: { url: "/", static: true },
