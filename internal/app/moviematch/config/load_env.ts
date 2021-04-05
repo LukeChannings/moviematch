@@ -1,6 +1,22 @@
 import { requestEnv } from "/internal/app/moviematch/util/permission.ts";
 import { Config } from "/types/moviematch.ts";
 
+export type ConfigEnvVariableName =
+  | "PLEX_URL"
+  | "PLEX_TOKEN"
+  | "LIBRARY_TITLE_FILTER"
+  | "LIBRARY_TYPE_FILTER"
+  | "MOVIE_LINK_TYPE"
+  | "AUTH_USER"
+  | "AUTH_PASS"
+  | "TLS_CERT"
+  | "TLS_KEY"
+  | "HOST"
+  | "PORT"
+  | "LOG_LEVEL"
+  | "ROOT_PATH"
+  | "REQUIRE_PLEX_LOGIN";
+
 const EnvBool = (value: string) => value === "1";
 const EnvList = (value: string) => value.split(",");
 
@@ -14,7 +30,7 @@ const trimRecord = (value: Record<string, unknown>) => {
 };
 
 const getTrimmedEnv = (
-  key: string,
+  key: ConfigEnvVariableName,
   Type: typeof String | typeof Number | typeof EnvBool | typeof EnvList =
     String,
 ) => {
