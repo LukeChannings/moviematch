@@ -65,7 +65,8 @@ render(
 
 if (
   window.innerHeight !==
-    document.querySelector("body")?.getBoundingClientRect().height && ('standalone' in navigator && !navigator.standalone)
+    document.querySelector("body")?.getBoundingClientRect().height &&
+  ("standalone" in navigator && !navigator.standalone)
 ) {
   document.body.style.setProperty("--vh", window.innerHeight / 100 + "px");
   window.addEventListener("resize", () => {

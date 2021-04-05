@@ -7,8 +7,10 @@ interface LayoutProps {
   className?: string;
 }
 
-export const Layout = ({ children, className, hideLogo = false }: LayoutProps) => (
-  <section className={`Screen ${className ? className : ''}`}>
+export const Layout = (
+  { children, className, hideLogo = false }: LayoutProps,
+) => (
+  <section className={`Screen ${className ? className : ""}`}>
     {!hideLogo && <Logo />}
     {children}
   </section>

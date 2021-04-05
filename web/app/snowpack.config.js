@@ -1,9 +1,12 @@
-const os = require('os');
+const os = require("os");
 const { VERSION = "dev" } = process.env;
 
 console.log(`Building version ${VERSION}`);
 
-const ip = Object.values(os.networkInterfaces()).flat().find(_ => _.family == 'IPv4' && !_.internal).address;
+const ip =
+  Object.values(os.networkInterfaces()).flat().find((_) =>
+    _.family == "IPv4" && !_.internal
+  ).address;
 
 process.env.SNOWPACK_PUBLIC_BASE_PATH = `http://${ip}:8000`;
 
