@@ -33,7 +33,7 @@ type Spring = ControllerUpdate<{
   opacity: number;
 }>;
 
-const INITIAL_COUNT = 7;
+const INITIAL_COUNT = 5;
 const YZ_SIZE = 15;
 const YZ_OFFSET = -30;
 
@@ -197,6 +197,7 @@ export const CardStack = memo(
         onDrag({ args: [id], down, delta: [x], movement: [mx] }) {
           if (down) {
             const p = abs(mx / (vw + ew));
+            console.log({ id, x, mx, p })
             let isAfterId = false;
             items.forEach(({ removed, index, id: _id, controller }) => {
               if (!removed) {
@@ -219,6 +220,7 @@ export const CardStack = memo(
         onDragEnd({ args: [id], movement: [x], velocities: [vx] }) {
           const p = abs(x / (vw + ew));
           if (p > 0.5 || abs(vx) > 0.5) {
+            console.log("remove", { id, x, p })
             dispatch({
               type: "remove",
               payload: {
@@ -234,7 +236,7 @@ export const CardStack = memo(
                   controller.start({ x: 0, opacity: 1 });
                 } else {
                   const yz = index * YZ_SIZE + YZ_OFFSET;
-                  controller.start({ y: yz, z: yz });
+                  controller.start({ y: yz, z: yz, config: { duration: 50, velocity: 1000 } });
                 }
               }
             });

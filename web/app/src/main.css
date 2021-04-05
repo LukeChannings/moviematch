@@ -35,14 +35,11 @@
   --z-modal: 5;
 
   --mm-transition-duration: 100ms;
-}
 
-html {
-  height: -webkit-fill-available;
+  --vh: 1vh;
 }
 
 body {
-  --vh: 1vh;
   background: linear-gradient(
     135deg,
     hsl(var(--mm-blue-hue) 26% 80%) 0%,

@@ -8,3 +8,4 @@ export interface ScreenProps<T = undefined> {
   params: T;
   store: Store;
 }
+  

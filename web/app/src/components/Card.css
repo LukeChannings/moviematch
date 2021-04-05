@@ -79,7 +79,7 @@
     rgba(0, 0, 0, 0.7) 100%
   );
   padding: var(--s3);
-  padding-right: 4.5rem;
+  padding-right: 4.3rem;
   height: 100%;
   display: flex;
   flex-direction: column-reverse;
@@ -88,7 +88,8 @@
 .Card_Info_Title {
   font-family: system-ui;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-size: clamp(0.8rem, 5vmin, 1rem);
   letter-spacing: 0;
 }
 
@@ -116,7 +117,8 @@
 }
 
 .Card_MoreInfo_Title {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  font-size: clamp(1.1rem, 6vmin, 1.3rem);
   line-height: 1.1;
   font-weight: bold;
   margin-bottom: var(--s3);
@@ -126,6 +128,8 @@
   overflow: auto;
   padding-right: 2rem;
   padding-bottom: 1rem;
+  font-size: 1rem;
+  font-size: clamp(0.8rem, 4vmin, 1rem);
 }
 
 .Card_MoreInfo_Metadata {
