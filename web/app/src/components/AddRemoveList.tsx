@@ -45,7 +45,8 @@ export const AddRemoveList = ({
                   }
                   setChildList(childList.filter((_) => _ !== i));
                 }}
-                data-test-handle={testHandle && `${testHandle}-${i}-remove-button`}
+                data-test-handle={testHandle &&
+                  `${testHandle}-${i}-remove-button`}
               >
                 {"-"}
               </button>

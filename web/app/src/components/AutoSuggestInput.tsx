@@ -148,7 +148,7 @@ export const AutoSuggestInput = ({
                 openMenu();
               }
             }}
-            data-test-handle={inputName + '-autosuggest-input'}
+            data-test-handle={inputName + "-autosuggest-input"}
           />
         </div>
       </div>
@@ -172,7 +172,10 @@ export const AutoSuggestInput = ({
             {...attributes.arrow}
           >
           </div>
-          <div className="AutoSuggestSuggestionsScrollBox" data-test-handle={inputName + "-suggestions"}>
+          <div
+            className="AutoSuggestSuggestionsScrollBox"
+            data-test-handle={inputName + "-suggestions"}
+          >
             {getFilteredItems().map((item, index) => (
               <li
                 className={`AutoSuggestSuggestion ${

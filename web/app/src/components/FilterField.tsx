@@ -48,7 +48,7 @@ export const FilterField = ({
   return (
     <fieldset className="FilterField">
       <Select
-        name={"key" + '-' + name}
+        name={"key" + "-" + name}
         value={key}
         options={filters.filters.reduce(
           (acc, filter) => ({ ...acc, [filter.key]: filter.title }),

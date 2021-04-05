@@ -70,7 +70,7 @@ export const selectInputSelector = (name: string) =>
   `[data-test-handle="${name}-select-input"]`;
 
 export const autosuggestInputSelector = (name: string) =>
-`[data-test-handle="${name}-autosuggest-input"]`;
+  `[data-test-handle="${name}-autosuggest-input"]`;
 
 export const autosuggestValueSelector = (name: string, value: string) =>
   `[data-test-handle="${name}-suggestion-${value}"]`;

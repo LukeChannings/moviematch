@@ -23,7 +23,7 @@ export const Button = ({
   color,
   highlightColor,
   type,
-  testHandle
+  testHandle,
 }: ButtonProps) => (
   <button
     className={`Button Button${appearance}`}

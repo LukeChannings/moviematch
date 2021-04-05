@@ -111,7 +111,11 @@ export const CreateScreen = ({
           >
             <Tr name="BACK" />
           </Button>
-          <Button appearance="Primary" onPress={createRoom} testHandle="create-room">
+          <Button
+            appearance="Primary"
+            onPress={createRoom}
+            testHandle="create-room"
+          >
             <Tr name="CREATE_ROOM" />
           </Button>
         </ButtonContainer>
