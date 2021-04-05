@@ -44,8 +44,12 @@ while (typeof exitCode === "undefined") {
 
   const abortController = new AbortController();
 
-  if (Deno.signal) {
+  try {
     Deno.signal(Deno.Signal.SIGINT).then(() => abortController.abort());
+  } catch (err) {
+    if (Deno.build.os !== 'windows') {
+      log.error(`${err.message}: Unable to listen for SIGINT. There might be problems stopping MovieMatch.`)
+    }
   }
 
   try {
