@@ -11,6 +11,7 @@ interface ButtonProps {
   color?: Color;
   highlightColor?: Color;
   type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
+  testHandle?: string;
 }
 
 export const Button = ({
@@ -22,6 +23,7 @@ export const Button = ({
   color,
   highlightColor,
   type,
+  testHandle
 }: ButtonProps) => (
   <button
     className={`Button Button${appearance}`}
@@ -35,6 +37,7 @@ export const Button = ({
     onClick={onPress}
     type={type ?? "button"}
     disabled={disabled}
+    data-test-handle={testHandle && `${testHandle}-button`}
   >
     {children}
   </button>

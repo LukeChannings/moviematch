@@ -55,6 +55,9 @@ test:
   # https://github.com/denoland/deno/issues/9284
   deno test {{ deno_options }} internal
 
+test-e2e:
+  deno test {{ deno_options }} e2e-tests
+
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}
   deno lint --unstable --ignore={{build_dir}},{{ui_dir}}
@@ -73,7 +76,6 @@ clean-ui:
   rm -rf {{ui_build_dir}} {{ui_dir}}/node_modules
 
 clean-server:
-  rm -rf $(deno info --json --unstable | jq -r .modulesCache)
   rm -rf {{build_dir}}
 
 format:

@@ -11,12 +11,14 @@ import { AutoSuggestInput } from "./AutoSuggestInput";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
 
 interface FilterFieldProps {
+  name: string;
   filters: Filters;
   onChange: (filter: Filter | null) => void;
   getSuggestions: (key: string) => Promise<FilterValue[]>;
 }
 
 export const FilterField = ({
+  name,
   onChange,
   filters,
   getSuggestions,
@@ -46,7 +48,7 @@ export const FilterField = ({
   return (
     <fieldset className="FilterField">
       <Select
-        name="key"
+        name={"key" + '-' + name}
         value={key}
         options={filters.filters.reduce(
           (acc, filter) => ({ ...acc, [filter.key]: filter.title }),
@@ -61,7 +63,7 @@ export const FilterField = ({
       {filter && (
         <>
           <Select
-            name="operator"
+            name={"operator-" + name}
             value={operator}
             options={filters.filterTypes[filter.type]?.reduce(
               (acc, filterType) => ({
@@ -74,7 +76,7 @@ export const FilterField = ({
           />
           {filter.type !== "boolean" && (
             <AutoSuggestInput
-              inputName={`${key}-input`}
+              inputName={`value-${name}`}
               items={suggestions}
               onChange={setValue}
               value={value}

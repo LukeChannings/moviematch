@@ -6,12 +6,14 @@ interface AddRemoveListProps {
   children: (index: number) => ReactNode;
   initialChildren?: number;
   onRemove?: (index: number) => void;
+  testHandle?: string;
 }
 
 export const AddRemoveList = ({
   children,
   initialChildren = 1,
   onRemove,
+  testHandle,
 }: AddRemoveListProps) => {
   const [childList, setChildList] = useState(
     Array.from({ length: initialChildren }).map((_, i) => i),
@@ -24,6 +26,7 @@ export const AddRemoveList = ({
           type="button"
           className="AddRemoveList_Add"
           onClick={() => setChildList([0])}
+          data-test-handle={testHandle && `${testHandle}-add-button`}
         >
           {"+"}
         </button>
@@ -42,6 +45,7 @@ export const AddRemoveList = ({
                   }
                   setChildList(childList.filter((_) => _ !== i));
                 }}
+                data-test-handle={testHandle && `${testHandle}-${i}-remove-button`}
               >
                 {"-"}
               </button>
@@ -56,6 +60,7 @@ export const AddRemoveList = ({
                     childList[childList.length - 1] + 1,
                   ]);
                 }}
+                data-test-handle={testHandle && `${testHandle}-add-button`}
               >
                 {"+"}
               </button>

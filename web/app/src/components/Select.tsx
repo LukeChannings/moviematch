@@ -24,6 +24,7 @@ export const Select = ({
       onChange={onChange}
       onBlur={onBlur}
       value={value}
+      data-test-handle={`${name}-select-input`}
     >
       <option value="">&mdash; Select &mdash;</option>
       {options &&

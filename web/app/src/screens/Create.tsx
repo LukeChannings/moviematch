@@ -85,11 +85,13 @@ export const CreateScreen = ({
           <AddRemoveList
             initialChildren={0}
             onRemove={(i) => filters.current.delete(i)}
+            testHandle="filter"
           >
             {(i) =>
               availableFilters && (
                 <FilterField
                   key={i}
+                  name={String(i)}
                   onChange={(filter) =>
                     filter && filters.current.set(i, filter)}
                   filters={availableFilters}
@@ -105,10 +107,11 @@ export const CreateScreen = ({
           <Button
             appearance="Tertiary"
             onPress={() => navigate({ path: "join" })}
+            testHandle="back"
           >
             <Tr name="BACK" />
           </Button>
-          <Button appearance="Primary" onPress={createRoom}>
+          <Button appearance="Primary" onPress={createRoom} testHandle="create-room">
             <Tr name="CREATE_ROOM" />
           </Button>
         </ButtonContainer>

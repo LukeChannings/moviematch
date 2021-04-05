@@ -10,6 +10,7 @@ interface TextInputProps {
   invalid?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  testHandle?: string;
 }
 
 export const TextInput = ({
@@ -20,6 +21,7 @@ export const TextInput = ({
   onChange,
   onBlur,
   paddingTop,
+  testHandle,
 }: TextInputProps) => (
   <input
     className={`TextInput ${invalid ? "--invalid" : ""}`}
@@ -34,5 +36,6 @@ export const TextInput = ({
     autoCorrect="off"
     onChange={onChange}
     onBlur={onBlur}
+    data-test-handle={testHandle ?? `${name}-text-input`}
   />
 );

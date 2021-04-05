@@ -26,7 +26,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
       >
         <Field
           label={<Tr name="LOGIN_NAME" />}
-          name="userName"
+          name="given-name"
           autoComplete="given-name"
           value={userName ?? ""}
           onChange={(e) => {
@@ -52,6 +52,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
                 });
                 navigate({ path: "join" });
               }}
+              testHandle="login-anonymous"
             >
               <Tr name="LOGIN_SIGN_IN" />
             </Button>
@@ -60,6 +61,7 @@ export const LoginScreen = ({ navigate, dispatch }: ScreenProps) => {
             appearance="Primary"
             color="plex-color"
             highlightColor="plex-highlight-color"
+            testHandle="login-plex"
             onPress={async () => {
               if (!userName) {
                 setUserNameError(translations?.FIELD_REQUIRED_ERROR!);

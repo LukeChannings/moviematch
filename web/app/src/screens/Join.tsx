@@ -21,7 +21,7 @@ export const JoinScreen = ({
 }: ScreenProps<{ errorMessage?: string } | undefined>) => {
   const store = useContext(MovieMatchContext);
   const [roomName, setRoomName] = useState<string | undefined>(
-    store.room?.name ?? "",
+    store.room?.name ?? ""
   );
   const [roomNameError, setRoomNameError] = useState<string | undefined>();
   const [joinError] = useState<string | undefined>(params?.errorMessage);
@@ -95,6 +95,7 @@ export const JoinScreen = ({
             onPress={() => {
               dispatch({ type: "logout", payload: null });
             }}
+            testHandle="logout"
           >
             <Tr name="LOGOUT" />
           </Button>
@@ -106,10 +107,16 @@ export const JoinScreen = ({
                 params: { roomName: roomName ?? "" },
               });
             }}
+            testHandle="create-room"
           >
             <Tr name="CREATE_ROOM" />
           </Button>
-          <Button appearance="Primary" onPress={handleJoin} type="submit">
+          <Button
+            appearance="Primary"
+            onPress={handleJoin}
+            type="submit"
+            testHandle="join-room"
+          >
             <Tr name="JOIN_ROOM" />
           </Button>
         </ButtonContainer>
