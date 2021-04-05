@@ -1,5 +1,10 @@
 # Release Notes
 
+## v2.0.0-alpha.7
+
+- Improve Card Stack for different screen sizes
+- Fix an issue with starting MovieMatch on Window
+
 ## v2.0.0-alpha.6
 
 - Fix and issue with the release artefact for alpha 5
