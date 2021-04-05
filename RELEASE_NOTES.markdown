@@ -3,7 +3,7 @@
 ## v2.0.0-alpha.7
 
 - Improve Card Stack for different screen sizes
-- Fix an issue with starting MovieMatch on Window
+- Fix an issue with starting MovieMatch on Windows
 
 ## v2.0.0-alpha.6
 
