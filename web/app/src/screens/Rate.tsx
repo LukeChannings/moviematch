@@ -27,7 +27,7 @@ export const RateScreen = ({ dispatch }: ScreenProps) => {
   }
 
   return (
-    <Layout hideLogo frameless className="RateScreen">
+    <Layout hideLogo className="RateScreen">
       <CardStack
         cards={media}
         onCardDismissed={(card, rating) => {
