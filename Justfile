@@ -53,7 +53,6 @@ build-binary target: build-bundle
   else
     docker run --rm -it --platform linux/arm64 -v {{build_dir}}:{{build_dir}} lukechannings/deno compile {{deno_compile_options}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
   fi
-  cd {{build_dir}}/{{target}} && zip -r -j "../{{target}}.zip" ./*
 
 test:
   # https://github.com/denoland/deno/issues/9284
