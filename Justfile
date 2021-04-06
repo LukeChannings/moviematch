@@ -5,14 +5,14 @@ build_dir := justfile_directory() + "/build"
 ui_dir := justfile_directory() + "/web/app"
 ui_build_dir := ui_dir + "/build"
 deno_options := "-A --unstable --import-map=./configs/import_map.json"
-deno_compile_options := "--allow-read --allow-write --allow-env --allow-net --lite --unstable"
+deno_compile_options := "--allow-read --allow-write --allow-env --allow-net --unstable"
 deno_fmt_ignore := build_dir + "," + ui_dir + "/node_modules" + "," + ui_build_dir
 
 default:
   @just --list
 
 start: install
-  #!/usr/bin/env bash
+  #!/bin/bash
   just start-server &
   DENO_PID="$!"
   just start-ui &
@@ -36,19 +36,23 @@ start-ui:
 build-ui: install-node-modules
   cd {{ui_dir}} && VERSION={{version}} npx snowpack build
 
-build: clean build-ui
+build-bundle: clean build-ui
   mkdir -p {{build_dir}}
   deno run {{ deno_options }} ./cmd/moviematch/pkger.ts {{ui_build_dir}}/dist/main.* {{ui_build_dir}}/icons {{ui_build_dir}}/manifest.webmanifest web/template/index.html configs/localization VERSION > {{build_dir}}/pkg.ts
   sed 's/pkger.ts/pkger_release.ts/' < configs/import_map.json > {{build_dir}}/import_map.json
-  deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js 
-  @just compile-all
-  rm {{build_dir}}/pkg.ts {{build_dir}}/import_map.json
+  deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
 
-compile-all: (compile "x86_64-unknown-linux-gnu") (compile "x86_64-pc-windows-msvc") (compile "x86_64-apple-darwin") (compile "aarch64-apple-darwin")
+build-binary-all: (build-binary "x86_64-unknown-linux-gnu") (build-binary "aarch64-unknown-linux-gnu") (build-binary "x86_64-pc-windows-msvc") (build-binary "x86_64-apple-darwin") (build-binary "aarch64-apple-darwin")
+  rm {{build_dir}}/{pkg.ts,import_map.json}
 
-compile target:
+build-binary target: build-bundle
+  #!/bin/bash
   mkdir -p {{build_dir}}/{{target}}
-  deno compile {{deno_compile_options}} --target {{target}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
+  if [[ "{{target}}" != "aarch64-unknown-linux-gnu" ]]; then
+    deno compile {{deno_compile_options}} --lite --target {{target}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
+  else
+    docker run --rm -it --platform linux/arm64 -v {{build_dir}}:{{build_dir}} lukechannings/deno compile {{deno_compile_options}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
+  fi
   cd {{build_dir}}/{{target}} && zip -r -j "../{{target}}.zip" ./*
 
 test:
@@ -80,3 +84,13 @@ clean-server:
 
 format:
   deno fmt --ignore={{deno_fmt_ignore}}
+
+update-lockfile:
+  deno cache --lock deps.lock --lock-write --unstable --import-map=./configs/import_map.json ./cmd/moviematch/main.ts
+
+install-githooks:
+  #!/bin/bash
+  echo -e "#!/bin/bash\njust lint" > .git/hooks/pre-commit
+  chmod +x .git/hooks/pre-commit
+  echo -e "#!/bin/bash\njust lint test" > .git/hooks/pre-push
+  chmod +x .git/hooks/pre-push
