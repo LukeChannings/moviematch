@@ -42,6 +42,14 @@ const runPuppeteerTest = async (
     );
   });
 
+  page.on("request", (req: HTTPRequest) => {
+    console.log(
+      `\n[UI] [Request] ${req.url()} ${
+        JSON.stringify(req.response(), null, 2)
+      }`,
+    );
+  });
+
   await page.goto(MOVIEMATCH_URL);
 
   try {
