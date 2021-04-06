@@ -3,7 +3,7 @@ import { assertNotEquals } from "/deps.ts";
 import { browserTest, btnSelector, textInputSelector } from "./_utils.ts";
 
 export const loginAnonymous = async (page: Page, userName: string) => {
-  await page.waitForSelector(".Screen");
+  await page.waitForSelector(textInputSelector("given-name"));
   await page.type(textInputSelector("given-name"), userName);
   await page.click(btnSelector("login-anonymous"));
   assertNotEquals(await page.$(btnSelector("logout")), null);

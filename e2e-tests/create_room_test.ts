@@ -17,6 +17,7 @@ browserTest(
     await page.click(btnSelector("create-room"));
 
     // CreateScreen
+    await page.waitForSelector(textInputSelector("roomName"));
     await page.type(textInputSelector("roomName"), "Abc123");
     await page.click(btnSelector("create-room"));
 
@@ -35,6 +36,7 @@ browserTest(
     await page.click(btnSelector("create-room"));
 
     // CreateScreen
+    await page.waitForSelector(textInputSelector("roomName"));
     await page.type(textInputSelector("roomName"), "Filters");
 
     await page.click(btnSelector("filter-add"));
@@ -51,6 +53,6 @@ browserTest(
       path: `screenshots/create_room_filters_${emulatedName ?? "desktop"}.jpeg`,
     });
 
-    // await page.click(btnSelector("create-room"));
+    await page.click(btnSelector("create-room"));
   },
 );

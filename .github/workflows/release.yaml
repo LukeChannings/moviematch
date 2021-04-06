@@ -91,9 +91,9 @@ jobs:
           - target: macos-amd64
             os: macos-latest
             name: macOS
-          # - target: windows-amd64
-          #   os: windows-latest
-          #   name: Windows
+          - target: windows-amd64
+            os: windows-latest
+            name: Windows
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
