@@ -59,8 +59,13 @@ test:
   # https://github.com/denoland/deno/issues/9284
   deno test {{ deno_options }} internal
 
-test-e2e:
+test-e2e target: install-deno-dependencies
+  #!/bin/bash
+  export PORT=8765
+  ./build/{{target}}/moviematch &
+  MM_PID="$!"
   deno test {{ deno_options }} e2e-tests
+  kill MM_PID
 
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}
@@ -73,6 +78,7 @@ install-node-modules:
 
 install-deno-dependencies:
   deno install -qAf --unstable https://deno.land/x/denon/denon.ts
+  deno run -A --unstable https://raw.githubusercontent.com/lucacasonato/deno-puppeteer/main/install.ts
 
 clean: clean-ui clean-server
 

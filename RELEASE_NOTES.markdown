@@ -6,6 +6,8 @@
 - [Bugfix] MovieMatch would fail to start on Windows
 - [Bugfix] Having Reduced Motion enabled would break the Card Stack
 - [Bugfix] The server is no longer sent duplicate ratings when a card is dismissed
+- [Feature] Provide ARM64 Linux binary
+- [CI] Run end-to-end tests for macOS, Linux, and Windows against the release binary
 
 ## v2.0.0-alpha.6
 

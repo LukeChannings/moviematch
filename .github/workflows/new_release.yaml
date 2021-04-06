@@ -1,0 +1,103 @@
+# Release Process:
+
+# 1. Update RELEASE_NOTES.markdown and bump VERSION
+# 2. Create a release with the same text as VERSION plus a `v` prefix
+# 3. This workflow with kick in and build a Docker image and upload binaries to the release
+
+name: Release (E2E)
+
+on:
+  push:
+    tags:
+      - "v2*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version
+        required: true
+
+jobs:
+  build_info:
+    name: Get build info
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.metadata.outputs.version }}
+      prerelease: ${{ steps.metadata.outputs.prerelease }}
+      existing_release: ${{ steps.metadata.outputs.existing_release }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Get metadata
+        id: metadata
+        run: |
+          export VERSION="${{ github.event.inputs.version || github.ref }}"
+          VERSION="${VERSION#refs/tags/v}"
+          echo "::set-output name=version::${VERSION}"
+          PRERELEASE="$([[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]] && echo "true" || echo "false")"
+          echo "::set-output name=prerelease::${PRERELEASE}"
+          response=$(curl -s -H "Accept: application/json" https://api.github.com/repos/lukechannings/moviematch/releases)
+          EXISTING_RELEASE=$( [[ "$(echo $response | jq ".[]|select(.tag_name==\"${VERSION}\")")" == "" ]] && echo "false" || echo "true" )
+          echo "::set-output name=existing_release::${EXISTING_RELEASE}"
+      - name: Check we're building the right version
+        run: |
+          if [[ "$(cat VERSION)" != "${{steps.metadata.outputs.version}}" ]]; then
+            echo "Tag version is "${{steps.metadata.outputs.version}}", but the source code version is "$(cat VERSION)". These need to match!"
+            exit 1
+          fi
+        shell: bash
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: build_info
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Setup Deno
+        uses: denolib/setup-deno@v2
+      - name: Setup Just
+        uses: extractions/setup-just@v1
+      - name: Lint
+        run: just lint
+      - name: Unit tests
+        run: just test
+        env:
+          TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+      - name: Get Release Notes
+        run: |
+          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\sv${{needs.build_info.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "${RELEASE_NOTES}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Compile MovieMatch
+        run: just build-binary-all
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: ./build
+          retention-days: 1
+  e2e-tests:
+    name: End-to-end testing
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+      steps:
+        - name: Clone repository
+          uses: actions/checkout@v2
+        - name: Setup Deno
+          uses: denolib/setup-deno@v2
+        - name: Setup Just
+          uses: extractions/setup-just@v1
+        - uses: actions/download-artifact@v2
+          with:
+            name: build
+        - name: Run end-to-end tests
+          run: just test-e2e ${{ matrix.target }}
