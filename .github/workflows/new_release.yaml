@@ -112,6 +112,11 @@ jobs:
         env:
           PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: screenshots-${{ matrix.os }}
+          path: ./screenshots
+          retention-days: 1
   release:
     name: Publish release
     runs-on: ubuntu-latest
