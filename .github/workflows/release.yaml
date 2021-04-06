@@ -125,6 +125,8 @@ jobs:
       - e2e-tests
       - build_info
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
           name: build
