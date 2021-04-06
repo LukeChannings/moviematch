@@ -46,32 +46,89 @@ jobs:
           fi
         shell: bash
   build:
-    name: Build and publish
+    name: Build
     runs-on: ubuntu-latest
     needs: build_info
-    timeout-minutes: 60
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
-      - name: Setup Just
-        uses: extractions/setup-just@v1
       - name: Setup Deno
         uses: denolib/setup-deno@v2
-      - name: Tests
-        run: just lint test
+      - name: Setup Just
+        uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Lint
+        run: just lint
+      - name: Unit tests
+        run: just test
         env:
           TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+      - name: Compile MovieMatch
+        run: just build-binary all
       - name: Get Release Notes
         run: |
-          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\sv${{steps.metadata.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          echo "${RELEASE_NOTES}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-      - name: Compile MovieMatch
-        run: |
-          just build
-        shell: bash
+          RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\sv${{needs.build_info.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
+          echo "${RELEASE_NOTES}" > build/RELEASE_NOTES.markdown
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: ./build
+          retention-days: 1
+  e2e-tests:
+    name: E2E Tests (${{matrix.name}})
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - target: linux-amd64
+            os: ubuntu-latest
+            name: Linux
+          - target: macos-amd64
+            os: macos-latest
+            name: macOS
+          # - target: windows-amd64
+          #   os: windows-latest
+          #   name: Windows
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Setup Deno
+        uses: denolib/setup-deno@v2
+      - name: Setup Just
+        uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
+      - name: Run end-to-end tests
+        run: just test-e2e ${{ matrix.target }}
+        env:
+          PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: screenshots-${{ matrix.os }}
+          path: ./screenshots
+          retention-days: 1
+  release_github:
+    name: Release (GitHub)
+    runs-on: ubuntu-latest
+    needs:
+      - e2e-tests
+      - build_info
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
       - name: Create Release
         id: create_release
         if: ${{ needs.build_info.outputs.existing_release == 'false' }}
@@ -81,20 +138,41 @@ jobs:
         with:
           tag_name: "v${{ needs.build_info.outputs.version }}"
           release_name: "v${{ needs.build_info.outputs.version }}"
-          body: ${{ env.RELEASE_NOTES }}
+          body_path: ./build/RELEASE_NOTES.markdown
           prerelease: ${{ needs.build_info.outputs.prerelease == 'true' }}
       - name: Upload binaries
         run: |
           set -x
-          assets=()
-          for target in ./build/*.zip; do
-            assets+=("-a" "$target")
+          targets=("linux-amd64" "linux-arm64" "macos-amd64" "macos-arm64" "windows-amd64")
+          assets=("-a" "./build/moviematch.js")
+          for target in ${targets[*]}; do
+            zip -r -j "./build/${target}.zip" ./build/${target}/*
+            assets+=("-a" "./build/${target}.zip")
           done
-          assets+=("-a" "./build/moviematch.js")
           hub release edit "${assets[@]}" -m "v${{ needs.build_info.outputs.version }}" "v${{ needs.build_info.outputs.version }}" || true
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        if: ${{ failure() }}
+        with:
+          delete_release: true
+          tag_name: v${{ needs.build_info.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  release_docker:
+    name: Release (Docker)
+    runs-on: ubuntu-latest
+    needs:
+      - e2e-tests
+      - build_info
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Set up QEMU
