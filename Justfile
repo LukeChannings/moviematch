@@ -42,17 +42,33 @@ build-bundle: clean build-ui
   sed 's/pkger.ts/pkger_release.ts/' < configs/import_map.json > {{build_dir}}/import_map.json
   deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
 
-build-binary-all: (build-binary "x86_64-unknown-linux-gnu") (build-binary "aarch64-unknown-linux-gnu") (build-binary "x86_64-pc-windows-msvc") (build-binary "x86_64-apple-darwin") (build-binary "aarch64-apple-darwin")
+build-binary target: build-bundle
+  #!/usr/bin/env bash
+
+  # Names are from https://github.com/BretFisher/multi-platform-docker-build#the-problem-with-downloading-binaries-in-dockerfiles
+  case "{{target}}" in
+    all | linux-amd64)
+      just compile x86_64-unknown-linux-gnu linux-amd64;;&
+    all | linux-arm64)
+      just compile aarch64-unknown-linux-gnu linux-arm64;;&
+    all | macos-amd64)
+      just compile x86_64-apple-darwin macos-amd64;;&
+    all | macos-arm64)
+      just compile aarch64-apple-darwin macos-arm64;;&
+    all | windows-amd64)
+      just compile x86_64-pc-windows-msvc windows-amd64;;
+  esac
+
   rm -f {{build_dir}}/pkg.ts
   rm -f {{build_dir}}/import_map.json
 
-build-binary target: build-bundle
-  #!/bin/bash
+compile rust_target target:
+  #!/usr/bin/env bash
   mkdir -p {{build_dir}}/{{target}}
-  if [[ "{{target}}" != "aarch64-unknown-linux-gnu" ]]; then
-    deno compile {{deno_compile_options}} --lite --target {{target}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
-  else
+  if [ "{{rust_target}}" == "aarch64-unknown-linux-gnu" ]; then
     docker run --rm --platform linux/arm64 -v {{build_dir}}:{{build_dir}} lukechannings/deno compile {{deno_compile_options}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
+  else
+    deno compile {{deno_compile_options}} --lite --target {{rust_target}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
   fi
 
 test:
@@ -62,12 +78,16 @@ test:
 test-e2e target: install-deno-dependencies
   #!/bin/bash
   export PORT=8765
+  export MOVIEMATCH_URL="http://localhost:$PORT"
+
   chmod +x ./build/{{target}}/moviematch*
   nohup ./build/{{target}}/moviematch* &
   MM_PID="$!"
-  env MOVIEMATCH_URL="http://localhost:$PORT" deno test {{ deno_options }} e2e-tests
-  echo "$?"
+
+  deno test {{ deno_options }} e2e-tests
+  STATUS="$?"
   kill $MM_PID
+  exit $STATUS
 
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}

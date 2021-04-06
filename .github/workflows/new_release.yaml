@@ -67,14 +67,12 @@ jobs:
         env:
           TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+      - name: Compile MovieMatch
+        run: just build-binary all
       - name: Get Release Notes
         run: |
           RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\sv${{needs.build_info.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          echo "${RELEASE_NOTES}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-      - name: Compile MovieMatch
-        run: just build-binary-all
+          echo "${RELEASE_NOTES}" > build/RELEASE_NOTES.markdown
       - uses: actions/upload-artifact@v2
         with:
           name: build
@@ -87,13 +85,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: x86_64-unknown-linux-gnu
+          - target: linux-amd64
             os: ubuntu-latest
             name: Linux
-          - target: x86_64-apple-darwin
+          - target: macos-amd64
             os: macos-latest
             name: macOS
-          - target: x86_64-pc-windows-msvc
+          - target: windows-amd64
             os: windows-latest
             name: Windows
     steps:
@@ -111,3 +109,50 @@ jobs:
           path: build
       - name: Run end-to-end tests
         run: just test-e2e ${{ matrix.target }}
+        env:
+          PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+  release:
+    name: Publish release
+    needs:
+      - e2e-tests
+      - build_info
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
+      - name: Upload binaries
+        run: |
+          set -x
+          targets=("linux-amd64" "linux-arm64" "macos-amd64" "macos-arm64" "windows-amd64")
+          for target in ${targets[*]}; do
+            zip -r -j "./build/${target}.zip" ./${target}/*
+            assets+=("-a" "./build/${target}.zip")
+          done
+          assets+=("-a" "./build/moviematch.js")
+          hub release edit "${assets[@]}" -m "v${{ needs.build_info.outputs.version }}" "v${{ needs.build_info.outputs.version }}" || true
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build & Push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./configs/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            VERSION=v${{needs.build_info.outputs.version}}
+          tags: |
+            lukechannings/moviematch:${{ needs.build_info.outputs.version }}
+            ${{ needs.build_info.outputs.prerelease == 'false' && 'lukechannings/moviematch:latest' || '' }}
