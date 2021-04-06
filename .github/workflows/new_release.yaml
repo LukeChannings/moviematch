@@ -113,7 +113,7 @@ jobs:
           PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - uses: actions/upload-artifact@v2
-        if: failed()
+        if: ${{ failure() }}
         with:
           name: screenshots-${{ matrix.os }}
           path: ./screenshots
