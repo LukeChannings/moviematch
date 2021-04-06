@@ -123,6 +123,20 @@ jobs:
         with:
           name: build
           path: build
+      - name: Get Release Notes
+        run: |
+
+      - name: Create Release
+        id: create_release
+        if: ${{ needs.build_info.outputs.existing_release == 'false' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ needs.build_info.outputs.version }}"
+          release_name: "v${{ needs.build_info.outputs.version }}"
+          body_path: ./build/RELEASE_NOTES.markdown
+          prerelease: ${{ needs.build_info.outputs.prerelease == 'true' }}
       - name: Upload binaries
         run: |
           set -x

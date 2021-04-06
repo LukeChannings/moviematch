@@ -84,6 +84,12 @@ test-e2e target: install-deno-dependencies
   nohup ./build/{{target}}/moviematch* &
   MM_PID="$!"
 
+  while true ; do
+    curl -sf "${MOVIEMATCH_URL}/health" && break
+    echo "Waiting for MovieMatch to start"
+    sleep 1
+  done
+
   deno test {{ deno_options }} e2e-tests
   STATUS="$?"
   kill $MM_PID
@@ -109,6 +115,9 @@ clean-ui:
 
 clean-server:
   rm -rf {{build_dir}}
+
+clean-deno-cache:
+  rm -rf $(deno info --unstable --json | jq .denoDir)
 
 format:
   deno fmt --ignore={{deno_fmt_ignore}}
