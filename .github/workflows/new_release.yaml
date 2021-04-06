@@ -56,6 +56,8 @@ jobs:
         uses: denolib/setup-deno@v2
       - name: Setup Just
         uses: extractions/setup-just@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
       - name: Lint
         run: just lint
       - name: Unit tests
