@@ -81,7 +81,7 @@ jobs:
           path: ./build
           retention-days: 1
   e2e-tests:
-    name: End-to-end testing
+    name: E2E Tests (${{matrix.name}})
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -89,10 +89,13 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
+            name: Linux
           - target: x86_64-apple-darwin
             os: macos-latest
+            name: macOS
           - target: x86_64-pc-windows-msvc
             os: windows-latest
+            name: Windows
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
