@@ -89,15 +89,15 @@ jobs:
             os: macos-latest
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-      steps:
-        - name: Clone repository
-          uses: actions/checkout@v2
-        - name: Setup Deno
-          uses: denolib/setup-deno@v2
-        - name: Setup Just
-          uses: extractions/setup-just@v1
-        - uses: actions/download-artifact@v2
-          with:
-            name: build
-        - name: Run end-to-end tests
-          run: just test-e2e ${{ matrix.target }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Setup Deno
+        uses: denolib/setup-deno@v2
+      - name: Setup Just
+        uses: extractions/setup-just@v1
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+      - name: Run end-to-end tests
+        run: just test-e2e ${{ matrix.target }}
