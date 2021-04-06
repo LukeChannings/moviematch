@@ -82,7 +82,7 @@ test-e2e target: install-deno-dependencies
   export MOVIEMATCH_URL="http://localhost:$PORT"
 
   chmod +x ./build/{{target}}/moviematch*
-  nohup ./build/{{target}}/moviematch* &
+  ./build/{{target}}/moviematch* &
   MM_PID="$!"
 
   while true ; do

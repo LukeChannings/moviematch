@@ -82,3 +82,5 @@ window.addEventListener("keyup", (e) => {
 window.addEventListener("mouseup", () => {
   document.body.classList.remove("show-focus-ring");
 });
+
+console.log("THIS IS A TEST");

@@ -1,5 +1,7 @@
 import puppeteer, {
+  ConsoleMessage,
   devicesMap,
+  HTTPRequest,
   Page,
   TimeoutError,
 } from "https://raw.githubusercontent.com/lucacasonato/deno-puppeteer/main/mod.ts";
@@ -18,10 +20,10 @@ const runPuppeteerTest = async (
     await page.emulate(devicesMap[emulate]);
   }
 
-  page.on("console", (msg) => {
-    for (let i = 0; i < msg.args().length; ++i) {
-      console.log(`[UI] ${i}: ${msg.args()[i]}`);
-    }
+  page.on("console", (msg: ConsoleMessage) => {
+    console.log(
+      `\n[UI] ${msg.text()} ${JSON.stringify(msg.stackTrace(), null, 2)}`,
+    );
   });
 
   page.on("pageerror", (err: Error) => {
@@ -30,7 +32,13 @@ const runPuppeteerTest = async (
 
   page.on("metrics", (metric: { title: string; metrics: unknown }) => {
     console.log(
-      `[UI] [Metrics] ${metric.title} ${JSON.stringify(metric.metrics)}`,
+      `\n[UI] [Metrics] ${metric.title} ${JSON.stringify(metric.metrics)}`,
+    );
+  });
+
+  page.on("requestfailed", (req: HTTPRequest) => {
+    console.log(
+      `\n[UI] [Request Failed] ${req.url()} ${JSON.stringify(req.failure())}`,
     );
   });
 
