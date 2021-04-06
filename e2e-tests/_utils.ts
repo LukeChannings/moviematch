@@ -17,6 +17,21 @@ const runPuppeteerTest = async (
   if (emulate) {
     await page.emulate(devicesMap[emulate]);
   }
+
+  page.on('console', msg => {
+    for (let i = 0; i < msg.args().length; ++i) {
+      console.log(`[UI] ${i}: ${msg.args()[i]}`);
+    }
+  });
+
+  page.on('pageerror', (err: Error) => {
+    console.error(`[UI] [Page Error] ${err}`);
+  })
+
+  page.on('metrics', (metric: { title: string, metrics: unknown }) => {
+    console.log(`[UI] [Metrics] ${metric.title} ${JSON.stringify(metric.metrics)}`);
+  })
+
   await page.goto(MOVIEMATCH_URL);
 
   try {
