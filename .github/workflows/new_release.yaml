@@ -110,8 +110,4 @@ jobs:
           name: build
           path: build
       - name: Run end-to-end tests
-        run: |
-          ls
-          chmod +x ./build/${{ matrix.target }}/moviematch*
-          just test-e2e ${{ matrix.target }}
-        shell: bash
+        run: just test-e2e ${{ matrix.target }}
