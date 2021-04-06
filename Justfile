@@ -43,7 +43,8 @@ build-bundle: clean build-ui
   deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
 
 build-binary-all: (build-binary "x86_64-unknown-linux-gnu") (build-binary "aarch64-unknown-linux-gnu") (build-binary "x86_64-pc-windows-msvc") (build-binary "x86_64-apple-darwin") (build-binary "aarch64-apple-darwin")
-  rm {{build_dir}}/{pkg.ts,import_map.json}
+  rm -f {{build_dir}}/pkg.ts
+  rm -f {{build_dir}}/import_map.json
 
 build-binary target: build-bundle
   #!/bin/bash
