@@ -7,6 +7,7 @@ ui_build_dir := ui_dir + "/build"
 deno_options := "-A --unstable --import-map=./configs/import_map.json"
 deno_compile_options := "--allow-read --allow-write --allow-env --allow-net --unstable"
 deno_fmt_ignore := build_dir + "," + ui_dir + "/node_modules" + "," + ui_build_dir
+default_target := os() + "-" + arch()
 
 default:
   @just --list
@@ -42,20 +43,20 @@ build-bundle: clean build-ui
   sed 's/pkger.ts/pkger_release.ts/' < configs/import_map.json > {{build_dir}}/import_map.json
   deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
 
-build-binary target: build-bundle
+build-binary target=default_target: build-bundle
   #!/usr/bin/env bash
 
   # Names are from https://github.com/BretFisher/multi-platform-docker-build#the-problem-with-downloading-binaries-in-dockerfiles
   case "{{target}}" in
-    all | linux-amd64)
+    all | linux-amd64 | linux-x86_64)
       just compile x86_64-unknown-linux-gnu linux-amd64;;&
-    all | linux-arm64)
+    all | linux-arm64 | linux-aarch64)
       just compile aarch64-unknown-linux-gnu linux-arm64;;&
-    all | macos-amd64)
+    all | macos-amd64 | macos-x86_64)
       just compile x86_64-apple-darwin macos-amd64;;&
-    all | macos-arm64)
+    all | macos-arm64 | macos-aarch64)
       just compile aarch64-apple-darwin macos-arm64;;&
-    all | windows-amd64)
+    all | windows-amd64 | window-x86_64)
       just compile x86_64-pc-windows-msvc windows-amd64;;
   esac
 
@@ -119,6 +120,8 @@ clean-server:
 
 clean-deno-cache:
   rm -rf $(deno info --unstable --json | jq .denoDir)
+
+alias fmt := format
 
 format:
   deno fmt --ignore={{deno_fmt_ignore}}
