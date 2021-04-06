@@ -90,6 +90,7 @@ test-e2e target: install-deno-dependencies
     sleep 1
   done
 
+  rm screenshots/*
   deno test {{ deno_options }} e2e-tests
   STATUS="$?"
   kill $MM_PID
