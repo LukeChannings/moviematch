@@ -113,6 +113,7 @@ jobs:
           PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - uses: actions/upload-artifact@v2
+        if: failed()
         with:
           name: screenshots-${{ matrix.os }}
           path: ./screenshots
@@ -128,9 +129,6 @@ jobs:
         with:
           name: build
           path: build
-      - name: Get Release Notes
-        run: |
-
       - name: Create Release
         id: create_release
         if: ${{ needs.build_info.outputs.existing_release == 'false' }}
