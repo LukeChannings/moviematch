@@ -108,5 +108,10 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: build
+          path: build
       - name: Run end-to-end tests
-        run: just test-e2e ${{ matrix.target }}
+        run: |
+          ls
+          chmod +x ./build/${{ matrix.target }}/moviematch${{ matrix.os == "windows-latest" && ".exe" || "" }}
+          just test-e2e ${{ matrix.target }}
+        shell: bash

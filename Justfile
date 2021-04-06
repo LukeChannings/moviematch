@@ -64,7 +64,6 @@ test:
   export PORT=8765
   nohup ./build/{{target}}/moviematch &
   MM_PID="$!"
-  sleep 5
   env MOVIEMATCH_URL="http://localhost:$PORT" deno test {{ deno_options }} e2e-tests
   kill $MM_PID
 
