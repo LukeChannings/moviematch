@@ -2,8 +2,10 @@
 
 ## v2.0.0-alpha.7
 
-- Improve Card Stack for different screen sizes
-- Fix an issue with starting MovieMatch on Windows
+- [Bugfix] Improve Card Stack for different screen sizes
+- [Bugfix] MovieMatch would fail to start on Windows
+- [Bugfix] Having Reduced Motion enabled would break the Card Stack
+- [Bugfix] The server is no longer sent duplicate ratings when a card is dismissed
 
 ## v2.0.0-alpha.6
 
