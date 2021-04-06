@@ -1,7 +1,6 @@
 import React, { StrictMode, useCallback } from "react";
 import { render } from "react-dom";
 
-import "modern-css-reset/dist/reset.css";
 import "./main.css";
 import "./components/Screen";
 
@@ -66,7 +65,7 @@ render(
 if (
   window.innerHeight !==
     document.querySelector("body")?.getBoundingClientRect().height &&
-  ("standalone" in navigator && !navigator.standalone)
+  (!(navigator as unknown as Record<string, unknown>).standalone)
 ) {
   document.body.style.setProperty("--vh", window.innerHeight / 100 + "px");
   window.addEventListener("resize", () => {

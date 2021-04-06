@@ -39,6 +39,32 @@
   --vh: 1vh;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
 body {
   background: linear-gradient(
     135deg,
@@ -48,7 +74,9 @@ body {
   background-size: 100vw calc(var(--vh) * 300);
   color: var(--mm-black);
   min-height: calc(var(--vh) * 100);
-  font-family: Helvetica Neue, system-ui, Helvetica, sans-serif;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+  font-family: "Helvetica Neue", system-ui, Helvetica, sans-serif;
   overscroll-behavior: none;
   scroll-behavior: smooth;
 }

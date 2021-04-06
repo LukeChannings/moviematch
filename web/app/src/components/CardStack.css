@@ -1,5 +1,5 @@
 .CardStack {
-  --card-height: min(calc(80vmin * 1.5), calc(var(--vh) * 75), 384px);
+  --card-height: min(calc(80vmin * 1.5), calc(var(--vh) * 75), 410px);
   position: relative;
   width: 100vw;
   display: flex;
@@ -12,6 +12,7 @@
 
 .CardStack.--empty {
   place-items: center;
+  min-height: calc(var(--card-height) + 105px); /* Card height plus the padding top and bottom */
 }
 
 .CardStackItem {

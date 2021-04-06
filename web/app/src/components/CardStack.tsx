@@ -9,12 +9,7 @@ import React, {
 import type { Media } from "../../../../types/moviematch";
 import "./CardStack.css";
 import { useGesture } from "react-use-gesture";
-import {
-  animated,
-  Controller,
-  ControllerUpdate,
-  Spring,
-} from "@react-spring/web";
+import { animated, Controller, Spring } from "@react-spring/web";
 import { Tr } from "./Tr";
 const { abs, sign } = Math;
 
@@ -26,12 +21,12 @@ interface CardStackProps {
   onCardDismissed: (card: Card, direction: "left" | "right") => void;
 }
 
-type Spring = ControllerUpdate<{
+type Spring = {
   x: number;
   y: number;
   z: number;
   opacity: number;
-}>;
+};
 
 const INITIAL_COUNT = 5;
 const YZ_SIZE = 15;
@@ -116,17 +111,22 @@ export const CardStack = memo(
             const item = items.find((_) => _.id === action.payload.id);
             if (item) {
               const itemIndex = items.indexOf(item);
-              item.controller
-                .start({
-                  x: (action.payload.direction === "left" ? -1 : 1) * (vw + ew),
-                })
-                .then(() => {
-                  dispatch({
-                    type: "finalizeRemove",
-                    payload: { id: action.payload.id },
+
+              if (item.controller.springs.x.idle) {
+                item.controller
+                  .start({
+                    x: (action.payload.direction === "left" ? -1 : 1) *
+                      (vw + ew),
+                    config: { duration: 150 },
+                  })
+                  .then(() => {
+                    dispatch({
+                      type: "finalizeRemove",
+                      payload: { id: action.payload.id },
+                    });
+                    onCardDismissed(item.item, action.payload.direction);
                   });
-                  onCardDismissed(item.item, action.payload.direction);
-                });
+              }
 
               newItems = items.map((item, i) =>
                 item.id === action.payload.id ? { ...item, removed: true } : {
@@ -138,7 +138,9 @@ export const CardStack = memo(
             break;
           }
           case "finalizeRemove": {
-            newItems = newItems.filter((_) => _.id !== action.payload.id);
+            if (newItems.find((_) => _.id === action.payload.id)) {
+              newItems = newItems.filter((_) => _.id !== action.payload.id);
+            }
             break;
           }
         }
@@ -197,7 +199,6 @@ export const CardStack = memo(
         onDrag({ args: [id], down, delta: [x], movement: [mx] }) {
           if (down) {
             const p = abs(mx / (vw + ew));
-            console.log({ id, x, mx, p });
             let isAfterId = false;
             items.forEach(({ removed, index, id: _id, controller }) => {
               if (!removed) {
@@ -220,7 +221,9 @@ export const CardStack = memo(
         onDragEnd({ args: [id], movement: [x], velocities: [vx] }) {
           const p = abs(x / (vw + ew));
           if (p > 0.5 || abs(vx) > 0.5) {
-            console.log("remove", { id, x, p });
+            // TODO: dispatch is called once, but the
+            // remove action is handled twice. Investigate why this
+            // is, and if `useReducer` is the best tool for the job.
             dispatch({
               type: "remove",
               payload: {
@@ -261,7 +264,7 @@ export const CardStack = memo(
             </p>
           )}
           {items.map((item) => {
-            const { x, y, z, opacity } = item.controller.springs as any;
+            const { x, y, z, opacity } = item.controller.springs;
             return (
               <animated.div
                 key={item.id}
