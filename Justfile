@@ -62,7 +62,7 @@ test:
 @test-e2e target: install-deno-dependencies
   #!/bin/bash
   export PORT=8765
-  nohup ./build/{{target}}/moviematch &
+  nohup ./build/{{target}}/moviematch* &
   MM_PID="$!"
   env MOVIEMATCH_URL="http://localhost:$PORT" deno test {{ deno_options }} e2e-tests
   kill $MM_PID

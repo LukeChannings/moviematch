@@ -112,6 +112,6 @@ jobs:
       - name: Run end-to-end tests
         run: |
           ls
-          chmod +x ./build/${{ matrix.target }}/moviematch${{ matrix.os == "windows-latest" && ".exe" || "" }}
+          chmod +x ./build/${{ matrix.target }}/moviematch*
           just test-e2e ${{ matrix.target }}
         shell: bash
