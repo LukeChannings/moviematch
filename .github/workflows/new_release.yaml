@@ -145,7 +145,7 @@ jobs:
           set -x
           targets=("linux-amd64" "linux-arm64" "macos-amd64" "macos-arm64" "windows-amd64")
           for target in ${targets[*]}; do
-            zip -r -j "./build/${target}.zip" ./${target}/*
+            zip -r -j "./build/${target}.zip" ./build/${target}/*
             assets+=("-a" "./build/${target}.zip")
           done
           assets+=("-a" "./build/moviematch.js")
@@ -174,3 +174,10 @@ jobs:
           tags: |
             lukechannings/moviematch:${{ needs.build_info.outputs.version }}
             ${{ needs.build_info.outputs.prerelease == 'false' && 'lukechannings/moviematch:latest' || '' }}
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        if: ${{ failure() }}
+        with:
+          delete_release: true
+          tag_name: ${{ needs.build_info.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

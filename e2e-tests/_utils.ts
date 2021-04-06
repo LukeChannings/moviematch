@@ -42,10 +42,11 @@ const runPuppeteerTest = async (
     );
   });
 
-  page.on("request", (req: HTTPRequest) => {
+  page.on("requestfinished", (req: HTTPRequest) => {
+    const response = req.response();
     console.log(
-      `\n[UI] [Request] ${req.url()} ${
-        JSON.stringify(req.response(), null, 2)
+      `\n[UI] [Request Finished] ${req.url()} ${response?.status()} ${
+        response?.statusText()
       }`,
     );
   });
