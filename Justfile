@@ -51,7 +51,7 @@ build-binary target: build-bundle
   if [[ "{{target}}" != "aarch64-unknown-linux-gnu" ]]; then
     deno compile {{deno_compile_options}} --lite --target {{target}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
   else
-    docker run --rm -it --platform linux/arm64 -v {{build_dir}}:{{build_dir}} lukechannings/deno compile {{deno_compile_options}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
+    docker run --rm --platform linux/arm64 -v {{build_dir}}:{{build_dir}} lukechannings/deno compile {{deno_compile_options}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
   fi
 
 test:
