@@ -59,13 +59,14 @@ test:
   # https://github.com/denoland/deno/issues/9284
   deno test {{ deno_options }} internal
 
-test-e2e target: install-deno-dependencies
+@test-e2e target: install-deno-dependencies
   #!/bin/bash
   export PORT=8765
-  ./build/{{target}}/moviematch &
+  nohup ./build/{{target}}/moviematch &
   MM_PID="$!"
+  sleep 5
   env MOVIEMATCH_URL="http://localhost:$PORT" deno test {{ deno_options }} e2e-tests
-  kill MM_PID
+  kill $MM_PID
 
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}
