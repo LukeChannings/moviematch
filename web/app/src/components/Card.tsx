@@ -5,6 +5,7 @@ import "./Card.css";
 import { InfoIcon } from "./InfoIcon";
 import { Pill } from "./Pill";
 import { ContentRatingSymbol } from "./ContentRatingSymbol";
+import { StarIcon } from "./StarIcon";
 
 export interface CardProps {
   title?: ReactNode;
@@ -63,7 +64,9 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
                 <div className="Card_MoreInfo_Metadata">
                   <Pill>{media.year}</Pill>
                   <Pill>{formatTime(+media.duration)}</Pill>
-                  <Pill>{media.rating} ⭐️</Pill>
+                  <Pill>
+                    <StarIcon /> {media.rating}
+                  </Pill>
                   <Pill>
                     <ContentRatingSymbol
                       rating={media.contentRating!}
