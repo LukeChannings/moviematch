@@ -7,22 +7,25 @@ interface AvatarProps {
   avatarUrl?: string;
 }
 
-const defaultImage = (userName: string) =>
-  `
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-  <rect x="0" y="0" width="24" height="24" fill="#EEC3C3" />
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="HelveticaNeue-Bold, Helvetica Neue, Helvetica, sans-serif" font-size="12" font-weight="bold">
-    ${userName[0].toUpperCase()}
-  </text>
-</svg>`;
-
 export const Avatar = ({ userName, avatarUrl }: AvatarProps) => {
+  const nameHue = userName
+    .toUpperCase()
+    .split("")
+    .filter((_) => /[\p{Letter}-]/gu.test(_))
+    .reduce((sum, _, i) => sum + _.charCodeAt(0) ** (i + 1), 0) % 360;
+
+  const plexHue = 41;
+
   return (
-    <img
+    <div
       className="Avatar"
-      src={avatarUrl ||
-        `data:image/svg+xml;utf8,${encodeURIComponent(defaultImage(userName))}`}
-      alt={`${userName}'s avatar`}
-    />
+      style={{
+        "--hue": avatarUrl ? plexHue : nameHue,
+        backgroundImage: `url(${avatarUrl})`,
+      } as any}
+    >
+      {!avatarUrl &&
+        <span className="Avatar_Letter">{userName.toUpperCase()[0]}</span>}
+    </div>
   );
 };

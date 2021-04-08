@@ -7,6 +7,7 @@ import "./RoomInfoBar.css";
 import { Tr } from "./Tr";
 import type { Toast } from "./Toast";
 import { Popover, PopoverButton, PopoverMenuButton } from "./Popover";
+import { ExpandIcon } from "./ExpandIcon";
 
 interface RoomInfoBarProps {
   logout: () => void;
@@ -50,6 +51,7 @@ export const RoomInfoBar = ({
           <PopoverButton className="RoomInfoBar_User">
             {(isPopoverOpen) => (
               <>
+                <ExpandIcon />
                 <Avatar
                   userName={store.user!.userName}
                   avatarUrl={store.user!.avatar}

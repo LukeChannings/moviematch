@@ -1,6 +1,23 @@
 .Avatar {
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid hsl(var(--mm-red-hue) 76% 60%);
-  border-radius: 100%;
+  --size: 2rem;
+  --hue: 0;
+
+  width: var(--size);
+  height: var(--size);
+  border-radius: var(--size);
+  border: clamp(2px, calc(var(--size) * 0.033333333), 0.5rem) solid
+    hsl(var(--hue) 35% 70%);
+  display: flex;
+  place-content: center;
+  align-items: center;
+  transition: ease-in background-color 200ms;
+  background-color: hsl(var(--hue) 40% 40%);
+  background-size: cover;
+}
+
+.Avatar_Letter {
+  font-size: calc(var(--size) / 2);
+  font-weight: bold;
+  line-height: 1;
+  color: hsl(var(--hue) 50% 90%);
 }

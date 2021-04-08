@@ -27,13 +27,16 @@
 .RoomInfoBar_User {
   display: grid;
   grid-auto-flow: column;
-  gap: var(--s2);
+  gap: var(--s1);
   align-items: center;
   color: var(--mm-white);
 }
-.RoomInfoBar_UserName {
+
+.RoomInfoBar_User_UserName {
+  margin-left: var(--s1);
   letter-spacing: 0;
 }
+
 .RoomInfoBar_ShareRoomButton {
   background: transparent;
   border: none;
