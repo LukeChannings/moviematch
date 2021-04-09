@@ -78,3 +78,13 @@ The file names follow [BCP47](https://tools.ietf.org/html/bcp47) naming. Feel fr
 ### Can I run MovieMatch behind a reverse proxy?
 
 Yes, you can read some documentation [here](./docs/reverse-proxy.markdown)
+
+### MovieMatch crashes on startup with an error!
+
+#### dns error: failed to lookup address information: Name or service not known
+
+This is an issue with your DNS configuration, try using an IP address for Plex instead of a domain name as a workaround. See [#70](https://github.com/LukeChannings/moviematch/issues/70) for more details.
+
+#### tcp connect error: Connection refused
+
+MovieMatch can't connect to Plex due to your network configuration, see [#51](https://github.com/LukeChannings/moviematch/issues/51) for ideas on how to debug.
