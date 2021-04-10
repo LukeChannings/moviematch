@@ -9,7 +9,7 @@ import type {
 } from "../../../types/moviematch";
 import { getClient, MovieMatchClient } from "./api/moviematch";
 import { checkPin, PlexPIN, PlexPINExpiredError } from "./api/plex_tv";
-import type { Toast } from "./components/Toast";
+import type { Toast } from "./components/atoms/Toast";
 import { useAsyncEffect } from "./hooks/useAsyncEffect";
 
 interface User {

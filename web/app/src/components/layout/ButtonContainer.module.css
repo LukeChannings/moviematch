@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+.containerMobileReverse {
+  composes: container;
+  flex-direction: column-reverse;
+}
+
+@media screen and (max-width: 48em) {
+  .container > *:nth-of-type(n + 2) {
+    margin-top: var(--s2);
+  }
+
+  .containerMobileReverse > *:nth-of-type(n + 2) {
+    margin-top: 0;
+    margin-bottom: var(--s2);
+  }
+}
+
+@media screen and (min-width: 48em) {
+  .container {
+    flex-direction: row;
+  }
+
+  .container > * {
+    margin-left: var(--s2);
+  }
+}

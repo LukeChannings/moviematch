@@ -1,0 +1,62 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.listItem {
+  display: grid;
+  grid-auto-flow: column;
+  width: 100%;
+  gap: 0.5rem;
+  grid-template-columns: 1fr 7rem;
+}
+
+.listItem:nth-of-type(n + 2) {
+  margin-top: var(--s4);
+}
+
+.controls {
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  grid-template-columns: 3rem 3rem;
+}
+
+.removeButton,
+.addButton {
+  width: 3rem;
+  min-height: 3rem;
+  height: 100%;
+  border: 2px solid var(--mm-black);
+  border-radius: 5px;
+  padding: 0;
+  font-weight: bold;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background-color var(--mm-transition-duration) ease-in-out;
+}
+
+.removeButton {
+  background: var(--mm-remove-color);
+}
+
+.addButton {
+  background: var(--mm-add-color);
+  grid-column: 2;
+}
+
+@media (hover: hover) {
+  .removeButton:hover {
+    background: var(--mm-remove-highlight-color);
+  }
+  .addButton:hover {
+    background: var(--mm-add-highlight-color);
+  }
+}

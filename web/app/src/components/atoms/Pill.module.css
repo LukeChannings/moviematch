@@ -1,0 +1,49 @@
+.pill {
+  padding: 0.35rem 0.25rem;
+  background-color: var(--mm-black);
+  border-radius: var(--s1);
+  color: var(--mm-white);
+  line-height: 1;
+  height: 1.5rem;
+  transition: background-color 100ms ease-in-out;
+  display: flex;
+  align-items: center;
+  place-content: center;
+  justify-content: center;
+}
+
+.pillWithRemoveButton {
+  composes: pill;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .pillWithRemoveButton:focus,
+  .pillWithRemoveButton:hover {
+    background-color: var(--mm-failure-color);
+  }
+
+  .pillWithRemoveButton:focus .PillCloseIcon,
+  .pillWithRemoveButton:hover .PillCloseIcon {
+    color: var(--mm-white);
+  }
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  font-family: system-ui;
+  line-height: 1.1;
+  display: flex;
+  place-content: center;
+}
+
+.icon {
+  color: var(--mm-dark-red);
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: color 100ms ease-in-out;
+  position: relative;
+  margin-left: var(--s2);
+  top: -4px;
+}

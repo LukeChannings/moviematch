@@ -2,17 +2,16 @@ import React, { StrictMode, useCallback } from "react";
 import { render } from "react-dom";
 
 import "./main.css";
-import "./components/Screen";
 
-import { LoginScreen } from "./screens/Login";
-import { JoinScreen } from "./screens/Join";
-import { CreateScreen } from "./screens/Create";
-import { RateScreen } from "./screens/Rate";
+import { LoginScreen } from "./components/screens/Login";
+import { JoinScreen } from "./components/screens/Join";
+import { CreateScreen } from "./components/screens/Create";
+import { RoomScreen } from "./components/screens/Room";
 import { MovieMatchContext, Routes, useStore } from "./store";
-import type { ScreenProps } from "./components/Screen";
-import { Loading } from "./screens/Loading";
-import { ToastList } from "./components/Toast";
-import { ConfigScreen } from "./screens/Config";
+import type { ScreenProps } from "./components/layout/Screen";
+import { Loading } from "./components/screens/Loading";
+import { ToastList } from "./components/atoms/Toast";
+import { ConfigScreen } from "./components/screens/Config";
 
 const MovieMatch = () => {
   const [store, dispatch] = useStore();
@@ -32,7 +31,7 @@ const MovieMatch = () => {
             login: LoginScreen,
             join: JoinScreen,
             createRoom: CreateScreen,
-            rate: RateScreen,
+            rate: RoomScreen,
             config: ConfigScreen,
           };
           const CurrentComponent = routes[store.route.path];

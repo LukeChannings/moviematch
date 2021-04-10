@@ -1,0 +1,29 @@
+.selectWrapper {
+  position: relative;
+}
+
+.selectWrapper::after {
+  position: absolute;
+  top: 1.2rem;
+  right: var(--s2);
+  font-size: 1.2rem;
+  content: "⌄";
+  line-height: 0;
+  font-weight: bold;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.select {
+  position: relative;
+  background-color: transparent;
+  width: 100%;
+  height: 3rem;
+  border: 2px solid var(--mm-black);
+  background-color: transparent;
+  border-radius: var(--s1);
+  padding: var(--s2);
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+}

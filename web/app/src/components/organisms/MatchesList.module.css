@@ -1,0 +1,51 @@
+.matches {
+  min-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.list {
+  display: grid;
+  position: relative;
+  grid-auto-flow: column;
+  list-style: none;
+  width: 100vw;
+  grid-gap: var(--s4);
+  overflow: auto;
+  padding: var(--s4) 0 var(--s3) 10vw;
+  scroll-snap-type: x mandatory;
+  grid-auto-columns: max-content;
+}
+
+.list::after {
+  content: "";
+  width: calc(10vw - var(--s4));
+  display: block;
+}
+
+@media screen and (min-width: 52em) {
+  .list {
+    --card-height: 50vh;
+  }
+}
+
+.item {
+  scroll-snap-align: start;
+  scroll-margin-left: 10vw;
+  scroll-snap-margin-left: 10vw;
+}
+
+.noMatchesText {
+  font-size: 1rem;
+  color: #505062;
+  max-width: 80vw;
+  text-align: center;
+  font-weight: bold;
+}
+
+@media screen and (min-width: 52em) {
+  .noMatchesText {
+    max-width: 50vw;
+  }
+}

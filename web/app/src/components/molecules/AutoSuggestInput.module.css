@@ -1,0 +1,134 @@
+.container {
+  width: 100%;
+  border: 2px solid var(--mm-black);
+  background-color: transparent;
+  border-radius: var(--s1);
+  padding: var(--s2);
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.selections {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.selections > * {
+  margin: calc(var(--s1) / 2);
+}
+
+.selectionsDelimiterLabel {
+  font-size: 0.8rem;
+  color: var(--mm-black);
+  font-weight: bold;
+}
+
+.input {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background-color: transparent;
+  border-bottom: 2px solid var(--mm-black);
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  margin-top: var(--s1);
+}
+
+.input:focus {
+  border-bottom: 2px solid var(--mm-black-lighter);
+}
+
+.suggestions {
+  background-color: var(--mm-black);
+  border: 1px solid var(--mm-white);
+  border-radius: var(--s2);
+  padding: var(--s1);
+  margin: 0;
+  z-index: var(--z-near);
+  min-width: 8rem;
+}
+
+.suggestionsScrollBox {
+  width: 100%;
+  height: 100%;
+  max-height: 10rem;
+  overflow: scroll;
+}
+
+.suggestionsArrow,
+.suggestionsArrow::before {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  z-index: -1;
+}
+
+.suggestionsArrow::before {
+  content: "";
+  transform: rotate(45deg);
+  background: var(--mm-black);
+  top: 0;
+  left: 0;
+}
+
+.suggestionsArrow::before {
+  transform: translateX(0px) rotate(45deg);
+  transform-origin: center;
+  border: 1px solid var(--mm-black);
+}
+
+[data-popper-placement^="top"] > .suggestionsArrow {
+  bottom: -5px;
+}
+
+[data-popper-placement^="top"] > .suggestionsArrow::before {
+  border-bottom-color: var(--mm-white);
+  border-right-color: var(--mm-white);
+}
+
+[data-popper-placement^="right"] > .suggestionsArrow {
+  left: -5px;
+}
+
+[data-popper-placement^="right"] > .suggestionsArrow::before {
+  border-bottom-color: var(--mm-white);
+  border-left-color: var(--mm-white);
+}
+
+[data-popper-placement^="bottom"] > .suggestionsArrow {
+  top: -5px;
+}
+
+[data-popper-placement^="bottom"] > .suggestionsArrow::before {
+  border-top-color: var(--mm-white);
+  border-left-color: var(--mm-white);
+}
+
+[data-popper-placement^="left"] > .suggestionsArrow {
+  right: -5px;
+}
+
+[data-popper-placement^="left"] > .suggestionsArrow::before {
+  border-top-color: var(--mm-white);
+  border-right-color: var(--mm-white);
+}
+
+.suggestion {
+  list-style: none;
+  color: var(--mm-white);
+  cursor: pointer;
+  border-radius: var(--s1);
+  padding: var(--s1);
+  color: var(--mm-white);
+}
+
+.highlightedSuggestion {
+  composes: suggestion;
+  background-color: var(--mm-add-color);
+  color: var(--mm-black);
+}

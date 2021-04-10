@@ -1,0 +1,17 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui;
+  font-size: 1rem;
+}
+
+.label {
+  color: var(--mm-black);
+  font-weight: bold;
+}
+
+.error {
+  color: var(--mm-dark-red);
+  font-weight: bold;
+  margin-top: var(--s1);
+}

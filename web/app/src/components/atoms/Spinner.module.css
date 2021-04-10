@@ -1,0 +1,27 @@
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: auto;
+  align-self: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 100%;
+  background-color: hsl(var(--mm-red-hue) 76% 60% / 0.5);
+  animation: 3s linear 0s infinite alternate scale;
+  transform-origin: 0 0;
+}
+
+@keyframes scale {
+  0% {
+    transform: scale(1) translateX(-50%) translateY(-50%);
+  }
+
+  50% {
+    transform: scale(2) translateX(-50%) translateY(-50%);
+  }
+
+  100% {
+    transform: scale(1) translateX(-50%) translateY(-50%);
+  }
+}

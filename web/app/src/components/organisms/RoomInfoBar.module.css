@@ -1,0 +1,89 @@
+.infoBar {
+  width: 100vw;
+  display: grid;
+  grid-template: 1fr / 1fr 1fr 1fr;
+  background-color: hsl(var(--mm-red-hue), 10%, 14%);
+  font-family: system-ui;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: hsl(var(--mm-red-hue), 5%, 90%);
+  padding: var(--s2) var(--s3);
+  box-shadow: -1px 3px 8px 1px rgba(33, 33, 33, 0.3);
+}
+
+.item {
+  display: flex;
+  align-content: center;
+}
+
+.item:first-of-type {
+  justify-content: flex-start;
+}
+
+.item:last-of-type {
+  justify-content: flex-end;
+}
+
+.user {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--s1);
+  align-items: center;
+  color: var(--mm-white);
+}
+
+.userName {
+  margin-left: var(--s1);
+  letter-spacing: 0;
+}
+
+.shareButton {
+  background: transparent;
+  border: none;
+  color: currentColor;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.shareButton .ShareIcon {
+  margin-left: var(--s2);
+}
+
+.matchCountWrapper {
+  position: relative;
+  margin: auto;
+}
+
+.matchCount {
+  position: absolute;
+  width: 3.5rem;
+  background-color: var(--mm-light-red);
+  color: var(--mm-white);
+  top: -125%;
+  border-radius: var(--s3);
+  transform: translateX(-50%);
+  left: 50%;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.matchCountTitle {
+  position: relative;
+  top: var(--s2);
+}
+
+@media screen and (min-width: 52em) {
+  .infoBar {
+    width: 52em;
+    border-radius: 11px;
+  }
+
+  .matchCount {
+    width: 4rem;
+    font-size: 1.4rem;
+    top: -150%;
+  }
+}
