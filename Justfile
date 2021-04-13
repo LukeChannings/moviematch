@@ -128,7 +128,7 @@ format:
   deno fmt --ignore={{deno_fmt_ignore}}
 
 update-lockfile:
-  deno cache --lock deps.lock --lock-write --unstable --import-map=./configs/import_map.json ./cmd/moviematch/main.ts
+  deno cache --reload --lock deps.lock --lock-write --unstable --import-map=./configs/import_map.json ./cmd/moviematch/main.ts
 
 install-githooks:
   #!/bin/bash
