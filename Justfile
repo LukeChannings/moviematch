@@ -100,6 +100,7 @@ test-e2e target: install-deno-dependencies
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}
   deno lint --unstable --ignore={{build_dir}},{{ui_dir}}
+  cd {{ui_dir}} && npx tsc
 
 install: install-node-modules install-deno-dependencies
 
