@@ -39,7 +39,7 @@ build-ui: install-node-modules
 
 build-bundle: clean build-ui
   mkdir -p {{build_dir}}
-  deno run {{ deno_options }} ./cmd/moviematch/pkger.ts {{ui_build_dir}}/dist/main.* {{ui_build_dir}}/icons {{ui_build_dir}}/manifest.webmanifest web/template/index.html configs/localization VERSION > {{build_dir}}/pkg.ts
+  deno run {{ deno_options }} ./cmd/moviematch/pkger.ts {{ui_build_dir}}/dist {{ui_build_dir}}/icons {{ui_build_dir}}/manifest.webmanifest web/template/index.html configs/localization VERSION > {{build_dir}}/pkg.ts
   sed 's/pkger.ts/pkger_release.ts/' < configs/import_map.json > {{build_dir}}/import_map.json
   deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
 
