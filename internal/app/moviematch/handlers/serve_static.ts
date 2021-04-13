@@ -31,7 +31,7 @@ export const serveStatic = (basePaths: string[]): RouteHandler =>
             headers,
           };
         }
-      } catch (err) {
+      } catch (_err) {
         continue;
       }
     }

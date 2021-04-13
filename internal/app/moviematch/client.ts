@@ -383,7 +383,7 @@ export class Client {
   async sendMessage(msg: ClientMessage) {
     try {
       await this.ws.send(JSON.stringify(msg));
-    } catch (err) {
+    } catch (_err) {
       log.warning(`Tried to send message to a disconnected client`);
     }
   }
