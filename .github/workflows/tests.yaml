@@ -27,7 +27,7 @@ jobs:
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - run: |
           just build-binary linux-amd64
-          just test-2e2 linux-amd64
+          just test-e2e linux-amd64
         name: E2E Tests
         env:
           TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
