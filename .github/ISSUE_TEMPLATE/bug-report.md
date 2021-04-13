@@ -7,6 +7,14 @@ assignees: ''
 
 ---
 
+**⚠️ Before filing a bug please be sure to have read the [FAQ](https://github.com/LukeChannings/moviematch#faq) and search through [existing issues](https://github.com/LukeChannings/moviematch/issues?q=is%3Aissue) that might be the same as your problem. If you have a feature suggestion, please write about it in [Discussions](https://github.com/LukeChannings/moviematch/discussions). Thanks! ⚠️**
+
+Please fill out:
+
+- **MovieMatch version:** VERSION
+- **System:** e.g. macOS, Linux, Windows, Docker, Kubernetes, etc
+- **Plex Version:** VERSION
+
 **Describe the bug** A clear and concise description of what the bug is.
 
 **To Reproduce** Steps to reproduce the behavior:
