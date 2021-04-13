@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { ErrorMessage } from "../atoms/ErrorMessage";
 import { Tr } from "../atoms/Tr";
 import {
@@ -11,18 +11,17 @@ import { Card } from "../molecules/Card";
 import { CardStack } from "../organisms/CardStack";
 import { MatchesList } from "../organisms/MatchesList";
 import { RoomInfoBar } from "../organisms/RoomInfoBar";
-import type { ScreenProps } from "../layout/Screen";
-import { MovieMatchContext } from "../../store";
 
 import styles from "./Room.module.css";
+import { useStore } from "../../store/useStore";
 
-export const RoomScreen = ({ dispatch }: ScreenProps) => {
-  const state = useContext(MovieMatchContext);
+export const RoomScreen = () => {
+  const [store, dispatch] = useStore();
   const matchesEl = useRef<HTMLUListElement>(null);
   const [matchOrder, setMatchOrder] = useState<string>("mostRecent");
-  const [media] = useState(state.room?.media);
+  const [media] = useState(store.room?.media);
 
-  if (!state.room || !media) {
+  if (!store.room || !media) {
     return <ErrorMessage message="No Room!" />;
   }
 
@@ -31,9 +30,12 @@ export const RoomScreen = ({ dispatch }: ScreenProps) => {
       <CardStack
         cards={media}
         onCardDismissed={(card, rating) => {
-          state.client.rate({
-            mediaId: card.id,
-            rating: rating === "left" ? "dislike" : "like",
+          dispatch({
+            type: "rate",
+            payload: {
+              mediaId: card.id,
+              rating: rating === "left" ? "dislike" : "like",
+            },
           });
         }}
         renderCard={(card) => <Card media={card} key={card.id} />}
@@ -44,13 +46,10 @@ export const RoomScreen = ({ dispatch }: ScreenProps) => {
           dispatch({ type: "addToast", payload: toast });
         }}
         logout={async () => {
-          await state.client.leaveRoom();
-          dispatch({ type: "logout", payload: null });
+          dispatch({ type: "logout" });
         }}
         leaveRoom={async () => {
-          await state.client.leaveRoom();
-          dispatch({ type: "setRoom", payload: undefined });
-          dispatch({ type: "navigate", payload: { path: "join" } });
+          dispatch({ type: "leaveRoom" });
         }}
       />
       <SegmentedControls
@@ -72,8 +71,8 @@ export const RoomScreen = ({ dispatch }: ScreenProps) => {
         </SegmentedControlOption>
       </SegmentedControls>
       <MatchesList ref={matchesEl}>
-        {state.room.matches &&
-          state.room.matches
+        {store.room.matches &&
+          store.room.matches
             .sort((a, b) =>
               matchOrder === "mostLikes"
                 ? b.users.length - a.users.length

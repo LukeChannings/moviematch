@@ -49,7 +49,7 @@ export class MovieMatchClient extends EventTarget {
 
   waitForConnected = () => {
     if (this.ws.readyState === WebSocket.OPEN) {
-      return true;
+      return Promise.resolve(true);
     }
 
     return new Promise((resolve) => {
@@ -58,7 +58,7 @@ export class MovieMatchClient extends EventTarget {
   };
 
   private handleClose = () => {
-    console.error(`Connection closed`);
+    this.dispatchEvent(new Event("disconnected"));
   };
 
   waitForMessage = <K extends ClientMessage["type"]>(
@@ -84,21 +84,26 @@ export class MovieMatchClient extends EventTarget {
 
     this.sendMessage({ type: "login", payload: login });
 
-    const msg = await Promise.race([
+    return await Promise.race([
       this.waitForMessage("loginSuccess"),
       this.waitForMessage("loginError"),
     ]);
+  };
 
-    if (msg.type === "loginError") {
-      throw new Error(JSON.stringify(msg.payload));
-    }
+  logout = async () => {
+    await this.waitForConnected();
 
-    return msg.payload;
+    this.sendMessage({ type: "logout" });
+
+    return await Promise.race([
+      this.waitForMessage("logoutSuccess"),
+      this.waitForMessage("logoutError"),
+    ]);
   };
 
   joinRoom = async (
     joinRoomRequest: JoinRoomRequest,
-  ): Promise<JoinRoomSuccess> => {
+  ) => {
     await this.waitForConnected();
 
     this.sendMessage({
@@ -106,16 +111,10 @@ export class MovieMatchClient extends EventTarget {
       payload: joinRoomRequest,
     });
 
-    const msg = await Promise.race([
+    return await Promise.race([
       this.waitForMessage("joinRoomSuccess"),
       this.waitForMessage("joinRoomError"),
     ]);
-
-    if (msg.type === "joinRoomError") {
-      throw new Error(JSON.stringify(msg.payload));
-    }
-
-    return msg.payload;
   };
 
   leaveRoom = async () => {
@@ -123,14 +122,10 @@ export class MovieMatchClient extends EventTarget {
       type: "leaveRoom",
     });
 
-    const msg = await Promise.race([
+    return await Promise.race([
       this.waitForMessage("leaveRoomSuccess"),
       this.waitForMessage("leaveRoomError"),
     ]);
-
-    if (msg.type === "leaveRoomError") {
-      throw new Error(JSON.stringify(msg.payload));
-    }
   };
 
   createRoom = async (createRoomRequest: CreateRoomRequest) => {
@@ -141,16 +136,10 @@ export class MovieMatchClient extends EventTarget {
       payload: createRoomRequest,
     });
 
-    const msg = await Promise.race([
+    return await Promise.race([
       this.waitForMessage("createRoomSuccess"),
       this.waitForMessage("createRoomError"),
     ]);
-
-    if (msg.type === "createRoomError") {
-      throw new Error(`${msg.payload.name}: ${msg.payload.message}`);
-    }
-
-    return msg.payload;
   };
 
   rate = async (rateRequest: Rate) => {
@@ -160,16 +149,21 @@ export class MovieMatchClient extends EventTarget {
     });
   };
 
-  getFilters = async () => {
+  requestFilters = async () => {
     this.sendMessage({ type: "requestFilters" });
-    const filters = await this.waitForMessage("filters");
-    return filters.payload;
+
+    return await Promise.race([
+      this.waitForMessage("requestFiltersSuccess"),
+      this.waitForMessage("requestFiltersError"),
+    ]);
   };
 
-  getFilterValues = async (key: string) => {
+  requestFilterValues = async (key: string) => {
     this.sendMessage({ type: "requestFilterValues", payload: { key } });
-    const filterValues = await this.waitForMessage("filterValues");
-    return filterValues.payload;
+    return await Promise.race([
+      this.waitForMessage("requestFilterValuesSuccess"),
+      this.waitForMessage("requestFilterValuesError"),
+    ]);
   };
 
   setLocale = async (locale: Locale) => {
@@ -187,21 +181,13 @@ export class MovieMatchClient extends EventTarget {
       payload: config,
     });
 
-    const msg = await this.waitForMessage("setupError");
-    return msg.payload;
+    return await Promise.race([
+      this.waitForMessage("setupError"),
+      this.waitForMessage("setupSuccess"),
+    ]);
   };
 
   sendMessage(msg: ServerMessage) {
     this.ws.send(JSON.stringify(msg));
   }
 }
-
-let client: MovieMatchClient;
-
-export const getClient = (): MovieMatchClient => {
-  if (!client) {
-    client = new MovieMatchClient();
-  }
-
-  return client;
-};

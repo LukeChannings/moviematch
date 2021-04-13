@@ -1,13 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Formik } from "formik";
 import type { Config } from "../../../../../types/moviematch";
 import { AddRemoveList } from "../atoms/AddRemoveList";
 import { Field } from "../molecules/Field";
 import { Layout } from "../layout/Layout";
-import type { ScreenProps } from "../layout/Screen";
 import { Select } from "../atoms/Select";
 import { Button } from "../atoms/Button";
 import { ErrorMessage } from "../atoms/ErrorMessage";
+import { useStore } from "../../store/useStore";
 
 export const ConfigScreenFmk = () => (
   <div>
@@ -69,11 +69,8 @@ export const ConfigScreenFmk = () => (
   </div>
 );
 
-export const ConfigScreen = ({
-  navigate,
-  dispatch,
-  store,
-}: ScreenProps<{ roomName: string }>) => {
+export const ConfigScreen = () => {
+  const [store, dispatch] = useStore();
   const [error, setError] = useState("");
   return (
     <Layout>
@@ -82,11 +79,9 @@ export const ConfigScreen = ({
         validate={(values) => {
           console.log(values);
         }}
-        onSubmit={async (values, { setSubmitting, setErrors }) => {
+        onSubmit={async (values, { setSubmitting }) => {
           setSubmitting(true);
-          const err = await store.client.setup(values as Config);
-
-          setError(err.message);
+          dispatch({ type: "setup", payload: values as Config });
 
           setSubmitting(false);
         }}

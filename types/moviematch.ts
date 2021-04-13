@@ -33,6 +33,7 @@ export type Message = ServerMessage | ClientMessage;
 // Messages intended for the Server
 export type ServerMessage =
   | { type: "login"; payload: Login }
+  | { type: "logout" }
   | { type: "createRoom"; payload: CreateRoomRequest }
   | { type: "joinRoom"; payload: JoinRoomRequest }
   | { type: "leaveRoom" }
@@ -46,6 +47,8 @@ export type ServerMessage =
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
   | { type: "loginSuccess"; payload: LoginSuccess }
+  | { type: "logoutError"; payload: LogoutError }
+  | { type: "logoutSuccess" }
   | { type: "createRoomError"; payload: CreateRoomError }
   | { type: "createRoomSuccess"; payload: JoinRoomSuccess }
   | { type: "joinRoomError"; payload: JoinRoomError }
@@ -56,9 +59,12 @@ export type ClientMessage =
   | { type: "media"; payload: Media[] }
   | { type: "config"; payload: AppConfig }
   | { type: "translations"; payload: Translations }
+  | { type: "setupSuccess"; payload: SetupSuccess }
   | { type: "setupError"; payload: SetupError }
-  | { type: "filters"; payload: Filters }
-  | { type: "filterValues"; payload: FilterValue[] };
+  | { type: "requestFiltersSuccess"; payload: Filters }
+  | { type: "requestFiltersError" }
+  | { type: "requestFilterValuesSuccess"; payload: FilterValue[] }
+  | { type: "requestFilterValuesError" };
 
 // Translations
 export type TranslationKey =
@@ -100,23 +106,25 @@ export type Translations = Record<TranslationKey, string>;
 
 // Login (when login is required to create a new room)
 
-export interface Login {
-  userName: string;
-  plexAuth?: {
-    clientId: string;
-    plexToken: string;
-  };
-}
+export type Login =
+  | { userName: string }
+  | { plexClientId: string; plexToken: string };
 
 export interface LoginError {
   name: "MalformedMessage";
   message: string;
 }
 
+export interface LogoutError {
+  name: "NotLoggedIn";
+  message: string;
+}
+
 export type Permissions = "CanCreateRoom";
 
 export interface LoginSuccess {
-  avatarImage: string;
+  avatarImage?: string;
+  userName?: string;
   permissions: Permissions[];
 }
 
@@ -208,6 +216,11 @@ export interface Match {
 export interface Rate {
   rating: "like" | "dislike";
   mediaId: string;
+}
+
+export interface SetupSuccess {
+  hostname: string;
+  port: number;
 }
 
 export interface SetupError {

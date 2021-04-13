@@ -7,7 +7,6 @@ import type {
 import { Select } from "../atoms/Select";
 
 import { AutoSuggestInput } from "./AutoSuggestInput";
-import { useAsyncEffect } from "../../hooks/useAsyncEffect";
 
 import styles from "./FilterField.module.css";
 
@@ -15,24 +14,24 @@ interface FilterFieldProps {
   name: string;
   filters: Filters;
   onChange: (filter: Filter | null) => void;
-  getSuggestions: (key: string) => Promise<FilterValue[]>;
+  suggestions?: Record<string, FilterValue[]>;
+  requestSuggestions: (key: string) => void;
 }
 
 export const FilterField = ({
   name,
   onChange,
   filters,
-  getSuggestions,
+  suggestions,
+  requestSuggestions,
 }: FilterFieldProps) => {
   const [key, setKey] = useState<string>("");
   const [operator, setOperator] = useState<string>("=");
   const [value, setValue] = useState<FilterValue[]>([]);
-  const [suggestions, setSuggestions] = useState<FilterValue[]>([]);
 
-  useAsyncEffect(async () => {
+  useEffect(() => {
     if (key !== "") {
-      const suggestions = await getSuggestions(key);
-      setSuggestions(suggestions);
+      requestSuggestions(key);
     }
   }, [key]);
 
@@ -78,7 +77,7 @@ export const FilterField = ({
           {filter.type !== "boolean" && (
             <AutoSuggestInput
               inputName={`value-${name}`}
-              items={suggestions}
+              items={suggestions![key]}
               onChange={setValue}
               value={value}
             />

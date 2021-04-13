@@ -36,8 +36,7 @@ export class Client {
   ws: WebSocket;
   ctx: RouteContext;
   room?: Room;
-  userName?: string;
-  plexAuth?: Login["plexAuth"];
+  anonymousUserName?: string;
   plexUser?: PlexUser;
   locale?: Locale;
 
@@ -89,6 +88,9 @@ export class Client {
             switch (message.type) {
               case "login":
                 await this.handleLogin(message.payload);
+                break;
+              case "logout":
+                await this.handleLogout();
                 break;
               case "createRoom":
                 await this.handleCreateRoom(message.payload);
@@ -142,7 +144,42 @@ export class Client {
   private async handleLogin(login: Login) {
     log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
-    if (typeof login?.userName !== "string") {
+    if ("userName" in login) {
+      if (this.anonymousUserName && login.userName !== this.anonymousUserName) {
+        log.debug(`Logging out ${this.anonymousUserName}`);
+        this.room?.users.delete(this.anonymousUserName);
+      }
+
+      this.anonymousUserName = login.userName;
+
+      const successMessage: LoginSuccess = {
+        userName: login.userName,
+        permissions: [],
+      };
+
+      this.sendMessage({ type: "loginSuccess", payload: successMessage });
+    } else if ("plexToken" in login) {
+      try {
+        const plexUser = await getUser({
+          plexToken: login.plexToken,
+          clientId: login.plexClientId,
+        });
+        this.plexUser = plexUser;
+
+        const successMessage: LoginSuccess = {
+          permissions: [],
+          avatarImage: plexUser.thumb,
+          userName: plexUser.username,
+        };
+
+        this.sendMessage({ type: "loginSuccess", payload: successMessage });
+      } catch (err) {
+        log.error(
+          `plexAuth invalid!`,
+          err,
+        );
+      }
+    } else {
       const error: LoginError = {
         name: "MalformedMessage",
         message: "The login message was not formed correctly.",
@@ -150,34 +187,22 @@ export class Client {
 
       return this.ws.send(JSON.stringify(error));
     }
+  }
 
-    if (this.userName && login.userName !== this.userName) {
-      log.debug(`Logging out ${this.userName}`);
-      this.room?.users.delete(this.userName);
+  private async handleLogout() {
+    const userName = this.anonymousUserName ?? this.plexUser?.username;
+    if (userName) {
+      this.room?.users.delete(userName);
+      this.sendMessage({ type: "logoutSuccess" });
+    } else {
+      this.sendMessage({
+        type: "logoutError",
+        payload: {
+          name: "NotLoggedIn",
+          message: "This connection does not have a logged in user associated.",
+        },
+      });
     }
-
-    this.userName = login.userName;
-
-    const successMessage: LoginSuccess = {
-      avatarImage: "",
-      permissions: [],
-    };
-
-    if (login.plexAuth) {
-      try {
-        const plexUser = await getUser(login.plexAuth);
-        this.plexAuth = login.plexAuth;
-        this.plexUser = plexUser;
-        successMessage.avatarImage = plexUser.thumb;
-      } catch (err) {
-        log.error(
-          `plexAuth invalid! ${JSON.stringify(login.plexAuth)}`,
-          err,
-        );
-      }
-    }
-
-    this.sendMessage({ type: "loginSuccess", payload: successMessage });
   }
 
   private async handleCreateRoom(createRoomReq: CreateRoomRequest) {
@@ -185,7 +210,7 @@ export class Client {
       `Handling room creation event: ${JSON.stringify(createRoomReq)}`,
     );
 
-    if (!this.userName) {
+    if (!this.anonymousUserName) {
       return this.sendMessage({
         type: "createRoomError",
         payload: {
@@ -197,12 +222,15 @@ export class Client {
 
     try {
       this.room = await createRoom(createRoomReq, this.ctx);
-      this.room.users.set(this.userName, this);
+      this.room.users.set(this.anonymousUserName, this);
       this.sendMessage({
         type: "createRoomSuccess",
         payload: {
-          previousMatches: await this.room.getMatches(this.userName!, false),
-          media: await this.room.getMediaForUser(this.userName),
+          previousMatches: await this.room.getMatches(
+            this.anonymousUserName!,
+            false,
+          ),
+          media: await this.room.getMediaForUser(this.anonymousUserName),
         },
       });
     } catch (err) {
@@ -219,7 +247,7 @@ export class Client {
   }
 
   private async handleJoinRoom(joinRoomReq: JoinRoomRequest) {
-    if (!this.userName) {
+    if (!this.anonymousUserName) {
       return this.sendMessage({
         type: "joinRoomError",
         payload: {
@@ -229,13 +257,16 @@ export class Client {
       });
     }
     try {
-      this.room = getRoom(this.userName, joinRoomReq);
-      this.room.users.set(this.userName, this);
+      this.room = getRoom(this.anonymousUserName, joinRoomReq);
+      this.room.users.set(this.anonymousUserName, this);
       this.sendMessage({
         type: "joinRoomSuccess",
         payload: {
-          previousMatches: await this.room.getMatches(this.userName!, false),
-          media: await this.room.getMediaForUser(this.userName),
+          previousMatches: await this.room.getMatches(
+            this.anonymousUserName!,
+            false,
+          ),
+          media: await this.room.getMediaForUser(this.anonymousUserName),
         },
       });
     } catch (err) {
@@ -265,11 +296,11 @@ export class Client {
 
   private handleLeaveRoom() {
     log.debug(
-      `${this?.userName} is leaving ${this.room?.roomName}`,
+      `${this?.anonymousUserName} is leaving ${this.room?.roomName}`,
     );
 
-    if (this.room && this.userName) {
-      this.room.users.delete(this.userName);
+    if (this.room && this.anonymousUserName) {
+      this.room.users.delete(this.anonymousUserName);
 
       return this.sendMessage({
         type: "leaveRoomSuccess",
@@ -285,11 +316,13 @@ export class Client {
   }
 
   private handleRate(rate: Rate) {
-    if (this.userName) {
+    if (this.anonymousUserName) {
       log.debug(
-        `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`,
+        `Handling rate event: ${this.anonymousUserName} ${
+          JSON.stringify(rate)
+        }`,
       );
-      this.room?.storeRating(this.userName, rate, Date.now());
+      this.room?.storeRating(this.anonymousUserName, rate, Date.now());
     }
   }
 
@@ -307,7 +340,7 @@ export class Client {
   }
 
   private handleClose() {
-    log.info(`${this.userName ?? "Unknown user"} left.`);
+    log.info(`${this.anonymousUserName ?? "Unknown user"} left.`);
 
     this.handleLeaveRoom();
 
@@ -332,7 +365,11 @@ export class Client {
       } else {
         await updateConfiguration(config as unknown as Record<string, unknown>);
 
-        // the client will reload automatically when the WebSocket is closed
+        this.sendMessage({
+          type: "setupSuccess",
+          payload: { hostname: config.hostname, port: config.port },
+        });
+
         shutdown();
       }
     } else {
@@ -358,11 +395,13 @@ export class Client {
       const [provider] = this.ctx.providers;
       const filters = await provider.getFilters();
       this.sendMessage({
-        type: "filters",
+        type: "requestFiltersSuccess",
         payload: filters,
       });
     } else {
-      throw new Error("NO PROVIDERS");
+      this.sendMessage({
+        type: "requestFiltersError",
+      });
     }
   }
 
@@ -372,11 +411,13 @@ export class Client {
       const [provider] = this.ctx.providers;
       const filterValues = await provider.getFilterValues(key);
       this.sendMessage({
-        type: "filterValues",
+        type: "requestFilterValuesSuccess",
         payload: filterValues,
       });
     } else {
-      throw new Error("NO PROVIDERS");
+      this.sendMessage({
+        type: "requestFilterValuesError",
+      });
     }
   }
 

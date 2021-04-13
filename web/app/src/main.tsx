@@ -1,4 +1,4 @@
-import React, { StrictMode, useCallback } from "react";
+import React, { StrictMode, useEffect } from "react";
 import { render } from "react-dom";
 
 import "./main.css";
@@ -7,49 +7,93 @@ import { LoginScreen } from "./components/screens/Login";
 import { JoinScreen } from "./components/screens/Join";
 import { CreateScreen } from "./components/screens/Create";
 import { RoomScreen } from "./components/screens/Room";
-import { MovieMatchContext, Routes, useStore } from "./store";
-import type { ScreenProps } from "./components/layout/Screen";
 import { Loading } from "./components/screens/Loading";
 import { ToastList } from "./components/atoms/Toast";
 import { ConfigScreen } from "./components/screens/Config";
+import { useCreateStore } from "./store/useStore";
+import type { Routes } from "./types";
+import * as plex from "./api/plex_tv";
+
+const getExistingLogin = async () => {
+  const plexLoginStatus = plex.getLogin();
+
+  if (plexLoginStatus) {
+    if ("pin" in plexLoginStatus) {
+      try {
+        return await plex.verifyPin(plexLoginStatus.pin);
+      } catch (err) {
+        return null;
+      }
+    } else {
+      return plexLoginStatus;
+    }
+  }
+
+  const userName = localStorage.getItem("userName");
+  if (userName) return { userName };
+
+  return null;
+};
 
 const MovieMatch = () => {
-  const [store, dispatch] = useStore();
-  const navigate = useCallback(async function navigate(route: Routes) {
-    dispatch({ type: "navigate", payload: route });
-  }, []);
+  const [store, dispatch, MovieMatchContext] = useCreateStore();
+
+  useEffect(() => {
+    if (store.connectionStatus === "connected") {
+      dispatch({
+        type: "setLocale",
+        payload: { language: navigator.language },
+      });
+
+      getExistingLogin().then((existingLogin) => {
+        if (existingLogin) {
+          dispatch({
+            type: "login",
+            payload: "token" in existingLogin
+              ? {
+                plexToken: existingLogin.token,
+                plexClientId: existingLogin.clientId,
+              }
+              : existingLogin,
+          });
+        } else {
+          dispatch({ type: "navigate", payload: "login" });
+        }
+      });
+    }
+  }, [store.connectionStatus]);
 
   return (
-    <MovieMatchContext.Provider value={store}>
-      <>
-        {(() => {
-          const routes: Record<
-            Routes["path"],
-            (props: ScreenProps<any>) => JSX.Element
-          > = {
-            loading: Loading,
-            login: LoginScreen,
-            join: JoinScreen,
-            createRoom: CreateScreen,
-            rate: RoomScreen,
-            config: ConfigScreen,
-          };
-          const CurrentComponent = routes[store.route.path];
-          return (
-            <CurrentComponent
-              navigate={navigate}
-              dispatch={dispatch}
-              params={"params" in store.route ? store.route.params : undefined}
-              store={store}
-            />
-          );
-        })()}
-        <ToastList
-          toasts={store.toasts}
-          removeToast={(toast) =>
-            dispatch({ type: "removeToast", payload: toast })}
-        />
-      </>
+    <MovieMatchContext.Provider value={{ store, dispatch }}>
+      {(() => {
+        const routes: Record<
+          Routes,
+          () => JSX.Element
+        > = {
+          loading: Loading,
+          login: LoginScreen,
+          join: JoinScreen,
+          createRoom: CreateScreen,
+          room: RoomScreen,
+          config: ConfigScreen,
+        };
+        const CurrentComponent = routes[store.route];
+
+        if (!store.translations) {
+          return <Loading />;
+        }
+
+        if (CurrentComponent) {
+          return <CurrentComponent />;
+        } else {
+          return <p>No route for {store.route}</p>;
+        }
+      })()}
+      <ToastList
+        toasts={store.toasts}
+        removeToast={(toast) =>
+          dispatch({ type: "removeToast", payload: toast })}
+      />
     </MovieMatchContext.Provider>
   );
 };

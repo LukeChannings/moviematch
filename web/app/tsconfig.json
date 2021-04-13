@@ -20,6 +20,8 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "importsNotUsedAsValues": "error",
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "isolatedModules": true
   }
 }

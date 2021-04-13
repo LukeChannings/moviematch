@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { MovieMatchContext } from "../../store";
+import React from "react";
 import { ShareIcon } from "../atoms/ShareIcon";
 import { ExpandIcon } from "../atoms/ExpandIcon";
 import { Avatar } from "../atoms/Avatar";
@@ -8,6 +7,7 @@ import type { Toast } from "../atoms/Toast";
 import { Popover, PopoverButton, PopoverMenuButton } from "../atoms/Popover";
 
 import styles from "./RoomInfoBar.module.css";
+import { useStore } from "../../store/useStore";
 
 interface RoomInfoBarProps {
   logout: () => void;
@@ -20,10 +20,8 @@ export const RoomInfoBar = ({
   logout,
   leaveRoom,
 }: RoomInfoBarProps) => {
-  const store = useContext(MovieMatchContext);
-  if (!store) {
-    return null;
-  }
+  const [store] = useStore();
+
   const handleShare = async () => {
     const shareUrl = new URL(location.origin);
     shareUrl.searchParams.set("roomName", store.room?.name ?? "");
