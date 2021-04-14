@@ -71,7 +71,7 @@ export const ConfigScreenFmk = () => (
 
 export const ConfigScreen = () => {
   const [store, dispatch] = useStore();
-  const [error, setError] = useState("");
+  const [error] = useState("");
   return (
     <Layout>
       <Formik
@@ -89,11 +89,9 @@ export const ConfigScreen = () => {
         {({
           values,
           errors,
-          touched,
           handleChange,
           handleBlur,
           handleSubmit,
-          isSubmitting,
           setFieldValue,
           /* and other goodies */
         }) => (

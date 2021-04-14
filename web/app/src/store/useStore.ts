@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-} from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { MovieMatchClient } from "../api/moviematch";
 import type { ClientMessage } from "../../../../types/moviematch";
 import { middleware } from "./middleware";

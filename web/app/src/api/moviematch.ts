@@ -3,7 +3,6 @@ import type {
   Config,
   CreateRoomRequest,
   JoinRoomRequest,
-  JoinRoomSuccess,
   Locale,
   Login,
   Rate,

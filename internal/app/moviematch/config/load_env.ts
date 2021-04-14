@@ -21,7 +21,7 @@ const EnvBool = (value: string) => value === "1";
 const EnvList = (value: string) => value.split(",");
 
 const trimRecord = (value: Record<string, unknown>) => {
-  const entries = Object.entries(value).filter(([key, value]) =>
+  const entries = Object.entries(value).filter(([_key, value]) =>
     typeof value !== "undefined"
   );
   if (entries.length !== 0) {

@@ -83,11 +83,14 @@ export const reducer = (state: Store, action: Actions): Store => {
       break;
     }
     case "loginSuccess": {
-      return {
-        ...state,
-        user: action.payload,
-        route: "join",
-      };
+      if (typeof action.payload === "string") {
+        return {
+          ...state,
+          user: action.payload,
+          route: "join",
+        };
+      }
+      break;
     }
     case "logoutSuccess": {
       return {

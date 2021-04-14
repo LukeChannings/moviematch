@@ -12,7 +12,7 @@ export const JoinScreen = () => {
   const [roomName, setRoomName] = useState<string | undefined>(
     store.room?.name ?? "",
   );
-  const [roomNameError, setRoomNameError] = useState<string | undefined>();
+  const [roomNameError] = useState<string | undefined>();
   // const [joinError] = useState<string | undefined>(params?.errorMessage);
 
   // if (store.room?.name && !params?.errorMessage) {

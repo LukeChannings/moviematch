@@ -63,7 +63,7 @@ export const AutoSuggestInput = ({
     defaultHighlightedIndex: 0,
     selectedItem: null,
     items: getFilteredItems(),
-    stateReducer: (state, actionAndChanges) => {
+    stateReducer: (_state, actionAndChanges) => {
       const { changes, type } = actionAndChanges;
       switch (type) {
         case useCombobox.stateChangeTypes.InputKeyDownEnter:

@@ -13,7 +13,7 @@
 //
 // This module is a quickly hacked together bundler reminiscent of Golang's pkger - https://github.com/markbates/pkger
 
-import { base64, extname, gzip, joinPath, resolvePath, walk } from "/deps.ts";
+import { base64, extname, gzip, resolvePath, walk } from "/deps.ts";
 
 const pkg: Record<string, string> = {};
 

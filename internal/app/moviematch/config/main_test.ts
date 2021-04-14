@@ -1,6 +1,5 @@
 import { assert } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
-import { MovieMatchError } from "/internal/app/moviematch/util/assert.ts";
 import { loadConfig } from "/internal/app/moviematch/config/main.ts";
 import { resetEnv } from "/internal/app/moviematch/config/load_env_test.ts";
 

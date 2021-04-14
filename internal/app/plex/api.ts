@@ -58,7 +58,7 @@ export class PlexApi {
       const data: PlexMediaContainer<T> = await req.json();
 
       return data.MediaContainer;
-    } catch (err) {
+    } catch (_err) {
       throw new Error(url.href);
     }
   }

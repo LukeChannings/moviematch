@@ -41,7 +41,6 @@ export const SegmentedControls = ({
   value,
   onChange,
   paddingTop,
-  ...props
 }: SegmentedControlsProps) => (
   <SegmentedControlContext.Provider value={{ name, value }}>
     <fieldset

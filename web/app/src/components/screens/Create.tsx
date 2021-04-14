@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import type { Filter, Filters } from "../../../../../types/moviematch";
+import type { Filter } from "../../../../../types/moviematch";
 import { useStore } from "../../store/useStore";
 import { Button } from "../atoms/Button";
 import { ButtonContainer } from "../layout/ButtonContainer";

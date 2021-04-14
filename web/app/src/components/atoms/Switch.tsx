@@ -13,7 +13,6 @@ export const Switch = ({
   onChange,
   disabled,
   name,
-  ...props
 }: SwitchProps) => (
   <input
     type="checkbox"
