@@ -28,7 +28,7 @@ const interpolate = (template: string, context: KVP): string => {
 
 const getTemplate = memo(() => readTextFile("/web/template/index.html"));
 
-const getBasePath = (req: ServerRequest, config: Config) => {
+const getRootPath = (req: ServerRequest, config: Config) => {
   // X-Forwarded-Prefix is non-standard (https://tools.ietf.org/html/rfc7239#section-4)
   // However, there is no equivalent that provides this functionality,
   // so it's the name I'm going with. This header should be set by the reverse proxy.
@@ -47,7 +47,7 @@ export const handler: RouteHandler = async (req: ServerRequest) => {
     body: interpolate(template, {
       ...translations,
       config: (config as unknown) as KVP,
-      rootPath: getBasePath(req, config),
+      rootPath: getRootPath(req, config),
       version: await getVersion(),
     }),
   };
