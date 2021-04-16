@@ -7,75 +7,18 @@ import { Layout } from "../layout/Layout";
 import { Select } from "../atoms/Select";
 import { Button } from "../atoms/Button";
 import { ErrorMessage } from "../atoms/ErrorMessage";
-import { useStore } from "../../store/useStore";
-
-export const ConfigScreenFmk = () => (
-  <div>
-    <h1>Anywhere in your app!</h1>
-    <Formik
-      initialValues={{ email: "", password: "" }}
-      validate={(values) => {
-        console.log(values);
-        const errors: Record<string, string> = {};
-        if (!values.email) {
-          errors.email = "Required";
-        } else if (
-          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-        ) {
-          errors.email = "Invalid email address";
-        }
-        return errors;
-      }}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }, 400);
-      }}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        isSubmitting,
-        /* and other goodies */
-      }) => (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            name="tmp.email"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.email}
-          />
-          {errors.email && touched.email && errors.email}
-          <input
-            type="password"
-            name="foo.password.0"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.password}
-          />
-          {errors.password && touched.password && errors.password}
-          <button type="submit" disabled={isSubmitting}>
-            Submit
-          </button>
-        </form>
-      )}
-    </Formik>
-  </div>
-);
+import { Dispatch, useSelector } from "../../store";
+import { useDispatch } from "react-redux";
 
 export const ConfigScreen = () => {
-  const [store, dispatch] = useStore();
+  const { config } = useSelector(["config"]);
+  const dispatch = useDispatch<Dispatch>();
+
   const [error] = useState("");
   return (
     <Layout>
       <Formik
-        initialValues={store.config?.initialConfiguration ?? {}}
+        initialValues={config?.initialConfiguration ?? {}}
         validate={(values) => {
           console.log(values);
         }}
@@ -93,7 +36,6 @@ export const ConfigScreen = () => {
           handleBlur,
           handleSubmit,
           setFieldValue,
-          /* and other goodies */
         }) => (
           <form name="config" className="LoginScreen_Form">
             {error && <ErrorMessage message={error} />}
@@ -223,11 +165,6 @@ export const ConfigScreen = () => {
                 )}
               </AddRemoveList>
             </Field>
-            {
-              /* <Field name="requirePlexTvLogin" label="Require Plex TV login">
-              <Switch />
-            </Field> */
-            }
             <Button appearance="Primary" onPress={() => handleSubmit()}>
               Configure
             </Button>

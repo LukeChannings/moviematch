@@ -1,12 +1,17 @@
+import type { Dispatch as ReduxDispatch } from "redux";
 import type { Toast } from "src/components/atoms/Toast";
 import type { Routes } from "src/types";
 import type {
   AppConfig,
   ClientMessage,
+  Filters,
+  FilterValue,
+  Match,
+  Media,
   ServerMessage,
   Translations,
+  User,
 } from "../../../../types/moviematch";
-import type { Store } from "./reducer";
 
 export type ClientActions =
   | { type: "addToast"; payload: Toast }
@@ -27,3 +32,24 @@ export type Actions =
   }
   | ClientActions
   | ClientMessage;
+
+export type Dispatch = ReduxDispatch<ClientActions>;
+
+export interface Store {
+  connectionStatus: "connecting" | "connected" | "disconnected";
+  route: Routes;
+  routeParams: Record<string, unknown>;
+  error?: { type?: string; message?: string };
+  toasts: Toast[];
+  translations?: Translations;
+  config?: AppConfig;
+  user?: User;
+  room?: {
+    name: string;
+    joined: boolean;
+    media?: Media[];
+    matches?: Match[];
+    availableFilters?: Filters;
+    filterValues?: Record<string, FilterValue[]>;
+  };
+}

@@ -1,6 +1,6 @@
 import type { ServerMessage } from "../../../../types/moviematch";
 import type { MovieMatchClient } from "../api/moviematch";
-import type { Actions } from "./actions";
+import type { Actions } from "./types";
 import * as plex from "../api/plex_tv";
 
 export const middleware = (

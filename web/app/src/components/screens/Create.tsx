@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { Filter } from "../../../../../types/moviematch";
-import { useStore } from "../../store/useStore";
+import { useStore } from "../../store";
 import { Button } from "../atoms/Button";
 import { ButtonContainer } from "../layout/ButtonContainer";
 import { ErrorMessage } from "../atoms/ErrorMessage";
@@ -13,7 +13,11 @@ import { Tr } from "../atoms/Tr";
 import styles from "./Create.module.css";
 
 export const CreateScreen = () => {
-  const [{ translations, room, error }, dispatch] = useStore();
+  const [{ translations, room, error }, dispatch] = useStore([
+    "translations",
+    "room",
+    "error",
+  ]);
   const [roomName, setRoomName] = useState<string>();
   const [roomNameError, setRoomNameError] = useState<string | null>(null);
   const filters = useRef(new Map<number, Filter>());
@@ -34,7 +38,9 @@ export const CreateScreen = () => {
     }
   }, [roomName]);
 
-  useEffect(() => dispatch({ type: "requestFilters" }), []);
+  useEffect(() => {
+    dispatch({ type: "requestFilters" });
+  }, []);
 
   return (
     <Layout>

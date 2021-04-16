@@ -13,15 +13,15 @@ import { MatchesList } from "../organisms/MatchesList";
 import { RoomInfoBar } from "../organisms/RoomInfoBar";
 
 import styles from "./Room.module.css";
-import { useStore } from "../../store/useStore";
+import { useStore } from "../../store";
 
 export const RoomScreen = () => {
-  const [store, dispatch] = useStore();
+  const [{ room }, dispatch] = useStore(["room"]);
   const matchesEl = useRef<HTMLUListElement>(null);
   const [matchOrder, setMatchOrder] = useState<string>("mostRecent");
-  const [media] = useState(store.room?.media);
+  const [media] = useState(room?.media);
 
-  if (!store.room || !media) {
+  if (!room || !media) {
     return <ErrorMessage message="No Room!" />;
   }
 
@@ -71,8 +71,8 @@ export const RoomScreen = () => {
         </SegmentedControlOption>
       </SegmentedControls>
       <MatchesList ref={matchesEl}>
-        {store.room.matches &&
-          store.room.matches
+        {room.matches &&
+          room.matches
             .sort((a, b) =>
               matchOrder === "mostLikes"
                 ? b.users.length - a.users.length

@@ -46,7 +46,7 @@ export type ServerMessage =
 // Messages intended for the UI
 export type ClientMessage =
   | { type: "loginError"; payload: LoginError }
-  | { type: "loginSuccess"; payload: LoginSuccess }
+  | { type: "loginSuccess"; payload: User }
   | { type: "logoutError"; payload: LogoutError }
   | { type: "logoutSuccess" }
   | { type: "createRoomError"; payload: CreateRoomError }
@@ -122,10 +122,10 @@ export interface LogoutError {
 
 export type Permissions = "CanCreateRoom";
 
-export interface LoginSuccess {
-  avatarImage?: string;
-  userName?: string;
+export interface User {
+  userName: string;
   permissions: Permissions[];
+  avatarImage?: string;
 }
 
 // Create Room

@@ -5,10 +5,13 @@ import { Button } from "../atoms/Button";
 import { ButtonContainer } from "../layout/ButtonContainer";
 import { Layout } from "../layout/Layout";
 import { Tr } from "../atoms/Tr";
-import { useStore } from "../../store/useStore";
+import { useStore } from "../../store";
 
 export const LoginScreen = () => {
-  const [{ config, translations }, dispatch] = useStore();
+  const [{ config, translations }, dispatch] = useStore([
+    "config",
+    "translations",
+  ]);
   const [userName, setUserName] = useState<string | null>(
     localStorage.getItem("userName"),
   );

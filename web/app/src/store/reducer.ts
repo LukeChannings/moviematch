@@ -1,40 +1,5 @@
-import type { PlexPIN } from "src/api/plex_tv";
-import type { Toast } from "src/components/atoms/Toast";
-import type { Routes } from "src/types";
-import type {
-  AppConfig,
-  Filters,
-  FilterValue,
-  Match,
-  Media,
-  Translations,
-} from "../../../../types/moviematch";
-import type { Actions } from "./actions";
-
-interface User {
-  userName: string;
-  avatar?: string;
-  plexAuth?: { clientId: string; plexToken: string } | { pin: PlexPIN };
-}
-
-export interface Store {
-  connectionStatus: "connecting" | "connected" | "disconnected";
-  route: Routes;
-  routeParams: Record<string, unknown>;
-  error?: { type?: string; message?: string };
-  toasts: Toast[];
-  translations?: Translations;
-  config?: AppConfig;
-  user?: User;
-  room?: {
-    name: string;
-    joined: boolean;
-    media?: Media[];
-    matches?: Match[];
-    availableFilters?: Filters;
-    filterValues?: Record<string, FilterValue[]>;
-  };
-}
+import type { Reducer } from "redux";
+import type { Actions, Store } from "./types";
 
 export const initialState: Store = {
   connectionStatus: "disconnected",
@@ -43,8 +8,10 @@ export const initialState: Store = {
   toasts: [],
 };
 
-export const reducer = (state: Store, action: Actions): Store => {
-  console.log(action);
+export const reducer: Reducer<Store, Actions> = (
+  state = initialState,
+  action,
+) => {
   switch (action.type) {
     case "updateConnectionStatus":
       return { ...state, connectionStatus: action.payload };
@@ -83,7 +50,7 @@ export const reducer = (state: Store, action: Actions): Store => {
       break;
     }
     case "loginSuccess": {
-      if (typeof action.payload === "string") {
+      if (action.payload) {
         return {
           ...state,
           user: action.payload,

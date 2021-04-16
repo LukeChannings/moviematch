@@ -1,5 +1,6 @@
-import React, { StrictMode, useEffect } from "react";
+import React, { StrictMode } from "react";
 import { render } from "react-dom";
+import { Provider, useDispatch } from "react-redux";
 
 import "./main.css";
 
@@ -10,61 +11,22 @@ import { RoomScreen } from "./components/screens/Room";
 import { Loading } from "./components/screens/Loading";
 import { ToastList } from "./components/atoms/Toast";
 import { ConfigScreen } from "./components/screens/Config";
-import { useCreateStore } from "./store/useStore";
 import type { Routes } from "./types";
-import * as plex from "./api/plex_tv";
+import { createStore, Dispatch, useSelector } from "./store";
 
-const getExistingLogin = async () => {
-  const plexLoginStatus = plex.getLogin();
-
-  if (plexLoginStatus) {
-    if ("pin" in plexLoginStatus) {
-      try {
-        return await plex.verifyPin(plexLoginStatus.pin);
-      } catch (err) {
-        return null;
-      }
-    } else {
-      return plexLoginStatus;
-    }
-  }
-
-  const userName = localStorage.getItem("userName");
-  if (userName) return { userName };
-
-  return null;
-};
+const store = createStore();
 
 const MovieMatch = () => {
-  const [store, dispatch, MovieMatchContext] = useCreateStore();
+  const { route = "loading", translations, toasts } = useSelector([
+    "route",
+    "translations",
+    "toasts",
+  ]);
 
-  useEffect(() => {
-    if (store.connectionStatus === "connected") {
-      dispatch({
-        type: "setLocale",
-        payload: { language: navigator.language },
-      });
-
-      getExistingLogin().then((existingLogin) => {
-        if (existingLogin) {
-          dispatch({
-            type: "login",
-            payload: "token" in existingLogin
-              ? {
-                plexToken: existingLogin.token,
-                plexClientId: existingLogin.clientId,
-              }
-              : existingLogin,
-          });
-        } else {
-          dispatch({ type: "navigate", payload: "login" });
-        }
-      });
-    }
-  }, [store.connectionStatus]);
+  const dispatch = useDispatch<Dispatch>();
 
   return (
-    <MovieMatchContext.Provider value={{ store, dispatch }}>
+    <>
       {(() => {
         const routes: Record<
           Routes,
@@ -77,30 +39,32 @@ const MovieMatch = () => {
           room: RoomScreen,
           config: ConfigScreen,
         };
-        const CurrentComponent = routes[store.route];
+        const CurrentComponent = routes[route];
 
-        if (!store.translations) {
+        if (!translations) {
           return <Loading />;
         }
 
         if (CurrentComponent) {
           return <CurrentComponent />;
         } else {
-          return <p>No route for {store.route}</p>;
+          return <p>No route for {route}</p>;
         }
       })()}
       <ToastList
-        toasts={store.toasts}
+        toasts={toasts}
         removeToast={(toast) =>
           dispatch({ type: "removeToast", payload: toast })}
       />
-    </MovieMatchContext.Provider>
+    </>
   );
 };
 
 render(
   <StrictMode>
-    <MovieMatch />
+    <Provider store={store}>
+      <MovieMatch />
+    </Provider>
   </StrictMode>,
   document.getElementById("app"),
 );

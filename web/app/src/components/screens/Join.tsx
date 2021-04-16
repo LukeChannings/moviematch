@@ -5,10 +5,11 @@ import { ButtonContainer } from "../layout/ButtonContainer";
 import { Layout } from "../layout/Layout";
 import { Tr } from "../atoms/Tr";
 import styles from "./Join.module.css";
-import { useStore } from "../../store/useStore";
+import { useStore } from "../../store";
+import { ErrorMessage } from "../atoms/ErrorMessage";
 
 export const JoinScreen = () => {
-  const [store, dispatch] = useStore();
+  const [store, dispatch] = useStore(["room", "error"]);
   const [roomName, setRoomName] = useState<string | undefined>(
     store.room?.name ?? "",
   );
@@ -31,7 +32,10 @@ export const JoinScreen = () => {
           e.preventDefault();
         }}
       >
-        {/* {joinError && <ErrorMessage message={joinError} />} */}
+        {store.error &&
+          <ErrorMessage
+            message={store.error.message ?? store.error.type ?? ""}
+          />}
         <Field
           label="Room Name"
           name="roomName"
