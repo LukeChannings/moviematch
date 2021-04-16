@@ -65,7 +65,7 @@ export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
     hostname: getTrimmedEnv("HOST"),
     port: getTrimmedEnv("PORT", Number),
     logLevel: getTrimmedEnv("LOG_LEVEL"),
-    basePath: getTrimmedEnv("ROOT_PATH"),
+    rootPath: getTrimmedEnv("ROOT_PATH"),
     requirePlexTvLogin: getTrimmedEnv("REQUIRE_PLEX_LOGIN", EnvBool),
     servers: server ? [server] : undefined,
     basicAuth,

@@ -80,10 +80,10 @@ Deno.test("validateConfig", () => {
       }],
     }, ["ServerLinkTypeInvalid"]],
     [{
-      basePath: "/",
+      rootPath: "/",
     }, ["ServersMustBeArray", "ServerBasePathInvalid"]],
     [{
-      basePath: 123,
+      rootPath: 123,
     }, ["ServersMustBeArray", "ServerBasePathInvalid"]],
     [{ basicAuth: "luke:test" }, ["ServersMustBeArray", "BasicAuthInvalid"]],
     [{ basicAuth: {} }, [

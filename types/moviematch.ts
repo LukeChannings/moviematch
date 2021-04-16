@@ -11,7 +11,7 @@ export interface Config {
   hostname: string;
   port: number;
   logLevel: "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
-  basePath: string;
+  rootPath: string;
   servers: Array<{
     type?: "plex";
     url: string;

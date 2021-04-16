@@ -186,11 +186,11 @@ export const validateConfig = (
       }
     }
 
-    if (value.basePath) {
-      if (typeof value.basePath !== "string") {
-        errors.push(new ServerBasePathInvalid("basePath must be a string"));
-      } else if (value.basePath === "/") {
-        errors.push(new ServerBasePathInvalid('basePath must not be "/"'));
+    if (value.rootPath) {
+      if (typeof value.rootPath !== "string") {
+        errors.push(new ServerBasePathInvalid("rootPath must be a string"));
+      } else if (value.rootPath === "/") {
+        errors.push(new ServerBasePathInvalid('rootPath must not be "/"'));
       }
     }
 

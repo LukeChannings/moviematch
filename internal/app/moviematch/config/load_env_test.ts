@@ -82,7 +82,7 @@ Deno.test("Config -> loadFromEnv", async () => {
       logLevel: "INFO",
     }],
     [{ "ROOT_PATH": "/moviematch" }, {
-      basePath: "/moviematch",
+      rootPath: "/moviematch",
     }],
     [{ "REQUIRE_PLEX_LOGIN": "1" }, {
       requirePlexTvLogin: true,

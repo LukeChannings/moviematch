@@ -140,9 +140,9 @@ export const ConfigScreen = ({
               />
             </Field>
             <Field
-              name="basePath"
+              name="rootPath"
               label="Base Path"
-              value={String(values.basePath)}
+              value={String(values.rootPath)}
               onChange={handleChange}
               onBlur={handleBlur}
             />

@@ -34,7 +34,7 @@ const getBasePath = (req: ServerRequest, config: Config) => {
   // so it's the name I'm going with. This header should be set by the reverse proxy.
   // Further reading: https://github.com/envoyproxy/envoy/issues/5528
   const forwardedPrefix = req.headers.get("x-forwarded-prefix");
-  return (forwardedPrefix ?? config.basePath ?? "").trim().replace(/\/$/, "");
+  return (forwardedPrefix ?? config.rootPath ?? "").trim().replace(/\/$/, "");
 };
 
 export const handler: RouteHandler = async (req: ServerRequest) => {
@@ -47,7 +47,7 @@ export const handler: RouteHandler = async (req: ServerRequest) => {
     body: interpolate(template, {
       ...translations,
       config: (config as unknown) as KVP,
-      basePath: getBasePath(req, config),
+      rootPath: getBasePath(req, config),
       version: await getVersion(),
     }),
   };
