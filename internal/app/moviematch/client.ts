@@ -8,9 +8,9 @@ import {
   Locale,
   Login,
   LoginError,
-  LoginSuccess,
   Rate,
   ServerMessage,
+  User,
 } from "/types/moviematch.ts";
 import {
   AccessDeniedError,
@@ -38,6 +38,7 @@ export class Client {
   room?: Room;
   anonymousUserName?: string;
   plexUser?: PlexUser;
+  isLoggedIn: boolean;
   locale?: Locale;
 
   constructor(ws: WebSocket, ctx: RouteContext) {
@@ -45,6 +46,7 @@ export class Client {
     this.ctx = ctx;
     this.listenForMessages();
     this.sendConfig();
+    this.isLoggedIn = false;
   }
 
   private sendConfig() {
@@ -141,6 +143,10 @@ export class Client {
     }
   }
 
+  private getUsername() {
+    return this.anonymousUserName ?? this.plexUser?.username;
+  }
+
   private async handleLogin(login: Login) {
     log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
@@ -152,12 +158,12 @@ export class Client {
 
       this.anonymousUserName = login.userName;
 
-      const successMessage: LoginSuccess = {
+      const user: User = {
         userName: login.userName,
         permissions: [],
       };
 
-      this.sendMessage({ type: "loginSuccess", payload: successMessage });
+      this.sendMessage({ type: "loginSuccess", payload: user });
     } else if ("plexToken" in login) {
       try {
         const plexUser = await getUser({
@@ -166,19 +172,20 @@ export class Client {
         });
         this.plexUser = plexUser;
 
-        const successMessage: LoginSuccess = {
-          permissions: [],
-          avatarImage: plexUser.thumb,
+        const user: User = {
           userName: plexUser.username,
+          avatarImage: plexUser.thumb,
+          permissions: [],
         };
 
-        this.sendMessage({ type: "loginSuccess", payload: successMessage });
+        this.sendMessage({ type: "loginSuccess", payload: user });
       } catch (err) {
         log.error(
           `plexAuth invalid!`,
           err,
         );
       }
+      this.isLoggedIn = true;
     } else {
       const error: LoginError = {
         name: "MalformedMessage",
@@ -190,7 +197,7 @@ export class Client {
   }
 
   private handleLogout() {
-    const userName = this.anonymousUserName ?? this.plexUser?.username;
+    const userName = this.getUsername();
     if (userName) {
       this.room?.users.delete(userName);
       this.sendMessage({ type: "logoutSuccess" });
@@ -210,7 +217,9 @@ export class Client {
       `Handling room creation event: ${JSON.stringify(createRoomReq)}`,
     );
 
-    if (!this.anonymousUserName) {
+    const userName = this.getUsername();
+
+    if (!userName) {
       return this.sendMessage({
         type: "createRoomError",
         payload: {
@@ -222,15 +231,15 @@ export class Client {
 
     try {
       this.room = await createRoom(createRoomReq, this.ctx);
-      this.room.users.set(this.anonymousUserName, this);
+      this.room.users.set(userName, this);
       this.sendMessage({
         type: "createRoomSuccess",
         payload: {
           previousMatches: await this.room.getMatches(
-            this.anonymousUserName!,
+            userName!,
             false,
           ),
-          media: await this.room.getMediaForUser(this.anonymousUserName),
+          media: await this.room.getMediaForUser(userName),
         },
       });
     } catch (err) {
@@ -247,7 +256,7 @@ export class Client {
   }
 
   private async handleJoinRoom(joinRoomReq: JoinRoomRequest) {
-    if (!this.anonymousUserName) {
+    if (!this.isLoggedIn) {
       return this.sendMessage({
         type: "joinRoomError",
         payload: {
@@ -256,17 +265,26 @@ export class Client {
         },
       });
     }
+
     try {
-      this.room = getRoom(this.anonymousUserName, joinRoomReq);
-      this.room.users.set(this.anonymousUserName, this);
+      // TODO: Actually think about how usernames are associated with room.users and
+      // avoid conflicts between anonymous users and Plex users.
+      const userName = this.getUsername();
+
+      if (!userName) {
+        throw new Error("No username despite logged in status.");
+      }
+
+      this.room = getRoom(userName, joinRoomReq);
+      this.room.users.set(userName, this);
       this.sendMessage({
         type: "joinRoomSuccess",
         payload: {
           previousMatches: await this.room.getMatches(
-            this.anonymousUserName!,
+            userName!,
             false,
           ),
-          media: await this.room.getMediaForUser(this.anonymousUserName),
+          media: await this.room.getMediaForUser(userName),
         },
       });
     } catch (err) {
@@ -299,8 +317,9 @@ export class Client {
       `${this?.anonymousUserName} is leaving ${this.room?.roomName}`,
     );
 
-    if (this.room && this.anonymousUserName) {
-      this.room.users.delete(this.anonymousUserName);
+    const userName = this.getUsername();
+    if (this.room && userName) {
+      this.room.users.delete(userName);
 
       return this.sendMessage({
         type: "leaveRoomSuccess",
@@ -316,13 +335,12 @@ export class Client {
   }
 
   private handleRate(rate: Rate) {
-    if (this.anonymousUserName) {
+    const userName = this.getUsername();
+    if (userName) {
       log.debug(
-        `Handling rate event: ${this.anonymousUserName} ${
-          JSON.stringify(rate)
-        }`,
+        `Handling rate event: ${userName} ${JSON.stringify(rate)}`,
       );
-      this.room?.storeRating(this.anonymousUserName, rate, Date.now());
+      this.room?.storeRating(userName, rate, Date.now());
     }
   }
 
@@ -340,7 +358,7 @@ export class Client {
   }
 
   private handleClose() {
-    log.info(`${this.anonymousUserName ?? "Unknown user"} left.`);
+    log.info(`${this.getUsername() ?? "Unknown user"} left.`);
 
     this.handleLeaveRoom();
 

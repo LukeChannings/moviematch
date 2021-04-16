@@ -8,7 +8,7 @@ const ip =
     _.family == "IPv4" && !_.internal
   ).address;
 
-process.env.SNOWPACK_PUBLIC_BASE_PATH = `http://${ip}:8000`;
+process.env.SNOWPACK_PUBLIC_ROOT_PATH = `http://${ip}:8000`;
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
