@@ -23,13 +23,13 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
   ({ media, title, href }, ref) => {
     const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false);
 
-    const { basePath } = document.body.dataset;
+    const { rootPath } = document.body.dataset;
 
     const srcSet = [
-      `${basePath}${media.posterUrl}?width=300`,
-      `${basePath}${media.posterUrl}?width=450 1.5x`,
-      `${basePath}${media.posterUrl}?width=600 2x`,
-      `${basePath}${media.posterUrl}?width=900 3x`,
+      `${rootPath}${media.posterUrl}?width=300`,
+      `${rootPath}${media.posterUrl}?width=450 1.5x`,
+      `${rootPath}${media.posterUrl}?width=600 2x`,
+      `${rootPath}${media.posterUrl}?width=900 3x`,
     ];
 
     const mediaTitle = `${media.title}${

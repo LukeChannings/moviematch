@@ -8,41 +8,41 @@ Deno.test("Config -> applyDefaults", () => {
       hostname: "0.0.0.0",
       port: 8000,
       logLevel: "DEBUG",
-      basePath: "",
+      rootPath: "",
       servers: [],
     }],
     [{ hostname: "127.0.0.1" }, {
       hostname: "127.0.0.1",
       port: 8000,
       logLevel: "DEBUG",
-      basePath: "",
+      rootPath: "",
       servers: [],
     }],
     [{ hostname: "127.0.0.1", port: 8888 }, {
       hostname: "127.0.0.1",
       port: 8888,
       logLevel: "DEBUG",
-      basePath: "",
+      rootPath: "",
       servers: [],
     }],
     [{ hostname: "127.0.0.1", port: 8888, logLevel: "DEBUG" }, {
       hostname: "127.0.0.1",
       port: 8888,
       logLevel: "DEBUG",
-      basePath: "",
+      rootPath: "",
       servers: [],
     }],
     [{
       hostname: "127.0.0.1",
       port: 8888,
       logLevel: "DEBUG",
-      basePath: "/moviematch",
+      rootPath: "/moviematch",
       servers: [],
     }, {
       hostname: "127.0.0.1",
       port: 8888,
       logLevel: "DEBUG",
-      basePath: "/moviematch",
+      rootPath: "/moviematch",
       servers: [],
     }],
     [{
@@ -53,7 +53,7 @@ Deno.test("Config -> applyDefaults", () => {
       hostname: "127.0.0.1",
       port: 8888,
       logLevel: "DEBUG",
-      basePath: "",
+      rootPath: "",
       servers: [
         {
           type: "plex",
@@ -69,7 +69,7 @@ Deno.test("Config -> applyDefaults", () => {
       JSON.stringify(actual) === JSON.stringify(expected),
       `Expected:
       ${JSON.stringify(expected, null, 2)}
-      
+
       got:
       ${JSON.stringify(actual, null, 2)}`,
     );

@@ -28,13 +28,13 @@ const interpolate = (template: string, context: KVP): string => {
 
 const getTemplate = memo(() => readTextFile("/web/template/index.html"));
 
-const getBasePath = (req: ServerRequest, config: Config) => {
+const getRootPath = (req: ServerRequest, config: Config) => {
   // X-Forwarded-Prefix is non-standard (https://tools.ietf.org/html/rfc7239#section-4)
   // However, there is no equivalent that provides this functionality,
   // so it's the name I'm going with. This header should be set by the reverse proxy.
   // Further reading: https://github.com/envoyproxy/envoy/issues/5528
   const forwardedPrefix = req.headers.get("x-forwarded-prefix");
-  return (forwardedPrefix ?? config.basePath ?? "").trim().replace(/\/$/, "");
+  return (forwardedPrefix ?? config.rootPath ?? "").trim().replace(/\/$/, "");
 };
 
 export const handler: RouteHandler = async (req: ServerRequest) => {
@@ -47,7 +47,7 @@ export const handler: RouteHandler = async (req: ServerRequest) => {
     body: interpolate(template, {
       ...translations,
       config: (config as unknown) as KVP,
-      basePath: getBasePath(req, config),
+      rootPath: getRootPath(req, config),
       version: await getVersion(),
     }),
   };

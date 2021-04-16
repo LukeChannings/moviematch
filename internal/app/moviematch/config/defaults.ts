@@ -10,7 +10,7 @@ const defaultConfig: Partial<Config> = {
   port: 8000,
   // TODO: Set this to INFO when 2.0.0 is stable
   logLevel: "DEBUG",
-  basePath: "",
+  rootPath: "",
   servers: [],
 };
 
