@@ -13,12 +13,13 @@ import { Tr } from "../atoms/Tr";
 import styles from "./Create.module.css";
 
 export const CreateScreen = () => {
-  const [{ translations, room, error }, dispatch] = useStore([
+  const [{ translations, room, error, routeParams }, dispatch] = useStore([
     "translations",
     "room",
     "error",
+    "routeParams",
   ]);
-  const [roomName, setRoomName] = useState<string>();
+  const [roomName, setRoomName] = useState<string>(routeParams?.roomName ?? "");
   const [roomNameError, setRoomNameError] = useState<string | null>(null);
   const filters = useRef(new Map<number, Filter>());
   const createRoom = useCallback(async () => {
@@ -86,7 +87,8 @@ export const CreateScreen = () => {
         <ButtonContainer reverseMobile paddingTop="s3">
           <Button
             appearance="Tertiary"
-            onPress={() => dispatch({ type: "navigate", payload: "join" })}
+            onPress={() =>
+              dispatch({ type: "navigate", payload: { route: "join" } })}
             testHandle="back"
           >
             <Tr name="BACK" />

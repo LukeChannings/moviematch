@@ -16,7 +16,10 @@ import type {
 export type ClientActions =
   | { type: "addToast"; payload: Toast }
   | { type: "removeToast"; payload: Toast }
-  | { type: "navigate"; payload: Routes }
+  | {
+    type: "navigate";
+    payload: { route: Routes; routeParams?: Record<string, string> };
+  }
   | { type: "plexLogin" }
   | ServerMessage;
 
@@ -38,7 +41,7 @@ export type Dispatch = ReduxDispatch<ClientActions>;
 export interface Store {
   connectionStatus: "connecting" | "connected" | "disconnected";
   route: Routes;
-  routeParams: Record<string, unknown>;
+  routeParams?: Record<string, string | undefined>;
   error?: { type?: string; message?: string };
   toasts: Toast[];
   translations?: Translations;

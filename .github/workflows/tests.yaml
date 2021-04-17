@@ -38,6 +38,6 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
-          name: screenshots-${{ matrix.os }}
+          name: screenshots
           path: ./screenshots
           retention-days: 1

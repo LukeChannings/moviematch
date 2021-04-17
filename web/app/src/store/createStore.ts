@@ -83,7 +83,7 @@ export const createStore = () => {
           : existingLogin,
       });
     } else {
-      dispatch({ type: "navigate", payload: "login" });
+      dispatch({ type: "navigate", payload: { route: "login" } });
     }
   });
 

@@ -4,7 +4,6 @@ import type { Actions, Store } from "./types";
 export const initialState: Store = {
   connectionStatus: "disconnected",
   route: "loading",
-  routeParams: {},
   toasts: [],
 };
 
@@ -16,7 +15,11 @@ export const reducer: Reducer<Store, Actions> = (
     case "updateConnectionStatus":
       return { ...state, connectionStatus: action.payload };
     case "navigate":
-      return { ...state, route: action.payload };
+      return {
+        ...state,
+        route: action.payload.route,
+        routeParams: action.payload.routeParams,
+      };
     case "addToast":
       return {
         ...state,

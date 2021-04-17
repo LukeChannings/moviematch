@@ -57,7 +57,10 @@ export const JoinScreen = () => {
             appearance="Secondary"
             onPress={() => {
               if (roomName) {
-                dispatch({ type: "navigate", payload: "createRoom" });
+                dispatch({
+                  type: "navigate",
+                  payload: { route: "createRoom", routeParams: { roomName } },
+                });
               }
             }}
             testHandle="create-room"
