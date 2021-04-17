@@ -12,6 +12,7 @@ process.env.SNOWPACK_PUBLIC_ROOT_PATH = `http://${ip}:8000`;
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
+  mode: VERSION === "dev" ? "development" : "production",
   env: {
     VERSION,
     API_URI: VERSION === "dev" ? `ws://${ip}:8000/api/ws` : undefined,
@@ -26,10 +27,13 @@ module.exports = {
     "@snowpack/plugin-typescript",
   ],
   optimize: {
-    bundle: VERSION !== "dev",
-    minify: true,
+    bundle: false,
+    minify: false,
     treeshake: true,
     target: "es2018",
+  },
+  buildOptions: {
+    clean: true,
   },
   devOptions: {
     open: "none",

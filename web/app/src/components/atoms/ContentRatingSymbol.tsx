@@ -1,23 +1,25 @@
 import React from "react";
 
-import MPAA_G from "./RatingSymbols/MPAA_G.svg";
-import MPAA_PG13 from "./RatingSymbols/MPAA_PG-13.svg";
-import MPAA_PG from "./RatingSymbols/MPAA_PG.svg";
-import MPAA_R from "./RatingSymbols/MPAA_R.svg";
-import MPAA_NC17 from "./RatingSymbols/MPAA_NC-17.svg";
-import BBFC_U from "./RatingSymbols/BBFC_U.svg";
-import BBFC_PG from "./RatingSymbols/BBFC_PG.svg";
-import BBFC_12A from "./RatingSymbols/BBFC_12A.svg";
-import BBFC_12 from "./RatingSymbols/BBFC_12.svg";
-import BBFC_15 from "./RatingSymbols/BBFC_15.svg";
-import BBFC_18 from "./RatingSymbols/BBFC_18.svg";
+import MPAA_G from "./RatingSymbols/MpaaG";
+import MPAA_PG13 from "./RatingSymbols/MpaaPg13";
+import MPAA_PG from "./RatingSymbols/MpaaPg";
+import MPAA_R from "./RatingSymbols/MpaaR";
+import MPAA_NC17 from "./RatingSymbols/MpaaNc17";
+import BBFC_U from "./RatingSymbols/BbfcU";
+import BBFC_PG from "./RatingSymbols/BbfcPg";
+import BBFC_12A from "./RatingSymbols/Bbfc12A";
+import BBFC_12 from "./RatingSymbols/Bbfc12";
+import BBFC_15 from "./RatingSymbols/Bbfc15";
+import BBFC_18 from "./RatingSymbols/Bbfc18";
 
 export interface ContentRatingProps {
   rating: string;
   size?: string;
 }
 
-const iconUrls: Partial<Record<string, string | null>> = {
+const iconUrls: Partial<
+  Record<string, (props: React.SVGProps<SVGSVGElement>) => JSX.Element | null>
+> = {
   "G": MPAA_G,
   "PG": MPAA_PG,
   "PG-13": MPAA_PG13,
@@ -35,14 +37,7 @@ export const ContentRatingSymbol = ({
   rating,
   size = "1.2em",
 }: ContentRatingProps) => {
-  const src = iconUrls[rating];
+  const Icon = iconUrls[rating];
 
-  return src
-    ? <img
-      src={src}
-      alt={`rated ${rating}`}
-      title={rating}
-      style={{ width: size, height: size, display: "block" }}
-    />
-    : <p>{rating}</p>;
+  return Icon ? <Icon style={{ fontSize: size }} /> : <p>{rating}</p>;
 };
