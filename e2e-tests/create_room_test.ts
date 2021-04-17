@@ -39,6 +39,7 @@ browserTest(
     await page.waitForSelector(textInputSelector("roomName"));
     await page.type(textInputSelector("roomName"), "Filters");
 
+    await page.waitForSelector(btnSelector("filter-add"));
     await page.click(btnSelector("filter-add"));
 
     await page.waitForSelector(selectInputSelector("key-0"));
