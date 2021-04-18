@@ -5,6 +5,7 @@ import {
   browserTest,
   btnSelector,
   selectInputSelector,
+  selector,
   textInputSelector,
 } from "./_utils.ts";
 import { loginAnonymous } from "./login_test.ts";
@@ -42,6 +43,7 @@ browserTest(
     await page.waitForSelector(btnSelector("filter-add"));
     await page.click(btnSelector("filter-add"));
 
+    await page.waitForSelector(selector("0-filter-field"));
     await page.waitForSelector(selectInputSelector("key-0"));
 
     await page.select(selectInputSelector("key-0"), "genre");

@@ -16,6 +16,7 @@ interface FilterFieldProps {
   onChange: (filter: Filter | null) => void;
   suggestions?: Record<string, FilterValue[]>;
   requestSuggestions: (key: string) => void;
+  testHandle?: string;
 }
 
 export const FilterField = ({
@@ -24,6 +25,7 @@ export const FilterField = ({
   filters,
   suggestions,
   requestSuggestions,
+  testHandle,
 }: FilterFieldProps) => {
   const [key, setKey] = useState<string>("");
   const [operator, setOperator] = useState<string>("=");
@@ -46,7 +48,10 @@ export const FilterField = ({
   const filter = filters.filters.find((_) => _.key === key);
 
   return (
-    <fieldset className={styles.filterField}>
+    <fieldset
+      className={styles.filterField}
+      data-test-handle={testHandle ?? `${name}-filter-field`}
+    >
       <Select
         name={"key" + "-" + name}
         value={key}

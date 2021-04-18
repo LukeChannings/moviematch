@@ -111,16 +111,18 @@ export const browserTest = (
   });
 };
 
+export const selector = (name: string) => `[data-test-handle="${name}"]`;
+
 export const textInputSelector = (name: string) =>
-  `[data-test-handle="${name}-text-input"]`;
+  selector(`${name}-text-input`);
+
 export const selectInputSelector = (name: string) =>
-  `[data-test-handle="${name}-select-input"]`;
+  selector(`${name}-select-input`);
 
 export const autosuggestInputSelector = (name: string) =>
-  `[data-test-handle="${name}-autosuggest-input"]`;
+  selector(`${name}-autosuggest-input`);
 
 export const autosuggestValueSelector = (name: string, value: string) =>
-  `[data-test-handle="${name}-suggestion-${value}"]`;
+  selector(`${name}-suggestion-${value}`);
 
-export const btnSelector = (name: string) =>
-  `[data-test-handle="${name}-button"]`;
+export const btnSelector = (name: string) => selector(`${name}-button`);
