@@ -28,7 +28,7 @@ start: install
   while true; do sleep 60; done
 
 start-server:
-  denon -c configs/denon.config.json run {{ deno_options }} ./cmd/moviematch/main.ts
+  denon -c configs/denon.config.json run --inspect {{ deno_options }} ./cmd/moviematch/main.ts
 
 start-ui:
   rm -rf {{ui_build_dir}}
