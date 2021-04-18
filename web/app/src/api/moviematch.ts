@@ -2,6 +2,7 @@ import type {
   ClientMessage,
   Config,
   CreateRoomRequest,
+  FilterValueRequest,
   JoinRoomRequest,
   Locale,
   Login,
@@ -157,8 +158,11 @@ export class MovieMatchClient extends EventTarget {
     ]);
   };
 
-  requestFilterValues = async (key: string) => {
-    this.sendMessage({ type: "requestFilterValues", payload: { key } });
+  requestFilterValues = async (filterValueRequest: FilterValueRequest) => {
+    this.sendMessage({
+      type: "requestFilterValues",
+      payload: filterValueRequest,
+    });
     return await Promise.race([
       this.waitForMessage("requestFilterValuesSuccess"),
       this.waitForMessage("requestFilterValuesError"),

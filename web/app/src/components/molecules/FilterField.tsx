@@ -77,7 +77,7 @@ export const FilterField = ({
           {filter.type !== "boolean" && (
             <AutoSuggestInput
               inputName={`value-${name}`}
-              items={suggestions![key]}
+              items={suggestions && key in suggestions ? suggestions[key] : []}
               onChange={setValue}
               value={value}
             />

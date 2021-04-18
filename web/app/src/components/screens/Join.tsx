@@ -10,7 +10,7 @@ import { ErrorMessage } from "../atoms/ErrorMessage";
 
 export const JoinScreen = () => {
   const [store, dispatch] = useStore(["room", "error"]);
-  const [roomName, setRoomName] = useState<string | undefined>(
+  const [roomName, setRoomName] = useState<string>(
     store.room?.name ?? "",
   );
   const [roomNameError] = useState<string | undefined>();
@@ -56,12 +56,10 @@ export const JoinScreen = () => {
           <Button
             appearance="Secondary"
             onPress={() => {
-              if (roomName) {
-                dispatch({
-                  type: "navigate",
-                  payload: { route: "createRoom", routeParams: { roomName } },
-                });
-              }
+              dispatch({
+                type: "navigate",
+                payload: { route: "createRoom", routeParams: { roomName } },
+              });
             }}
             testHandle="create-room"
           >

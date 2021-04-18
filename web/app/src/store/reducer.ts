@@ -12,8 +12,22 @@ export const reducer: Reducer<Store, Actions> = (
   action,
 ) => {
   switch (action.type) {
-    case "updateConnectionStatus":
-      return { ...state, connectionStatus: action.payload };
+    case "updateConnectionStatus": {
+      return {
+        ...state,
+        connectionStatus: action.payload,
+        toasts: action.payload === "disconnected"
+          ? [
+            {
+              id: "connection-failure",
+              message: "Disconnected",
+              appearance: "Failure",
+            },
+            ...state.toasts,
+          ]
+          : state.toasts.filter(({ id }) => id !== "connection-failure"),
+      };
+    }
     case "navigate":
       return {
         ...state,
@@ -85,6 +99,18 @@ export const reducer: Reducer<Store, Actions> = (
       return {
         ...state,
         room: { ...state.room!, availableFilters: action.payload },
+      };
+    }
+    case "requestFilterValuesSuccess": {
+      return {
+        ...state,
+        room: {
+          ...state.room!,
+          filterValues: {
+            ...state.room?.filterValues,
+            [action.payload.request.key]: action.payload.values,
+          },
+        },
       };
     }
   }

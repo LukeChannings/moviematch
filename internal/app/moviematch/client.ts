@@ -3,6 +3,7 @@ import {
   ClientMessage,
   Config,
   CreateRoomRequest,
+  FilterValueRequest,
   JoinRoomError,
   JoinRoomRequest,
   Locale,
@@ -116,7 +117,7 @@ export class Client {
                 await this.handleRequestFilters();
                 break;
               case "requestFilterValues":
-                await this.handleRequestFilterValues(message.payload.key);
+                await this.handleRequestFilterValues(message.payload);
                 break;
               default:
                 log.info(`Unhandled message: ${messageText}`);
@@ -423,14 +424,19 @@ export class Client {
     }
   }
 
-  async handleRequestFilterValues(key: string) {
+  async handleRequestFilterValues(filterValueRequest: FilterValueRequest) {
     if (this.ctx.providers.length) {
       // TODO - Aggregate filter values from all providers.
       const [provider] = this.ctx.providers;
-      const filterValues = await provider.getFilterValues(key);
+      const filterValues = await provider.getFilterValues(
+        filterValueRequest.key,
+      );
       this.sendMessage({
         type: "requestFilterValuesSuccess",
-        payload: filterValues,
+        payload: {
+          request: filterValueRequest,
+          values: filterValues,
+        },
       });
     } else {
       this.sendMessage({

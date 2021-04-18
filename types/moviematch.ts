@@ -63,7 +63,10 @@ export type ClientMessage =
   | { type: "setupError"; payload: SetupError }
   | { type: "requestFiltersSuccess"; payload: Filters }
   | { type: "requestFiltersError" }
-  | { type: "requestFilterValuesSuccess"; payload: FilterValue[] }
+  | {
+    type: "requestFilterValuesSuccess";
+    payload: { request: FilterValueRequest; values: FilterValue[] };
+  }
   | { type: "requestFilterValuesError" };
 
 // Translations
