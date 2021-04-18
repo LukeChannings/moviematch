@@ -31,12 +31,13 @@ jobs:
           just build-binary linux-amd64
           just test-e2e linux-amd64
         name: E2E Tests
+        if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
         env:
           PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Upload screenshots on failure
         uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
+        if: ${{ failure() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') }}
         with:
           name: screenshots
           path: ./screenshots

@@ -11,6 +11,7 @@ export const loginAnonymous = async (page: Page, userName: string) => {
   await page.waitForSelector(textInputSelector("given-name"));
   await page.type(textInputSelector("given-name"), userName);
   await page.click(btnSelector("login-anonymous"));
+  await page.waitForSelector(btnSelector("logout"));
   assertNotEquals(await page.$(btnSelector("logout")), null);
 };
 
