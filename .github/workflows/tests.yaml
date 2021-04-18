@@ -32,8 +32,8 @@ jobs:
           just test-e2e linux-amd64
         name: E2E Tests
         env:
-          TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
-          TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+          PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Upload screenshots on failure
         uses: actions/upload-artifact@v2
         if: ${{ failure() }}
