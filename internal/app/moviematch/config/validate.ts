@@ -200,7 +200,9 @@ export const validateConfig = (
 
         if (typeof value.basicAuth.userName !== "string") {
           errors.push(
-            new BasicAuthUserNameInvalid("basicAuth.userName must be a string"),
+            new BasicAuthUserNameInvalid(
+              "basicAuth.anonymousUserName must be a string",
+            ),
           );
         }
         if (typeof value.basicAuth.password !== "string") {

@@ -3,14 +3,15 @@ import {
   ClientMessage,
   Config,
   CreateRoomRequest,
+  FilterValueRequest,
   JoinRoomError,
   JoinRoomRequest,
   Locale,
   Login,
   LoginError,
-  LoginSuccess,
   Rate,
   ServerMessage,
+  User,
 } from "/types/moviematch.ts";
 import {
   AccessDeniedError,
@@ -36,9 +37,9 @@ export class Client {
   ws: WebSocket;
   ctx: RouteContext;
   room?: Room;
-  userName?: string;
-  plexAuth?: Login["plexAuth"];
+  anonymousUserName?: string;
   plexUser?: PlexUser;
+  isLoggedIn: boolean;
   locale?: Locale;
 
   constructor(ws: WebSocket, ctx: RouteContext) {
@@ -46,6 +47,7 @@ export class Client {
     this.ctx = ctx;
     this.listenForMessages();
     this.sendConfig();
+    this.isLoggedIn = false;
   }
 
   private sendConfig() {
@@ -90,6 +92,9 @@ export class Client {
               case "login":
                 await this.handleLogin(message.payload);
                 break;
+              case "logout":
+                await this.handleLogout();
+                break;
               case "createRoom":
                 await this.handleCreateRoom(message.payload);
                 break;
@@ -112,7 +117,7 @@ export class Client {
                 await this.handleRequestFilters();
                 break;
               case "requestFilterValues":
-                await this.handleRequestFilterValues(message.payload.key);
+                await this.handleRequestFilterValues(message.payload);
                 break;
               default:
                 log.info(`Unhandled message: ${messageText}`);
@@ -139,10 +144,50 @@ export class Client {
     }
   }
 
+  private getUsername() {
+    return this.anonymousUserName ?? this.plexUser?.username;
+  }
+
   private async handleLogin(login: Login) {
     log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
-    if (typeof login?.userName !== "string") {
+    if ("userName" in login) {
+      if (this.anonymousUserName && login.userName !== this.anonymousUserName) {
+        log.debug(`Logging out ${this.anonymousUserName}`);
+        this.room?.users.delete(this.anonymousUserName);
+      }
+
+      this.anonymousUserName = login.userName;
+
+      const user: User = {
+        userName: login.userName,
+        permissions: [],
+      };
+
+      this.sendMessage({ type: "loginSuccess", payload: user });
+    } else if ("plexToken" in login) {
+      try {
+        const plexUser = await getUser({
+          plexToken: login.plexToken,
+          clientId: login.plexClientId,
+        });
+        this.plexUser = plexUser;
+
+        const user: User = {
+          userName: plexUser.username,
+          avatarImage: plexUser.thumb,
+          permissions: [],
+        };
+
+        this.sendMessage({ type: "loginSuccess", payload: user });
+      } catch (err) {
+        log.error(
+          `plexAuth invalid!`,
+          err,
+        );
+      }
+      this.isLoggedIn = true;
+    } else {
       const error: LoginError = {
         name: "MalformedMessage",
         message: "The login message was not formed correctly.",
@@ -150,34 +195,22 @@ export class Client {
 
       return this.ws.send(JSON.stringify(error));
     }
+  }
 
-    if (this.userName && login.userName !== this.userName) {
-      log.debug(`Logging out ${this.userName}`);
-      this.room?.users.delete(this.userName);
+  private handleLogout() {
+    const userName = this.getUsername();
+    if (userName) {
+      this.room?.users.delete(userName);
+      this.sendMessage({ type: "logoutSuccess" });
+    } else {
+      this.sendMessage({
+        type: "logoutError",
+        payload: {
+          name: "NotLoggedIn",
+          message: "This connection does not have a logged in user associated.",
+        },
+      });
     }
-
-    this.userName = login.userName;
-
-    const successMessage: LoginSuccess = {
-      avatarImage: "",
-      permissions: [],
-    };
-
-    if (login.plexAuth) {
-      try {
-        const plexUser = await getUser(login.plexAuth);
-        this.plexAuth = login.plexAuth;
-        this.plexUser = plexUser;
-        successMessage.avatarImage = plexUser.thumb;
-      } catch (err) {
-        log.error(
-          `plexAuth invalid! ${JSON.stringify(login.plexAuth)}`,
-          err,
-        );
-      }
-    }
-
-    this.sendMessage({ type: "loginSuccess", payload: successMessage });
   }
 
   private async handleCreateRoom(createRoomReq: CreateRoomRequest) {
@@ -185,7 +218,9 @@ export class Client {
       `Handling room creation event: ${JSON.stringify(createRoomReq)}`,
     );
 
-    if (!this.userName) {
+    const userName = this.getUsername();
+
+    if (!userName) {
       return this.sendMessage({
         type: "createRoomError",
         payload: {
@@ -197,12 +232,15 @@ export class Client {
 
     try {
       this.room = await createRoom(createRoomReq, this.ctx);
-      this.room.users.set(this.userName, this);
+      this.room.users.set(userName, this);
       this.sendMessage({
         type: "createRoomSuccess",
         payload: {
-          previousMatches: await this.room.getMatches(this.userName!, false),
-          media: await this.room.getMediaForUser(this.userName),
+          previousMatches: await this.room.getMatches(
+            userName!,
+            false,
+          ),
+          media: await this.room.getMediaForUser(userName),
         },
       });
     } catch (err) {
@@ -219,7 +257,7 @@ export class Client {
   }
 
   private async handleJoinRoom(joinRoomReq: JoinRoomRequest) {
-    if (!this.userName) {
+    if (!this.isLoggedIn) {
       return this.sendMessage({
         type: "joinRoomError",
         payload: {
@@ -228,14 +266,26 @@ export class Client {
         },
       });
     }
+
     try {
-      this.room = getRoom(this.userName, joinRoomReq);
-      this.room.users.set(this.userName, this);
+      // TODO: Actually think about how usernames are associated with room.users and
+      // avoid conflicts between anonymous users and Plex users.
+      const userName = this.getUsername();
+
+      if (!userName) {
+        throw new Error("No username despite logged in status.");
+      }
+
+      this.room = getRoom(userName, joinRoomReq);
+      this.room.users.set(userName, this);
       this.sendMessage({
         type: "joinRoomSuccess",
         payload: {
-          previousMatches: await this.room.getMatches(this.userName!, false),
-          media: await this.room.getMediaForUser(this.userName),
+          previousMatches: await this.room.getMatches(
+            userName!,
+            false,
+          ),
+          media: await this.room.getMediaForUser(userName),
         },
       });
     } catch (err) {
@@ -265,11 +315,12 @@ export class Client {
 
   private handleLeaveRoom() {
     log.debug(
-      `${this?.userName} is leaving ${this.room?.roomName}`,
+      `${this?.anonymousUserName} is leaving ${this.room?.roomName}`,
     );
 
-    if (this.room && this.userName) {
-      this.room.users.delete(this.userName);
+    const userName = this.getUsername();
+    if (this.room && userName) {
+      this.room.users.delete(userName);
 
       return this.sendMessage({
         type: "leaveRoomSuccess",
@@ -285,11 +336,12 @@ export class Client {
   }
 
   private handleRate(rate: Rate) {
-    if (this.userName) {
+    const userName = this.getUsername();
+    if (userName) {
       log.debug(
-        `Handling rate event: ${this.userName} ${JSON.stringify(rate)}`,
+        `Handling rate event: ${userName} ${JSON.stringify(rate)}`,
       );
-      this.room?.storeRating(this.userName, rate, Date.now());
+      this.room?.storeRating(userName, rate, Date.now());
     }
   }
 
@@ -307,7 +359,7 @@ export class Client {
   }
 
   private handleClose() {
-    log.info(`${this.userName ?? "Unknown user"} left.`);
+    log.info(`${this.getUsername() ?? "Unknown user"} left.`);
 
     this.handleLeaveRoom();
 
@@ -332,7 +384,11 @@ export class Client {
       } else {
         await updateConfiguration(config as unknown as Record<string, unknown>);
 
-        // the client will reload automatically when the WebSocket is closed
+        this.sendMessage({
+          type: "setupSuccess",
+          payload: { hostname: config.hostname, port: config.port },
+        });
+
         shutdown();
       }
     } else {
@@ -358,25 +414,34 @@ export class Client {
       const [provider] = this.ctx.providers;
       const filters = await provider.getFilters();
       this.sendMessage({
-        type: "filters",
+        type: "requestFiltersSuccess",
         payload: filters,
       });
     } else {
-      throw new Error("NO PROVIDERS");
+      this.sendMessage({
+        type: "requestFiltersError",
+      });
     }
   }
 
-  async handleRequestFilterValues(key: string) {
+  async handleRequestFilterValues(filterValueRequest: FilterValueRequest) {
     if (this.ctx.providers.length) {
       // TODO - Aggregate filter values from all providers.
       const [provider] = this.ctx.providers;
-      const filterValues = await provider.getFilterValues(key);
+      const filterValues = await provider.getFilterValues(
+        filterValueRequest.key,
+      );
       this.sendMessage({
-        type: "filterValues",
-        payload: filterValues,
+        type: "requestFilterValuesSuccess",
+        payload: {
+          request: filterValueRequest,
+          values: filterValues,
+        },
       });
     } else {
-      throw new Error("NO PROVIDERS");
+      this.sendMessage({
+        type: "requestFilterValuesError",
+      });
     }
   }
 

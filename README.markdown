@@ -9,7 +9,7 @@
 
 <div style="text-align: center">
   <a href="screenshots/Splash.jpeg"><img src="screenshots/Splash.jpeg" alt="Splash Screen" width="25%"></a>
-  <a href="screenshots/Login.jpeg"><img src="screenshots/Login.jpeg" alt="Splash Screen" width="25%"></a>
+  <a href="screenshots/e2e_login_page_iphone_x.jpeg"><img src="screenshots/e2e_login_page_iphone_x.jpeg" alt="Splash Screen" width="25%"></a>
   <a href="screenshots/Rate.jpeg"><img src="screenshots/Rate.jpeg" alt="Splash Screen" width="25%"></a>
 </div>
 

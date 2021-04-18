@@ -7,3 +7,11 @@ export type Color =
   | "white"
   | "plex-color"
   | "plex-highlight-color";
+
+export type Routes =
+  | "loading"
+  | "login"
+  | "join"
+  | "createRoom"
+  | "room"
+  | "config";

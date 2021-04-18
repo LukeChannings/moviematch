@@ -2,26 +2,25 @@
  * plex.tv Authentication
  * See - https://forums.plex.tv/t/authenticating-with-plex/609370
  */
-import type { Login } from "../../../../types/moviematch";
-
 const APP_NAME = "MovieMatch";
-const CLIENT_ID = localStorage.getItem("plexClientId") ?? generateClientId();
+const CLIENT_ID = localStorage.getItem("plexClientId") ??
+  (() => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const clientId = Array.from({ length: 30 })
+      .map((_) => characters[Math.floor(Math.random() * characters.length)])
+      .join("");
+    localStorage.setItem("plexClientId", clientId);
+    return clientId;
+  })();
+
+export class PlexPINExpiredError extends Error {}
 
 export interface PlexPIN {
   id: string;
   code: string;
   authToken: string | null;
   expiresAt: string;
-}
-
-function generateClientId() {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const clientId = Array.from({ length: 30 })
-    .map((_) => characters[Math.floor(Math.random() * characters.length)])
-    .join("");
-  localStorage.setItem("plexClientId", clientId);
-  return clientId;
 }
 
 export const signIn = async () => {
@@ -53,9 +52,7 @@ export const signIn = async () => {
   }
 };
 
-export class PlexPINExpiredError extends Error {}
-
-export const checkPin = async (pin: PlexPIN) => {
+export const verifyPin = async (pin: PlexPIN) => {
   if (Number(new Date(pin.expiresAt)) > Date.now() && !pin.authToken) {
     const search = new URLSearchParams({
       strong: "true",
@@ -87,22 +84,21 @@ export const checkPin = async (pin: PlexPIN) => {
 
     return {
       clientId: CLIENT_ID,
-      plexToken: data.authToken,
+      token: data.authToken,
     };
   } else {
     throw new PlexPINExpiredError();
   }
 };
 
-export const getPlexCredentials = async (): Promise<Login["plexAuth"]> => {
-  const plexTvPin = localStorage.getItem("plexTvPin");
+export const getLogin = (): { pin: PlexPIN } | {
+  token: string;
+  clientId: string;
+} | null => {
+  const token = localStorage.getItem("plexToken");
+  const pin = JSON.parse(localStorage.getItem("plexTvPin")!);
 
-  const pin: PlexPIN = JSON.parse(plexTvPin ?? "null");
-
-  if (!pin || Number(new Date(pin.expiresAt)) < Date.now()) {
-    await signIn();
-    return;
-  }
-
-  return await checkPin(pin);
+  if (token) return { token, clientId: CLIENT_ID };
+  if (pin) return { pin };
+  return null;
 };

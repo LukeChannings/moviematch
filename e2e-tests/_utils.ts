@@ -9,10 +9,15 @@ import puppeteer, {
 const MOVIEMATCH_URL = Deno.env.get("MOVIEMATCH_URL") ??
   "http://localhost:8080";
 
+interface RunPuppeteerTestOptions {
+  timeoutMs: number;
+  emulate?: string;
+  errorScreenshotName?: string;
+}
+
 const runPuppeteerTest = async (
   test: (page: Page, emulatedName?: string) => Promise<void>,
-  timeoutMs: number,
-  emulate?: string,
+  { timeoutMs, emulate, errorScreenshotName }: RunPuppeteerTestOptions,
 ) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -42,15 +47,6 @@ const runPuppeteerTest = async (
     );
   });
 
-  page.on("requestfinished", (req: HTTPRequest) => {
-    const response = req.response();
-    console.log(
-      `\n[UI] [Request Finished] ${req.url()} ${response?.status()} ${
-        response?.statusText()
-      }`,
-    );
-  });
-
   await page.goto(MOVIEMATCH_URL);
 
   try {
@@ -69,6 +65,9 @@ const runPuppeteerTest = async (
       ),
     ]);
   } catch (err) {
+    if (errorScreenshotName) {
+      await page.screenshot(getScreenshotOptions(errorScreenshotName));
+    }
     throw err;
   } finally {
     await browser.close();
@@ -82,32 +81,66 @@ export const browserTest = (
 ) => {
   Deno.test({
     name: `${name} (Desktop)`,
-    fn: () => runPuppeteerTest(test, timeoutMs),
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `${name}-desktop-error`,
+      }),
     sanitizeOps: false,
   });
   Deno.test({
+    name: `${name} (iPhone X)`,
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `${name}-mobile-error`,
+        emulate: "iPhone X",
+      }),
+    sanitizeOps: false,
+  });
+
+  Deno.test({
     name: `${name} (iPhone 6)`,
-    fn: () => runPuppeteerTest(test, timeoutMs, "iPhone 6"),
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `${name}-mobile-small-error`,
+        emulate: "iPhone 6",
+      }),
     sanitizeOps: false,
   });
 
   Deno.test({
     name: `${name} (iPad)`,
-    fn: () => runPuppeteerTest(test, timeoutMs, "iPad"),
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `${name}-tablet-error`,
+        emulate: "iPad",
+      }),
     sanitizeOps: false,
   });
 };
 
+export const getScreenshotOptions = (name: string) => ({
+  path: `screenshots/e2e_${
+    name.toLocaleLowerCase().replace(/[\s]/g, "_")
+  }.jpeg`,
+  quality: 80,
+});
+
+export const selector = (name: string) => `[data-test-handle="${name}"]`;
+
 export const textInputSelector = (name: string) =>
-  `[data-test-handle="${name}-text-input"]`;
+  selector(`${name}-text-input`);
+
 export const selectInputSelector = (name: string) =>
-  `[data-test-handle="${name}-select-input"]`;
+  selector(`${name}-select-input`);
 
 export const autosuggestInputSelector = (name: string) =>
-  `[data-test-handle="${name}-autosuggest-input"]`;
+  selector(`${name}-autosuggest-input`);
 
 export const autosuggestValueSelector = (name: string, value: string) =>
-  `[data-test-handle="${name}-suggestion-${value}"]`;
+  selector(`${name}-suggestion-${value}`);
 
-export const btnSelector = (name: string) =>
-  `[data-test-handle="${name}-button"]`;
+export const btnSelector = (name: string) => selector(`${name}-button`);

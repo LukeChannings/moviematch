@@ -1,5 +1,6 @@
-import React, { StrictMode, useCallback } from "react";
+import React, { StrictMode } from "react";
 import { render } from "react-dom";
+import { Provider, useDispatch } from "react-redux";
 
 import "./main.css";
 
@@ -7,56 +8,63 @@ import { LoginScreen } from "./components/screens/Login";
 import { JoinScreen } from "./components/screens/Join";
 import { CreateScreen } from "./components/screens/Create";
 import { RoomScreen } from "./components/screens/Room";
-import { MovieMatchContext, Routes, useStore } from "./store";
-import type { ScreenProps } from "./components/layout/Screen";
 import { Loading } from "./components/screens/Loading";
 import { ToastList } from "./components/atoms/Toast";
 import { ConfigScreen } from "./components/screens/Config";
+import type { Routes } from "./types";
+import { createStore, Dispatch, useSelector } from "./store";
+
+const store = createStore();
 
 const MovieMatch = () => {
-  const [store, dispatch] = useStore();
-  const navigate = useCallback(async function navigate(route: Routes) {
-    dispatch({ type: "navigate", payload: route });
-  }, []);
+  const { route = "loading", translations, toasts } = useSelector([
+    "route",
+    "translations",
+    "toasts",
+  ]);
+
+  const dispatch = useDispatch<Dispatch>();
 
   return (
-    <MovieMatchContext.Provider value={store}>
-      <>
-        {(() => {
-          const routes: Record<
-            Routes["path"],
-            (props: ScreenProps<any>) => JSX.Element
-          > = {
-            loading: Loading,
-            login: LoginScreen,
-            join: JoinScreen,
-            createRoom: CreateScreen,
-            rate: RoomScreen,
-            config: ConfigScreen,
-          };
-          const CurrentComponent = routes[store.route.path];
-          return (
-            <CurrentComponent
-              navigate={navigate}
-              dispatch={dispatch}
-              params={"params" in store.route ? store.route.params : undefined}
-              store={store}
-            />
-          );
-        })()}
-        <ToastList
-          toasts={store.toasts}
-          removeToast={(toast) =>
-            dispatch({ type: "removeToast", payload: toast })}
-        />
-      </>
-    </MovieMatchContext.Provider>
+    <>
+      {(() => {
+        const routes: Record<
+          Routes,
+          () => JSX.Element
+        > = {
+          loading: Loading,
+          login: LoginScreen,
+          join: JoinScreen,
+          createRoom: CreateScreen,
+          room: RoomScreen,
+          config: ConfigScreen,
+        };
+        const CurrentComponent = routes[route];
+
+        if (!translations) {
+          return <Loading />;
+        }
+
+        if (CurrentComponent) {
+          return <CurrentComponent />;
+        } else {
+          return <p>No route for {route}</p>;
+        }
+      })()}
+      <ToastList
+        toasts={toasts}
+        removeToast={(toast) =>
+          dispatch({ type: "removeToast", payload: toast })}
+      />
+    </>
   );
 };
 
 render(
   <StrictMode>
-    <MovieMatch />
+    <Provider store={store}>
+      <MovieMatch />
+    </Provider>
   </StrictMode>,
   document.getElementById("app"),
 );

@@ -65,4 +65,6 @@ for (const path of Deno.args) {
   }
 }
 
-console.log(`export const pkg: Record<string,string> = ${JSON.stringify(pkg)}`);
+console.log(
+  `export const pkg: Record<string, string> = ${JSON.stringify(pkg)}`,
+);

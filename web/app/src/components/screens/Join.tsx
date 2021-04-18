@@ -1,76 +1,28 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Field } from "../molecules/Field";
-import { Spinner } from "../atoms/Spinner";
 import { Button } from "../atoms/Button";
 import { ButtonContainer } from "../layout/ButtonContainer";
-import type { ScreenProps } from "../layout/Screen";
-import { MovieMatchContext } from "../../store";
-import type {
-  JoinRoomError,
-  JoinRoomSuccess,
-} from "../../../../../types/moviematch";
 import { Layout } from "../layout/Layout";
-import { ErrorMessage } from "../atoms/ErrorMessage";
 import { Tr } from "../atoms/Tr";
 import styles from "./Join.module.css";
+import { useStore } from "../../store";
+import { ErrorMessage } from "../atoms/ErrorMessage";
 
-export const JoinScreen = ({
-  navigate,
-  dispatch,
-  params,
-}: ScreenProps<{ errorMessage?: string } | undefined>) => {
-  const store = useContext(MovieMatchContext);
-  const [roomName, setRoomName] = useState<string | undefined>(
+export const JoinScreen = () => {
+  const [store, dispatch] = useStore(["room", "error"]);
+  const [roomName, setRoomName] = useState<string>(
     store.room?.name ?? "",
   );
-  const [roomNameError, setRoomNameError] = useState<string | undefined>();
-  const [joinError] = useState<string | undefined>(params?.errorMessage);
-  const handleJoin = useCallback(async () => {
-    if (roomName) {
-      navigate({ path: "loading" });
-      dispatch({ type: "setRoom", payload: { name: roomName, joined: false } });
-      try {
-        const joinMsg: JoinRoomSuccess = await store.client.joinRoom({
-          roomName,
-        });
-        dispatch({
-          type: "setRoom",
-          payload: {
-            name: roomName,
-            joined: true,
-            media: joinMsg.media,
-            matches: joinMsg.previousMatches,
-          },
-        });
-        navigate({ path: "rate" });
-      } catch (err) {
-        const joinRoomError: JoinRoomError = JSON.parse(err.message);
+  const [roomNameError] = useState<string | undefined>();
+  // const [joinError] = useState<string | undefined>(params?.errorMessage);
 
-        navigate({
-          path: "join",
-          params: {
-            errorMessage: joinRoomError.message,
-          },
-        });
-      }
-    } else {
-      setRoomNameError(`Room name is required!`);
-    }
-  }, [roomName]);
-
-  useEffect(() => {
-    if (roomName && !roomNameError && !joinError) {
-      handleJoin();
-    }
-  }, [store.room?.name, roomNameError, joinError]);
-
-  if (store.room?.name && !params?.errorMessage) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    );
-  }
+  // if (store.room?.name && !params?.errorMessage) {
+  //   return (
+  //     <Layout>
+  //       <Spinner />
+  //     </Layout>
+  //   );
+  // }
 
   return (
     <Layout>
@@ -78,10 +30,12 @@ export const JoinScreen = ({
         className={styles.form}
         onSubmit={(e) => {
           e.preventDefault();
-          handleJoin();
         }}
       >
-        {joinError && <ErrorMessage message={joinError} />}
+        {store.error &&
+          <ErrorMessage
+            message={store.error.message ?? store.error.type ?? ""}
+          />}
         <Field
           label="Room Name"
           name="roomName"
@@ -93,7 +47,7 @@ export const JoinScreen = ({
           <Button
             appearance="Tertiary"
             onPress={() => {
-              dispatch({ type: "logout", payload: null });
+              dispatch({ type: "logout" });
             }}
             testHandle="logout"
           >
@@ -102,9 +56,9 @@ export const JoinScreen = ({
           <Button
             appearance="Secondary"
             onPress={() => {
-              navigate({
-                path: "createRoom",
-                params: { roomName: roomName ?? "" },
+              dispatch({
+                type: "navigate",
+                payload: { route: "createRoom", routeParams: { roomName } },
               });
             }}
             testHandle="create-room"
@@ -113,7 +67,11 @@ export const JoinScreen = ({
           </Button>
           <Button
             appearance="Primary"
-            onPress={handleJoin}
+            onPress={() => {
+              if (roomName) {
+                dispatch({ type: "joinRoom", payload: { roomName } });
+              }
+            }}
             type="submit"
             testHandle="join-room"
           >

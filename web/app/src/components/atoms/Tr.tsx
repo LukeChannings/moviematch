@@ -1,6 +1,6 @@
-import React, { memo, useContext } from "react";
+import React, { memo } from "react";
+import { useStore } from "../../store";
 import type { TranslationKey } from "../../../../../types/moviematch";
-import { MovieMatchContext } from "../../store";
 
 interface TranslationProps {
   name: TranslationKey;
@@ -20,8 +20,8 @@ const interpolate = (text: string, context: Record<string, string>) => {
 };
 
 export const Tr = memo(({ name, context }: TranslationProps) => {
-  const store = useContext(MovieMatchContext);
-  const translation = (store.translations ?? {})[name];
+  const [{ translations }] = useStore(["translations"]);
+  const translation = (translations ?? {})[name];
 
   if (translation && context) {
     return <>{interpolate(translation, context)}</>;

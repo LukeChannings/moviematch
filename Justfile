@@ -28,7 +28,7 @@ start: install
   while true; do sleep 60; done
 
 start-server:
-  denon -c configs/denon.config.json run {{ deno_options }} ./cmd/moviematch/main.ts
+  denon -c configs/denon.config.json run --inspect {{ deno_options }} ./cmd/moviematch/main.ts
 
 start-ui:
   rm -rf {{ui_build_dir}}
@@ -39,7 +39,7 @@ build-ui: install-node-modules
 
 build-bundle: clean build-ui
   mkdir -p {{build_dir}}
-  deno run {{ deno_options }} ./cmd/moviematch/pkger.ts {{ui_build_dir}}/dist {{ui_build_dir}}/icons {{ui_build_dir}}/manifest.webmanifest web/template/index.html configs/localization VERSION > {{build_dir}}/pkg.ts
+  deno run {{ deno_options }} ./cmd/moviematch/pkger.ts {{ui_build_dir}} web/template/index.html configs/localization VERSION > {{build_dir}}/pkg.ts
   sed 's/pkger.ts/pkger_release.ts/' < configs/import_map.json > {{build_dir}}/import_map.json
   deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
 
@@ -76,7 +76,7 @@ test:
   # https://github.com/denoland/deno/issues/9284
   deno test {{ deno_options }} internal
 
-test-e2e target: install-deno-dependencies
+test-e2e target:
   #!/bin/bash
   export PORT=8765
   export MOVIEMATCH_URL="http://localhost:$PORT"
@@ -91,7 +91,7 @@ test-e2e target: install-deno-dependencies
     sleep 1
   done
 
-  rm screenshots/*
+  rm screenshots/e2e_*
   deno test {{ deno_options }} e2e-tests
   STATUS="$?"
   kill $MM_PID
@@ -100,7 +100,7 @@ test-e2e target: install-deno-dependencies
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}
   deno lint --unstable --ignore={{build_dir}},{{ui_dir}}
-  # cd {{ui_dir}} && npx tsc
+  cd {{ui_dir}} && npx tsc
 
 install: install-node-modules install-deno-dependencies
 

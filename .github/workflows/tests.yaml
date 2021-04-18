@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: ["*"]
+    branches: ["**"]
   pull_request:
-    branches: ["*"]
+    branches: ["**"]
   workflow_dispatch:
 
 jobs:
@@ -18,6 +18,8 @@ jobs:
         uses: extractions/setup-just@v1
       - name: Setup Deno
         uses: denolib/setup-deno@v2
+      - run: just install
+        name: Install dependencies
       - run: just lint
         name: Lint
       - run: just test
@@ -29,13 +31,14 @@ jobs:
           just build-binary linux-amd64
           just test-e2e linux-amd64
         name: E2E Tests
+        if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
         env:
-          TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
-          TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+          PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Upload screenshots on failure
         uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
+        if: ${{ failure() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') }}
         with:
-          name: screenshots-${{ matrix.os }}
+          name: screenshots
           path: ./screenshots
           retention-days: 1

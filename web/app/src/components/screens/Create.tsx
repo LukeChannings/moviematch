@@ -1,9 +1,6 @@
-import React, { useCallback, useContext, useRef, useState } from "react";
-import type {
-  Filter,
-  Filters,
-  JoinRoomSuccess,
-} from "../../../../../types/moviematch";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import type { Filter } from "../../../../../types/moviematch";
+import { useStore } from "../../store";
 import { Button } from "../atoms/Button";
 import { ButtonContainer } from "../layout/ButtonContainer";
 import { ErrorMessage } from "../atoms/ErrorMessage";
@@ -11,23 +8,19 @@ import { Field } from "../molecules/Field";
 import { FilterField } from "../molecules/FilterField";
 import { AddRemoveList } from "../atoms/AddRemoveList";
 import { Layout } from "../layout/Layout";
-import type { ScreenProps } from "../layout/Screen";
 import { Tr } from "../atoms/Tr";
-import { MovieMatchContext } from "../../store";
-import { useAsyncEffect } from "../../hooks/useAsyncEffect";
 
 import styles from "./Create.module.css";
 
-export const CreateScreen = ({
-  navigate,
-  dispatch,
-  params: { roomName: initialRoomName },
-}: ScreenProps<{ roomName: string }>) => {
-  const { client, translations } = useContext(MovieMatchContext);
-  const [roomName, setRoomName] = useState(initialRoomName);
+export const CreateScreen = () => {
+  const [{ translations, room, error, routeParams }, dispatch] = useStore([
+    "translations",
+    "room",
+    "error",
+    "routeParams",
+  ]);
+  const [roomName, setRoomName] = useState<string>(routeParams?.roomName ?? "");
   const [roomNameError, setRoomNameError] = useState<string | null>(null);
-  const [createRoomError, setCreateRoomError] = useState<string>();
-  const [availableFilters, setAvailableFilters] = useState<Filters>();
   const filters = useRef(new Map<number, Filter>());
   const createRoom = useCallback(async () => {
     if (!roomName) {
@@ -36,31 +29,18 @@ export const CreateScreen = ({
     }
 
     if (roomName) {
-      try {
-        const joinMsg: JoinRoomSuccess = await client.createRoom({
+      dispatch({
+        type: "createRoom",
+        payload: {
           roomName,
           filters: [...filters.current.values()],
-        });
-
-        dispatch({
-          type: "setRoom",
-          payload: {
-            name: roomName,
-            joined: true,
-            media: joinMsg.media,
-            matches: joinMsg.previousMatches,
-          },
-        });
-        navigate({ path: "rate" });
-      } catch (err) {
-        setCreateRoomError(err.message);
-      }
+        },
+      });
     }
   }, [roomName]);
 
-  useAsyncEffect(async () => {
-    const filters = await client.getFilters();
-    setAvailableFilters(filters);
+  useEffect(() => {
+    dispatch({ type: "requestFilters" });
   }, []);
 
   return (
@@ -71,7 +51,7 @@ export const CreateScreen = ({
           e.preventDefault();
         }}
       >
-        {createRoomError && <ErrorMessage message={createRoomError} />}
+        {error && <ErrorMessage message={error.message ?? error.type ?? ""} />}
         <Field
           label={<Tr name="LOGIN_ROOM_NAME" />}
           name="roomName"
@@ -88,15 +68,16 @@ export const CreateScreen = ({
             testHandle="filter"
           >
             {(i) =>
-              availableFilters && (
+              room?.availableFilters && (
                 <FilterField
                   key={i}
                   name={String(i)}
                   onChange={(filter) =>
                     filter && filters.current.set(i, filter)}
-                  filters={availableFilters}
-                  getSuggestions={async (key: string) => {
-                    return await client.getFilterValues(key);
+                  filters={room.availableFilters}
+                  suggestions={room?.filterValues}
+                  requestSuggestions={(key: string) => {
+                    dispatch({ type: "requestFilterValues", payload: { key } });
                   }}
                 />
               )}
@@ -106,7 +87,8 @@ export const CreateScreen = ({
         <ButtonContainer reverseMobile paddingTop="s3">
           <Button
             appearance="Tertiary"
-            onPress={() => navigate({ path: "join" })}
+            onPress={() =>
+              dispatch({ type: "navigate", payload: { route: "join" } })}
             testHandle="back"
           >
             <Tr name="BACK" />
