@@ -66,7 +66,7 @@ const runPuppeteerTest = async (
     ]);
   } catch (err) {
     if (errorScreenshotName) {
-      await page.screenshot({ path: errorScreenshotName });
+      await page.screenshot(getScreenshotOptions(errorScreenshotName));
     }
     throw err;
   } finally {
@@ -84,16 +84,27 @@ export const browserTest = (
     fn: () =>
       runPuppeteerTest(test, {
         timeoutMs,
-        errorScreenshotName: `screenshots/${name}-desktop-error.jpeg`,
+        errorScreenshotName: `${name}-desktop-error`,
       }),
     sanitizeOps: false,
   });
+  Deno.test({
+    name: `${name} (iPhone X)`,
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `${name}-mobile-error`,
+        emulate: "iPhone X",
+      }),
+    sanitizeOps: false,
+  });
+
   Deno.test({
     name: `${name} (iPhone 6)`,
     fn: () =>
       runPuppeteerTest(test, {
         timeoutMs,
-        errorScreenshotName: `screenshots/${name}-mobile-error.jpeg`,
+        errorScreenshotName: `${name}-mobile-small-error`,
         emulate: "iPhone 6",
       }),
     sanitizeOps: false,
@@ -104,12 +115,19 @@ export const browserTest = (
     fn: () =>
       runPuppeteerTest(test, {
         timeoutMs,
-        errorScreenshotName: `screenshots/${name}-tablet-error.jpeg`,
+        errorScreenshotName: `${name}-tablet-error`,
         emulate: "iPad",
       }),
     sanitizeOps: false,
   });
 };
+
+export const getScreenshotOptions = (name: string) => ({
+  path: `screenshots/e2e_${
+    name.toLocaleLowerCase().replace(/[\s]/g, "_")
+  }.jpeg`,
+  quality: 80,
+});
 
 export const selector = (name: string) => `[data-test-handle="${name}"]`;
 

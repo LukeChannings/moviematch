@@ -1,6 +1,11 @@
 import { Page } from "https://raw.githubusercontent.com/lucacasonato/deno-puppeteer/main/mod.ts";
 import { assertNotEquals } from "/deps.ts";
-import { browserTest, btnSelector, textInputSelector } from "./_utils.ts";
+import {
+  browserTest,
+  btnSelector,
+  getScreenshotOptions,
+  textInputSelector,
+} from "./_utils.ts";
 
 export const loginAnonymous = async (page: Page, userName: string) => {
   await page.waitForSelector(textInputSelector("given-name"));
@@ -10,8 +15,8 @@ export const loginAnonymous = async (page: Page, userName: string) => {
 };
 
 browserTest("Login - Anonymous", async (page: Page, emulatedName?: string) => {
-  await page.screenshot({
-    path: `screenshots/login_page_${emulatedName ?? "desktop"}.jpeg`,
-  });
+  await page.screenshot(
+    getScreenshotOptions(`login_page_${emulatedName ?? "desktop"}`),
+  );
   await loginAnonymous(page, "Luke");
 });
