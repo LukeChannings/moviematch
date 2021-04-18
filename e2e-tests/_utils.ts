@@ -9,10 +9,15 @@ import puppeteer, {
 const MOVIEMATCH_URL = Deno.env.get("MOVIEMATCH_URL") ??
   "http://localhost:8080";
 
+interface RunPuppeteerTestOptions {
+  timeoutMs: number;
+  emulate?: string;
+  errorScreenshotName?: string;
+}
+
 const runPuppeteerTest = async (
   test: (page: Page, emulatedName?: string) => Promise<void>,
-  timeoutMs: number,
-  emulate?: string,
+  { timeoutMs, emulate, errorScreenshotName }: RunPuppeteerTestOptions,
 ) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -60,6 +65,9 @@ const runPuppeteerTest = async (
       ),
     ]);
   } catch (err) {
+    if (errorScreenshotName) {
+      await page.screenshot({ path: errorScreenshotName });
+    }
     throw err;
   } finally {
     await browser.close();
@@ -73,18 +81,32 @@ export const browserTest = (
 ) => {
   Deno.test({
     name: `${name} (Desktop)`,
-    fn: () => runPuppeteerTest(test, timeoutMs),
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `screenshots/${name}-desktop-error.jpeg`,
+      }),
     sanitizeOps: false,
   });
   Deno.test({
     name: `${name} (iPhone 6)`,
-    fn: () => runPuppeteerTest(test, timeoutMs, "iPhone 6"),
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `screenshots/${name}-mobile-error.jpeg`,
+        emulate: "iPhone 6",
+      }),
     sanitizeOps: false,
   });
 
   Deno.test({
     name: `${name} (iPad)`,
-    fn: () => runPuppeteerTest(test, timeoutMs, "iPad"),
+    fn: () =>
+      runPuppeteerTest(test, {
+        timeoutMs,
+        errorScreenshotName: `screenshots/${name}-tablet-error.jpeg`,
+        emulate: "iPad",
+      }),
     sanitizeOps: false,
   });
 };
