@@ -28,6 +28,15 @@ export const reducer: Reducer<Store, Actions> = (
           : state.toasts.filter(({ id }) => id !== "connection-failure"),
       };
     }
+    case "config": {
+      if (action.payload.requiresConfiguration) {
+        return { ...state, config: action.payload, route: "config" };
+      }
+      return {
+        ...state,
+        config: action.payload,
+      };
+    }
     case "navigate":
       return {
         ...state,
@@ -71,7 +80,11 @@ export const reducer: Reducer<Store, Actions> = (
         return {
           ...state,
           user: action.payload,
-          route: "join",
+          ...(!state.config?.requiresConfiguration
+            ? {
+              route: "join",
+            }
+            : {}),
         };
       }
       break;

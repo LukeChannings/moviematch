@@ -76,7 +76,7 @@ test:
   # https://github.com/denoland/deno/issues/9284
   deno test {{ deno_options }} internal
 
-test-e2e target: install-deno-dependencies
+test-e2e target:
   #!/bin/bash
   export PORT=8765
   export MOVIEMATCH_URL="http://localhost:$PORT"
