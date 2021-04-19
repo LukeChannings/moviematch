@@ -7,6 +7,9 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
+env:
+  DENO_VERSION: 1.9.2
+
 jobs:
   test:
     name: Test
@@ -18,6 +21,8 @@ jobs:
         uses: extractions/setup-just@v1
       - name: Setup Deno
         uses: denolib/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
       - run: just install
         name: Install dependencies
       - run: just lint
