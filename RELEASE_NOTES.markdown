@@ -1,5 +1,17 @@
 # Release Notes
 
+## v2.0.0-alpha.8
+
+- [CI]: Run end-to-end tests everywhere
+- [Docs]: Add information about common crashes to the FAQ
+- [Testing] Improvements to end-to-end tests
+- [Testing] Include the UI in linting tests (tsc)
+- [Compat] Rename `basePath` to `rootPath`
+- [Bugfix] The server is now notified when a user logs out and will remove them from the room
+- [Bugfix] More robust messages for filter values and setup
+- [UI] Refactor the store from `useReducer` + `Context` to Redux
+- [UI] Refactor to CSS Modules
+
 ## v2.0.0-alpha.7
 
 - [Bugfix] Improve Card Stack for different screen sizes
