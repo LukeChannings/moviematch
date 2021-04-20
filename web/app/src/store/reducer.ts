@@ -53,6 +53,7 @@ export const reducer: Reducer<Store, Actions> = (
         ...state,
         toasts: state.toasts.filter((toast) => toast !== action.payload),
       };
+    case "createRoom":
     case "joinRoom": {
       return {
         ...state,

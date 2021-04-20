@@ -1,0 +1,21 @@
+.user {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--s1);
+  align-items: center;
+  color: var(--mm-white);
+  cursor: pointer;
+  user-select: none;
+}
+
+.userName {
+  display: none;
+}
+
+@media screen and (min-width: 26.5em) {
+  .userName {
+    display: block;
+    margin-left: var(--s1);
+    letter-spacing: 0;
+  }
+}

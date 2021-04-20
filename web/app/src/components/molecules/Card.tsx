@@ -65,12 +65,12 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
                 <Pill>{media.year}</Pill>
                 <Pill>{formatTime(+media.duration)}</Pill>
                 <Pill>
-                  <StarIcon /> {media.rating}
+                  <StarIcon size="0.8rem" /> {media.rating}
                 </Pill>
                 <Pill>
                   <ContentRatingSymbol
                     rating={media.contentRating!}
-                    size="1.5em"
+                    size="1rem"
                   />
                 </Pill>
                 {media.genres.map((genre) => (
