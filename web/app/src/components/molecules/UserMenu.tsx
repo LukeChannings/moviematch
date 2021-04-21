@@ -20,7 +20,7 @@ export const UserMenu = () => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (
         e.target instanceof HTMLElement &&
-        popperEl?.contains(e.target)
+        (popperEl?.contains(e.target) || referenceEl?.contains(e.target))
       ) {
         return;
       }
@@ -31,7 +31,7 @@ export const UserMenu = () => {
     return () => {
       document.removeEventListener("mouseup", handleOutsideClick);
     };
-  }, []);
+  }, [referenceEl, popperEl]);
 
   const popper = usePopper(referenceEl, popperEl, {
     modifiers: [
@@ -44,6 +44,12 @@ export const UserMenu = () => {
     ],
   });
 
+  useEffect(() => {
+    setTimeout(() => {
+      popper.forceUpdate && popper.forceUpdate();
+    }, 10);
+  }, [isOpen]);
+
   if (!user) return null;
 
   return (
@@ -52,7 +58,9 @@ export const UserMenu = () => {
         className={styles.user}
         ref={setReferenceEl}
         role="button"
-        onClick={() => setOpen(!isOpen)}
+        onClick={() => {
+          setOpen(!isOpen);
+        }}
       >
         <ExpandIcon />
         {user && (

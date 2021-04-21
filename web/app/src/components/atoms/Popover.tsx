@@ -1,3 +1,4 @@
+import { animated, useSpring } from "@react-spring/web";
 import React, { CSSProperties, forwardRef, HTMLAttributes } from "react";
 
 import styles from "./Popover.module.css";
@@ -10,11 +11,22 @@ interface PopoverProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
   ({ children, arrowProps, arrowStyles, isOpen, ...props }, ref) => {
+    const { opacity } = useSpring({
+      opacity: isOpen ? 1 : 0,
+      config: {
+        duration: 150,
+      },
+    });
+
     return (
-      <div
+      <animated.div
         {...props}
         ref={ref}
-        style={isOpen ? { ...props.style, display: "none" } : props.style}
+        style={{
+          ...props.style,
+          ...(!isOpen ? { pointerEvents: "none" } : {}),
+          opacity,
+        }}
         className={styles.popover}
       >
         <div
@@ -24,7 +36,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
           style={arrowStyles}
         />
         {children}
-      </div>
+      </animated.div>
     );
   },
 );
