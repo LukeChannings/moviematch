@@ -13,16 +13,18 @@ import { Tr } from "../atoms/Tr";
 import styles from "./Create.module.css";
 
 export const CreateScreen = () => {
-  const [{ translations, room, error, routeParams }, dispatch] = useStore([
-    "translations",
-    "room",
-    "error",
-    "routeParams",
-  ]);
+  const [{ translations, createRoom, error, routeParams }, dispatch] = useStore(
+    [
+      "translations",
+      "createRoom",
+      "error",
+      "routeParams",
+    ],
+  );
   const [roomName, setRoomName] = useState<string>(routeParams?.roomName ?? "");
   const [roomNameError, setRoomNameError] = useState<string | null>(null);
   const filters = useRef(new Map<number, Filter>());
-  const createRoom = useCallback(async () => {
+  const handleCreateRoom = useCallback(async () => {
     if (!roomName) {
       setRoomNameError(translations?.FIELD_REQUIRED_ERROR!);
       return;
@@ -68,14 +70,14 @@ export const CreateScreen = () => {
             testHandle="filter"
           >
             {(i) =>
-              room?.availableFilters && (
+              createRoom?.availableFilters && (
                 <FilterField
                   key={i}
                   name={String(i)}
                   onChange={(filter) =>
                     filter && filters.current.set(i, filter)}
-                  filters={room.availableFilters}
-                  suggestions={room?.filterValues}
+                  filters={createRoom.availableFilters}
+                  suggestions={createRoom?.filterValues}
                   requestSuggestions={(key: string) => {
                     dispatch({ type: "requestFilterValues", payload: { key } });
                   }}
@@ -95,7 +97,7 @@ export const CreateScreen = () => {
           </Button>
           <Button
             appearance="Primary"
-            onPress={createRoom}
+            onPress={handleCreateRoom}
             testHandle="create-room"
           >
             <Tr name="CREATE_ROOM" />

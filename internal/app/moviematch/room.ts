@@ -63,7 +63,7 @@ export class Room {
     }
 
     if (media.length === 0) {
-      throw new NoMediaError();
+      throw new NoMediaError("There are no items with the specified filters applied.");
     }
 
     media.sort(() => 0.5 - Math.random());

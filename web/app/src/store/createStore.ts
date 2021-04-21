@@ -31,8 +31,12 @@ const getExistingLogin = async () => {
   return null;
 };
 
+let client: MovieMatchClient;
+
 export const createStore = () => {
-  const client = new MovieMatchClient();
+  if (!client) {
+    client = new MovieMatchClient();
+  }
 
   const forwardActions: Middleware = () =>
     (next) =>

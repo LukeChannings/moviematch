@@ -66,6 +66,7 @@ export const reducer: Reducer<Store, Actions> = (
         return {
           ...state,
           route: "room",
+          error: undefined,
           room: {
             ...state.room,
             joined: true,
@@ -112,16 +113,16 @@ export const reducer: Reducer<Store, Actions> = (
     case "requestFiltersSuccess": {
       return {
         ...state,
-        room: { ...state.room!, availableFilters: action.payload },
+        createRoom: { ...state.createRoom!, availableFilters: action.payload },
       };
     }
     case "requestFilterValuesSuccess": {
       return {
         ...state,
-        room: {
-          ...state.room!,
+        createRoom: {
+          ...state.createRoom!,
           filterValues: {
-            ...state.room?.filterValues,
+            ...state.createRoom?.filterValues,
             [action.payload.request.key]: action.payload.values,
           },
         },
