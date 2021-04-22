@@ -18,6 +18,8 @@ jobs:
         uses: extractions/setup-just@v1
       - name: Setup Deno
         uses: denolib/setup-deno@v2
+        with:
+          deno-version: "1.9.0"
       - run: just install
         name: Install dependencies
       - run: just lint
