@@ -6,7 +6,7 @@ console.log(`Building version ${VERSION}`);
 const ip =
   Object.values(os.networkInterfaces()).flat().find((_) =>
     _.family == "IPv4" && !_.internal && _.address.startsWith("192")
-  ).address;
+  ) ?? {};
 
 process.env.SNOWPACK_PUBLIC_ROOT_PATH = `http://${ip}:8000`;
 
@@ -15,7 +15,9 @@ module.exports = {
   mode: VERSION === "dev" ? "development" : "production",
   env: {
     VERSION,
-    API_URI: VERSION === "dev" ? `ws://${ip}:8000/api/ws` : undefined,
+    API_URI: VERSION === "dev"
+      ? `ws://${ip.address ?? "localhost"}:8000/api/ws`
+      : undefined,
   },
   mount: {
     static: { url: "/", static: true },

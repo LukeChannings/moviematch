@@ -8,6 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
+  env:
+    DENO_VERSION: "1.9.0"
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -19,7 +21,7 @@ jobs:
       - name: Setup Deno
         uses: denolib/setup-deno@v2
         with:
-          deno-version: "1.9.0"
+          deno-version: ${{ env.DENO_VERSION }}
       - run: just install
         name: Install dependencies
       - run: just lint
