@@ -158,6 +158,7 @@ export class Client {
       }
 
       this.anonymousUserName = login.userName;
+      this.isLoggedIn = true;
 
       const user: User = {
         userName: login.userName,
@@ -179,6 +180,8 @@ export class Client {
           permissions: [],
         };
 
+        this.isLoggedIn = true;
+
         this.sendMessage({ type: "loginSuccess", payload: user });
       } catch (err) {
         log.error(
@@ -186,7 +189,6 @@ export class Client {
           err,
         );
       }
-      this.isLoggedIn = true;
     } else {
       const error: LoginError = {
         name: "MalformedMessage",
@@ -201,6 +203,11 @@ export class Client {
     const userName = this.getUsername();
     if (userName) {
       this.room?.users.delete(userName);
+
+      this.isLoggedIn = false;
+      delete this.anonymousUserName;
+      delete this.plexUser;
+
       this.sendMessage({ type: "logoutSuccess" });
     } else {
       this.sendMessage({
