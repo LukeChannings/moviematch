@@ -16,6 +16,9 @@ on:
         description: Version
         required: true
 
+env:
+  DENO_VERSION: "1.9.2"
+
 jobs:
   build_info:
     name: Get build info
@@ -55,7 +58,7 @@ jobs:
       - name: Setup Deno
         uses: denolib/setup-deno@v2
         with:
-          deno-version: "1.9.0"
+          deno-version: ${{ env.DENO_VERSION }}
       - name: Setup Just
         uses: extractions/setup-just@v1
         env:
@@ -102,7 +105,7 @@ jobs:
       - name: Setup Deno
         uses: denolib/setup-deno@v2
         with:
-          deno-version: "1.9.0"
+          deno-version: ${{ env.DENO_VERSION }}
       - name: Setup Just
         uses: extractions/setup-just@v1
         env:
