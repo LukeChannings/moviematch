@@ -1,5 +1,6 @@
 import { log } from "/deps.ts";
 import {
+  ClientMessage,
   CreateRoomRequest,
   Filter,
   JoinRoomRequest,
@@ -8,6 +9,7 @@ import {
   Rate,
   RoomOption,
   RoomSort,
+  User,
 } from "/types/moviematch.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
@@ -39,6 +41,7 @@ export class Room {
   sort: RoomSort;
 
   media: Promise<Map</*mediaId */ string, Media>>;
+  userProgress = new Map</* userName */ string, number>();
   ratings = new Map<
     /* mediaId */ string,
     Array<[userName: string, rating: Rate["rating"], time: number]>
@@ -85,6 +88,7 @@ export class Room {
 
   storeRating = async (userName: string, rating: Rate, matchedAt: number) => {
     const existingRatings = this.ratings.get(rating.mediaId);
+    const progress = (this.userProgress.get(userName) ?? 0) + 1;
     if (existingRatings) {
       const existingRatingByUser = existingRatings.find(([_userName]) =>
         _userName === userName
@@ -110,6 +114,10 @@ export class Room {
     } else {
       this.ratings.set(rating.mediaId, [[userName, rating.rating, matchedAt]]);
     }
+
+    this.userProgress.set(userName, progress);
+
+    this.notifyProgress(userName, progress / (await this.media).size);
   };
 
   getMatches = async (
@@ -146,14 +154,50 @@ export class Room {
     return matches;
   };
 
+  getUsers = (): Array<{ user: User; progress: number }> => {
+    return [...this.users.values()].map((client) => {
+      return {
+        user: {
+          userName: client.getUsername()!,
+          avatarImage: client.plexUser?.thumb,
+        },
+        progress: 0,
+      };
+    });
+  };
+
+  notifyJoin = (user: User) => {
+    this.broadcastMessage({
+      type: "userJoinedRoom",
+      payload: user,
+    }, user.userName);
+  };
+
+  notifyLeave = (user: User) => {
+    this.broadcastMessage({
+      type: "userLeftRoom",
+      payload: user,
+    }, user.userName);
+  };
+
+  notifyProgress = (userName: string, progress: number) => {
+    this.broadcastMessage({
+      type: "userProgress",
+      payload: { userName, progress },
+    }, userName);
+  };
+
   notifyMatch = (match: Match) => {
-    for (const userName of match.users) {
-      const client = this.users.get(userName);
-      if (client) {
-        client.sendMessage({
-          type: "match",
-          payload: match,
-        });
+    this.broadcastMessage({
+      type: "match",
+      payload: match,
+    });
+  };
+
+  broadcastMessage = (msg: ClientMessage, sourceUserName?: string) => {
+    for (const [userName, client] of this.users.entries()) {
+      if (client && userName !== sourceUserName) {
+        client.sendMessage(msg);
       }
     }
   };

@@ -45,9 +45,10 @@ export class Client {
   constructor(ws: WebSocket, ctx: RouteContext) {
     this.ws = ws;
     this.ctx = ctx;
+    this.isLoggedIn = false;
+
     this.listenForMessages();
     this.sendConfig();
-    this.isLoggedIn = false;
   }
 
   private sendConfig() {
@@ -144,8 +145,15 @@ export class Client {
     }
   }
 
-  private getUsername() {
+  getUsername() {
     return this.anonymousUserName ?? this.plexUser?.username;
+  }
+
+  getUser(): User {
+    return {
+      userName: this.getUsername()!,
+      avatarImage: this.plexUser?.thumb,
+    };
   }
 
   private async handleLogin(login: Login) {
@@ -248,6 +256,7 @@ export class Client {
             false,
           ),
           media: await this.room.getMediaForUser(userName),
+          users: this.room.getUsers(),
         },
       });
     } catch (err) {
@@ -293,8 +302,10 @@ export class Client {
             false,
           ),
           media: await this.room.getMediaForUser(userName),
+          users: this.room.getUsers(),
         },
       });
+      this.room.notifyJoin(this.getUser());
     } catch (err) {
       let error: JoinRoomError["name"];
       if (err instanceof AccessDeniedError) {
@@ -329,9 +340,11 @@ export class Client {
     if (this.room && userName) {
       this.room.users.delete(userName);
 
-      return this.sendMessage({
+      this.sendMessage({
         type: "leaveRoomSuccess",
       });
+
+      this.room.notifyLeave(this.getUser());
     } else {
       return this.sendMessage({
         type: "leaveRoomError",
