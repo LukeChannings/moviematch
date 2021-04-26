@@ -305,7 +305,10 @@ export class Client {
           users: this.room.getUsers(),
         },
       });
-      this.room.notifyJoin(this.getUser());
+      this.room.notifyJoin({
+        user: this.getUser(),
+        progress: this.room.userProgress.get(this.getUsername()!) ?? 0,
+      });
     } catch (err) {
       let error: JoinRoomError["name"];
       if (err instanceof AccessDeniedError) {

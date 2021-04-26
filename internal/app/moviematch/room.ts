@@ -10,6 +10,7 @@ import {
   RoomOption,
   RoomSort,
   User,
+  UserProgress,
 } from "/types/moviematch.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
@@ -117,7 +118,7 @@ export class Room {
 
     this.userProgress.set(userName, progress);
 
-    this.notifyProgress(userName, progress / (await this.media).size);
+    this.notifyProgress({ userName }, progress / (await this.media).size);
   };
 
   getMatches = async (
@@ -156,21 +157,19 @@ export class Room {
 
   getUsers = (): Array<{ user: User; progress: number }> => {
     return [...this.users.values()].map((client) => {
+      const user = client.getUser();
       return {
-        user: {
-          userName: client.getUsername()!,
-          avatarImage: client.plexUser?.thumb,
-        },
-        progress: 0,
+        user,
+        progress: this.userProgress.get(user.userName) ?? 0,
       };
     });
   };
 
-  notifyJoin = (user: User) => {
+  notifyJoin = (userProgress: UserProgress) => {
     this.broadcastMessage({
       type: "userJoinedRoom",
-      payload: user,
-    }, user.userName);
+      payload: userProgress,
+    }, userProgress.user.userName);
   };
 
   notifyLeave = (user: User) => {
@@ -180,11 +179,11 @@ export class Room {
     }, user.userName);
   };
 
-  notifyProgress = (userName: string, progress: number) => {
+  notifyProgress = (user: User, progress: number) => {
     this.broadcastMessage({
       type: "userProgress",
-      payload: { userName, progress },
-    }, userName);
+      payload: { user, progress },
+    }, user.userName);
   };
 
   notifyMatch = (match: Match) => {

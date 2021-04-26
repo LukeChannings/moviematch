@@ -56,5 +56,6 @@ export interface Store {
     joined: boolean;
     media?: Media[];
     matches?: Match[];
+    users?: Array<{ user: User; progress: number }>;
   };
 }

@@ -19,3 +19,16 @@
     letter-spacing: 0;
   }
 }
+
+.usersList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s3);
+  padding: var(--s1) var(--s3);
+}
+
+.hr {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--mm-white);
+}

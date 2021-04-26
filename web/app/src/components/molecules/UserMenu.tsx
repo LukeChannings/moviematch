@@ -5,12 +5,13 @@ import { Dispatch, useStore } from "../../store";
 import { Avatar } from "../atoms/Avatar";
 import { ExpandIcon } from "../atoms/ExpandIcon";
 import { MenuButton } from "../atoms/MenuButton";
+import { MenuGroup } from "../atoms/MenuGroup";
 import { Popover } from "../atoms/Popover";
 
 import styles from "./UserMenu.module.css";
 
 export const UserMenu = () => {
-  const [{ user }] = useStore(["user"]);
+  const [{ user, room }] = useStore(["user", "room"]);
   const dispatch = useDispatch<Dispatch>();
   const [referenceEl, setReferenceEl] = useState<HTMLDivElement | null>();
   const [popperEl, setPopperEl] = useState<HTMLDivElement | null>();
@@ -65,13 +66,8 @@ export const UserMenu = () => {
         <ExpandIcon />
         {user && (
           <>
-            <Avatar
-              userName={user.userName}
-              avatarUrl={user.avatarImage}
-            />
-            <p className={styles.userName}>
-              {user.userName}
-            </p>
+            <Avatar userName={user.userName} avatarUrl={user.avatarImage} />
+            <p className={styles.userName}>{user.userName}</p>
           </>
         )}
       </div>
@@ -83,14 +79,29 @@ export const UserMenu = () => {
         arrowProps={popper.attributes.arrow}
         arrowStyles={popper.styles.arrow}
       >
-        <MenuButton
-          onClick={() => dispatch({ type: "leaveRoom" })}
-        >
+        <MenuGroup title="Other people in the room">
+          {room?.users && room?.users?.length > 1 && (
+            <div className={styles.usersList}>
+              {room.users.map((userProgress) => {
+                console.log(userProgress);
+                if (userProgress.user.userName === user.userName) {
+                  return null;
+                }
+                return (
+                  <Avatar
+                    key={userProgress.user.userName}
+                    userName={userProgress.user.userName}
+                    avatarUrl={userProgress.user.avatarImage}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </MenuGroup>
+        <MenuButton onClick={() => dispatch({ type: "leaveRoom" })}>
           Leave Room
         </MenuButton>
-        <MenuButton
-          onClick={() => dispatch({ type: "logout" })}
-        >
+        <MenuButton onClick={() => dispatch({ type: "logout" })}>
           Logout
         </MenuButton>
       </Popover>

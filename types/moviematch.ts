@@ -68,7 +68,7 @@ export type ClientMessage =
     payload: { request: FilterValueRequest; values: FilterValue[] };
   }
   | { type: "requestFilterValuesError" }
-  | { type: "userJoinedRoom"; payload: User }
+  | { type: "userJoinedRoom"; payload: UserProgress }
   | { type: "userLeftRoom"; payload: User }
   | { type: "userProgress"; payload: UserProgress };
 
@@ -277,7 +277,7 @@ export interface FilterValueRequest {
 }
 
 export interface UserProgress {
-  userName: string;
+  user: User;
   // A percentage of the way through the room the user is
   progress: number;
 }

@@ -100,3 +100,5 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
     );
   },
 );
+
+Card.displayName = "Card";
