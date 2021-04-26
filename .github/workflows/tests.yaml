@@ -7,9 +7,10 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
+env:
+  DENO_VERSION: 1.9.2
+
 jobs:
-  env:
-    DENO_VERSION: "1.9.0"
   test:
     name: Test
     runs-on: ubuntu-latest

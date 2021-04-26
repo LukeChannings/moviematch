@@ -3,12 +3,14 @@ const { VERSION = "dev" } = process.env;
 
 console.log(`Building version ${VERSION}`);
 
-const ip =
-  Object.values(os.networkInterfaces()).flat().find((_) =>
-    _.family == "IPv4" && !_.internal && _.address.startsWith("192")
+const ip = Object.values(os.networkInterfaces())
+  .flat()
+  .find(
+    (_) => _.family == "IPv4" && !_.internal && _.address.startsWith("192"),
   ) ?? {};
 
-process.env.SNOWPACK_PUBLIC_ROOT_PATH = `http://${ip}:8000`;
+process.env.SNOWPACK_PUBLIC_ROOT_PATH = `http://${ip.address ??
+  "localhost"}:8000`;
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {

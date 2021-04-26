@@ -11,6 +11,7 @@
 - [Bugfix] More robust messages for filter values and setup
 - [UI] Refactor the store from `useReducer` + `Context` to Redux
 - [UI] Refactor to CSS Modules
+- [Bugfix] Fix #74
 
 ## v2.0.0-alpha.7
 
