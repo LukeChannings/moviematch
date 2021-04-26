@@ -27,14 +27,12 @@ export class PlexApi {
 
   private async fetch<T>(
     key: string,
-    { baseKey = "/", searchParams = {} }: {
-      baseKey?: string;
+    { searchParams = {} }: {
       searchParams?: Record<string, string>;
-      lang?: string;
     } = {},
   ): Promise<T> {
     const url = new URL(this.plexUrl.href);
-    url.pathname = key.startsWith("/") ? key : baseKey + key;
+    url.pathname = (url.pathname + key).replace(/\/+/g, "/");
 
     for (const [key, value] of Object.entries(searchParams)) {
       url.searchParams.set(key, value);
