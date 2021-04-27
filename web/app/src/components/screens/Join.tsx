@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Field } from "../molecules/Field";
 import { Button } from "../atoms/Button";
 import { ButtonContainer } from "../layout/ButtonContainer";
@@ -7,22 +7,29 @@ import { Tr } from "../atoms/Tr";
 import styles from "./Join.module.css";
 import { useStore } from "../../store";
 import { ErrorMessage } from "../atoms/ErrorMessage";
+import { Spinner } from "../atoms/Spinner";
 
 export const JoinScreen = () => {
   const [store, dispatch] = useStore(["room", "error"]);
+  const [initialRoomName] = useState<string | null>(
+    new URLSearchParams(location.search).get("roomName"),
+  );
   const [roomName, setRoomName] = useState<string>(
     store.room?.name ?? "",
   );
   const [roomNameError] = useState<string | undefined>();
-  // const [joinError] = useState<string | undefined>(params?.errorMessage);
 
-  // if (store.room?.name && !params?.errorMessage) {
-  //   return (
-  //     <Layout>
-  //       <Spinner />
-  //     </Layout>
-  //   );
-  // }
+  useEffect(() => {
+    if (initialRoomName) {
+      dispatch({ type: "joinRoom", payload: { roomName: initialRoomName } });
+    }
+  }, [initialRoomName]);
+
+  if (initialRoomName) {
+    return <Layout>
+      <Spinner />
+    </Layout>;
+  }
 
   return (
     <Layout>

@@ -4,7 +4,7 @@
   background: var(--mm-black);
   position: relative;
   transform: translate(0, -80%);
-  padding: var(--s1) 0;
+  padding: var(--s2) var(--s3);
   border-radius: var(--s2);
   overflow: hidden;
   border: 1px solid var(--mm-white);

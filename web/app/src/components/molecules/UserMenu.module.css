@@ -21,14 +21,7 @@
 }
 
 .usersList {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--s3);
-  padding: var(--s1) var(--s3);
-}
-
-.hr {
-  width: 100%;
-  border: none;
-  border-bottom: 1px solid var(--mm-white);
+  display: flex;
+  flex-direction: column;
+  padding: var(--s1) var(--s3) var(--s1) 0;
 }

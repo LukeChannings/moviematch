@@ -9,6 +9,7 @@ import { MenuGroup } from "../atoms/MenuGroup";
 import { Popover } from "../atoms/Popover";
 
 import styles from "./UserMenu.module.css";
+import { UserProgressItem } from "./UserProgressItem";
 
 export const UserMenu = () => {
   const [{ user, room }] = useStore(["user", "room"]);
@@ -79,21 +80,18 @@ export const UserMenu = () => {
         arrowProps={popper.attributes.arrow}
         arrowStyles={popper.styles.arrow}
       >
-        <MenuGroup title="Other people in the room">
+        <UserProgressItem key={user.userName} user={user} progress={0} />
+        <MenuGroup title="Also in the room">
           {room?.users && room?.users?.length > 1 && (
             <div className={styles.usersList}>
               {room.users.map((userProgress) => {
-                console.log(userProgress);
                 if (userProgress.user.userName === user.userName) {
                   return null;
                 }
-                return (
-                  <Avatar
-                    key={userProgress.user.userName}
-                    userName={userProgress.user.userName}
-                    avatarUrl={userProgress.user.avatarImage}
-                  />
-                );
+                return <UserProgressItem
+                  key={userProgress.user.userName}
+                  {...userProgress}
+                />;
               })}
             </div>
           )}

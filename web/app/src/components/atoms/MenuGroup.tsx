@@ -8,7 +8,6 @@ interface MenuGroupProps {
 }
 
 export const MenuGroup = ({ title, children }: MenuGroupProps) => {
-  console.log(children);
   if (!children) {
     return null;
   }
