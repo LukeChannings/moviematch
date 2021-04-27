@@ -165,17 +165,17 @@ export const validateConfig = (
             }
           }
 
-          if (server.linkType) {
+          if (server.deepLinkType) {
             const validLinkTypes = ["app", "webLocal", "webExternal"];
             if (
-              typeof server.linkType !== "string" ||
-              !validLinkTypes.includes(server.linkType)
+              typeof server.deepLinkType !== "string" ||
+              !validLinkTypes.includes(server.deepLinkType)
             ) {
               errors.push(
                 new ServerLinkTypeInvalid(
-                  `linkType must be one of these: ${
+                  `deepLinkType must be one of these: ${
                     validLinkTypes.join(", ")
-                  }. Instead, it was "${server.linkType}"`,
+                  }. Instead, it was "${server.deepLinkType}"`,
                 ),
               );
             }

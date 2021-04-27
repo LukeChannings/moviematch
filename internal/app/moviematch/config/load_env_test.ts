@@ -74,7 +74,7 @@ Deno.test("Config -> loadFromEnv", async () => {
     [{ "MOVIE_LINK_TYPE": "app" }, {
       servers: [
         {
-          linkType: "app",
+          deepLinkType: "app",
         } as Config["servers"][number],
       ],
     }],

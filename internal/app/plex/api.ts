@@ -12,7 +12,7 @@ export interface PlexApiOptions {
   language?: string;
   libraryTitleFilter?: string[];
   libraryTypeFilter?: string[];
-  linkType?: "app" | "webLocal" | "webExternal";
+  deepLinkType?: "app" | "webLocal" | "webExternal";
 }
 
 export class PlexApi {
@@ -261,10 +261,14 @@ export class PlexApi {
     const { type = "plexTv", metadataType = "1" } = options ?? {};
     const serverId = await this.getServerId();
 
-    if (type === "app") {
+    if (type === "iosApp") {
       return `plex://preplay/?metadataKey=${
         encodeURIComponent(key)
       }&metadataType=${metadataType}&server=${serverId}`;
+    } else if (type === "androidApp") {
+      return `plex://server://${serverId}/com.plexapp.plugins.library/library/metadata/${
+        encodeURIComponent(key)
+      }`;
     }
 
     const url = new URL(
@@ -279,7 +283,7 @@ export class PlexApi {
 }
 
 export interface PlexDeepLinkOptions {
-  type: "plexTv" | "plexLocal" | "app";
+  type: "plexTv" | "plexLocal" | "iosApp" | "androidApp";
   metadataType?: string;
 }
 

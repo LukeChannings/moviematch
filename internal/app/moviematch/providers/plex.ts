@@ -4,6 +4,7 @@ import {
   Library,
   LibraryType,
   Media,
+  ServerDeepLinkType,
 } from "/types/moviematch.ts";
 import { PlexApi, PlexDeepLinkOptions } from "/internal/app/plex/api.ts";
 import {
@@ -17,7 +18,7 @@ export interface PlexProviderConfig {
   token: string;
   libraryTitleFilter?: string[];
   libraryTypeFilter?: LibraryType[];
-  linkType?: "app" | "webLocal" | "webExternal";
+  deepLinkType?: ServerDeepLinkType;
 }
 
 export const filtersToPlexQueryString = (
@@ -154,24 +155,22 @@ export const createProvider = (
     ): Promise<[ReadableStream<Uint8Array>, Headers]> =>
       api.transcodePhoto(key, { width }),
     getCanonicalUrl: (key: string, options) => {
-      let linkType: PlexDeepLinkOptions["type"];
+      const appType = options?.userAgent?.includes("iPhone")
+        ? "iosApp"
+        : options?.userAgent?.includes("Android")
+        ? "androidApp"
+        : null;
 
-      switch (providerOptions.linkType) {
-        case "app":
-          linkType = "app";
-          break;
-        case "webExternal":
-          linkType = "plexTv";
-          break;
-        case "webLocal":
-          linkType = "plexLocal";
-          break;
-        default: {
-          if (options?.userAgent?.includes("iPhone")) {
-            linkType = "app";
-          } else {
+      let linkType: PlexDeepLinkOptions["type"] = appType ?? "plexTv";
+
+      if (providerOptions.deepLinkType) {
+        switch (providerOptions.deepLinkType) {
+          case "webExternal":
             linkType = "plexTv";
-          }
+            break;
+          case "webLocal":
+            linkType = "plexLocal";
+            break;
         }
       }
 

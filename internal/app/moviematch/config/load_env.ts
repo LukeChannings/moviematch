@@ -48,7 +48,7 @@ export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
     token: getTrimmedEnv("PLEX_TOKEN"),
     libraryTitleFilter: getTrimmedEnv("LIBRARY_TITLE_FILTER", EnvList),
     libraryTypeFilter: getTrimmedEnv("LIBRARY_TYPE_FILTER", EnvList),
-    linkType: getTrimmedEnv("MOVIE_LINK_TYPE"),
+    deepLinkType: getTrimmedEnv("MOVIE_LINK_TYPE"),
   });
 
   const basicAuth = trimRecord({

@@ -18,7 +18,7 @@ export interface Config {
     token: string;
     libraryTitleFilter?: string[];
     libraryTypeFilter: LibraryType[];
-    linkType?: "app" | "webLocal" | "webExternal";
+    deepLinkType?: ServerDeepLinkType;
   }>;
   requirePlexTvLogin: boolean;
   basicAuth?: BasicAuth;
@@ -27,6 +27,8 @@ export interface Config {
     keyFile: string;
   };
 }
+
+export type ServerDeepLinkType = "app" | "webLocal" | "webExternal";
 
 export type Message = ServerMessage | ClientMessage;
 

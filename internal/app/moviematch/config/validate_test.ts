@@ -62,21 +62,21 @@ Deno.test("validateConfig", () => {
       servers: [{
         url: "http://localhost",
         token: "abc123",
-        linkType: "app",
+        deepLinkType: "app",
       }],
     }, []],
     [{
       servers: [{
         url: "http://localhost",
         token: "abc123",
-        linkType: "app",
+        deepLinkType: "app",
       }],
     }, []],
     [{
       servers: [{
         url: "http://localhost",
         token: "abc123",
-        linkType: "foo",
+        deepLinkType: "foo",
       }],
     }, ["ServerLinkTypeInvalid"]],
     [{

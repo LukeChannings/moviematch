@@ -148,10 +148,13 @@ export const ConfigScreen = () => {
                         )}
                       </AddRemoveList>
                     </Field>
-                    <Field label="Link Type" name={`servers.${index}.linkType`}>
+                    <Field
+                      label="Link Type"
+                      name={`servers.${index}.deepLinkType`}
+                    >
                       <Select
-                        name={`servers.${index}.linkType`}
-                        value={values.servers![index]?.linkType ?? ""}
+                        name={`servers.${index}.deepLinkType`}
+                        value={values.servers![index]?.deepLinkType ?? ""}
                         options={{
                           app: "App",
                           webLocal: "Local Web app",
