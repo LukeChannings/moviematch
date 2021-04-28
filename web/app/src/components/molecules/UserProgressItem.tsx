@@ -7,7 +7,7 @@ import styles from "./UserProgressItem.module.css";
 export const UserProgressItem = ({ user }: UserProgress) => {
   return (
     <div className={styles.userProgress}>
-      <Avatar userName={styles.userProgress} avatarUrl={user.avatarImage} />
+      <Avatar userName={user.userName} avatarUrl={user.avatarImage} />
       <p className={styles.userName}>{user.userName}</p>
     </div>
   );

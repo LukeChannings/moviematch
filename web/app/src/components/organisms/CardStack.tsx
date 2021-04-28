@@ -10,6 +10,7 @@ import type { Media } from "../../../../../types/moviematch";
 import { useGesture } from "react-use-gesture";
 import { animated, Controller, Spring } from "@react-spring/web";
 import { Tr } from "../atoms/Tr";
+import { useStore } from "../../store";
 
 import styles from "./CardStack.module.css";
 const { abs, sign } = Math;
@@ -66,6 +67,7 @@ export const useFirstChildWidth = (transform?: (n: number) => number) => {
 export const CardStack = memo(
   ({ cards, renderCard, onCardDismissed }: CardStackProps) => {
     const vw = useViewportWidth((n) => n / 2);
+    const [{ connectionStatus }] = useStore(["connectionStatus"]);
     const [elRef, ew] = useFirstChildWidth();
     const [{ items }, dispatch] = useReducer(
       function reducer(
@@ -174,6 +176,10 @@ export const CardStack = memo(
 
     useEffect(() => {
       const handler = (e: KeyboardEvent) => {
+        if (connectionStatus !== "connected") {
+          return;
+        }
+
         if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
           const item = items.reduceRight<StackItem<Media> | null>(
             (item, _) => item || (!_.removed ? _ : null),
@@ -198,7 +204,7 @@ export const CardStack = memo(
     const bind = useGesture(
       {
         onDrag({ args: [id], down, delta: [x], movement: [mx] }) {
-          if (down) {
+          if (down && connectionStatus === "connected") {
             const p = abs(mx / (vw + ew));
             let isAfterId = false;
             items.forEach(({ removed, index, id: _id, controller }) => {
@@ -221,7 +227,7 @@ export const CardStack = memo(
         },
         onDragEnd({ args: [id], movement: [x], velocities: [vx] }) {
           const p = abs(x / (vw + ew));
-          if (p > 0.5 || abs(vx) > 0.5) {
+          if (p > 0.5 || abs(vx) > 0.5 && connectionStatus === "connected") {
             // TODO: dispatch is called once, but the
             // remove action is handled twice. Investigate why this
             // is, and if `useReducer` is the best tool for the job.

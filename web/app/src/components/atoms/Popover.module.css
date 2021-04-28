@@ -4,13 +4,14 @@
   background: var(--mm-black);
   position: relative;
   transform: translate(0, -80%);
-  padding: var(--s2) var(--s3);
+  padding: var(--s2);
   border-radius: var(--s2);
   overflow: hidden;
   border: 1px solid var(--mm-white);
   box-shadow: -1px 3px 8px 1px rgba(33, 33, 33, 0.3);
   overflow: visible;
   z-index: var(--z-near);
+  gap: var(--s1);
 }
 
 @media screen and (min-width: 42em) {

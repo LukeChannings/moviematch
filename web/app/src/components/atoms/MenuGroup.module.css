@@ -1,8 +1,10 @@
 .menuGroup {
-  margin-bottom: 1px solid var(--mm-white);
+  border-bottom: 1px solid var(--mm-white);
+  padding-bottom: var(--s3);
+  margin-bottom: var(--s2);
 }
 
 .title {
   font-size: 0.7rem;
-  padding: var(--s2) var(--s3) 0;
+  padding: var(--s1) 0 var(--s2);
 }

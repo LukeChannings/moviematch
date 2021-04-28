@@ -15,7 +15,7 @@ export const JoinScreen = () => {
     new URLSearchParams(location.search).get("roomName"),
   );
   const [roomName, setRoomName] = useState<string>(
-    store.room?.name ?? "",
+    store.room?.name ?? initialRoomName ?? "",
   );
   const [roomNameError] = useState<string | undefined>();
 
@@ -25,7 +25,7 @@ export const JoinScreen = () => {
     }
   }, [initialRoomName]);
 
-  if (initialRoomName) {
+  if (initialRoomName && !store.error) {
     return <Layout>
       <Spinner />
     </Layout>;

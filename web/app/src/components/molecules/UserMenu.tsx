@@ -43,6 +43,12 @@ export const UserMenu = () => {
           offset: [0, 10],
         },
       },
+      {
+        name: "preventOverflow",
+        options: {
+          padding: 8,
+        },
+      },
     ],
   });
 
@@ -81,7 +87,7 @@ export const UserMenu = () => {
         arrowStyles={popper.styles.arrow}
       >
         <UserProgressItem key={user.userName} user={user} progress={0} />
-        <MenuGroup title="Also in the room">
+        <MenuGroup title="Also in the room:">
           {room?.users && room?.users?.length > 1 && (
             <div className={styles.usersList}>
               {room.users.map((userProgress) => {

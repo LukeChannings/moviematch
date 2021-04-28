@@ -1,19 +1,16 @@
 .menuButton {
   appearance: none;
   -webkit-appearance: none;
-  background: transparent;
-  color: var(--mm-white);
   border: none;
   cursor: pointer;
   width: 100%;
   padding: var(--s2);
   white-space: nowrap;
-  text-align: left;
-  padding: var(--s2) var(--s3);
-}
-
-.menuButton:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: var(--s1) var(--s3);
+  background-color: var(--mm-add-highlight-color);
+  color: var(--mm-black);
+  border-radius: var(--s1);
 }
 
 @media (hover: hover) {
