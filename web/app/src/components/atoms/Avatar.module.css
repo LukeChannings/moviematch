@@ -2,22 +2,22 @@
   --size: 2rem;
   --hue: 0;
 
-  width: var(--size);
-  height: var(--size);
-  border-radius: var(--size);
-  border: clamp(2px, calc(var(--size) * 0.033333333), 0.5rem) solid
-    hsl(var(--hue) 35% 70%);
-  display: flex;
-  place-content: center;
-  align-items: center;
-  transition: ease-in background-color 200ms;
-  background-color: hsl(var(--hue) 40% 40%);
-  background-size: cover;
+  stroke: hsl(var(--hue) 50% 70%);
+  stroke-width: clamp(2px, calc(var(--size) * 0.033333333), 0.5rem);
+  fill: hsl(var(--hue) 40% 40%);
+}
+
+.progress {
+  --circumference: calc(2 * 3.1415 * 15);
+  stroke: hsl(var(--hue) 50% 90%);
+  stroke-width: 2px;
+  stroke-dasharray: var(--progress), var(--circumference);
+  stroke-linecap: round;
 }
 
 .letter {
+  font-family: sans-serif;
   font-size: calc(var(--size) / 2);
   font-weight: bold;
-  line-height: 1;
-  color: hsl(var(--hue) 50% 90%);
+  fill: hsl(var(--hue) 50% 70%);
 }
