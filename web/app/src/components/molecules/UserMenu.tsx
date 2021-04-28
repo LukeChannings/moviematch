@@ -60,6 +60,8 @@ export const UserMenu = () => {
 
   if (!user) return null;
 
+  const areOthersInRoom = room?.users && room?.users?.length > 1;
+
   return (
     <>
       <div
@@ -86,18 +88,25 @@ export const UserMenu = () => {
         arrowProps={popper.attributes.arrow}
         arrowStyles={popper.styles.arrow}
       >
-        <UserProgressItem key={user.userName} user={user} progress={0} />
+        <UserProgressItem
+          key={user.userName}
+          user={user}
+          progress={0}
+          style={!areOthersInRoom ? { marginBottom: "var(--s2)" } : {}}
+        />
         <MenuGroup title="Also in the room:">
-          {room?.users && room?.users?.length > 1 && (
+          {areOthersInRoom && (
             <div className={styles.usersList}>
-              {room.users.map((userProgress) => {
+              {room?.users!.map((userProgress) => {
                 if (userProgress.user.userName === user.userName) {
                   return null;
                 }
-                return <UserProgressItem
-                  key={userProgress.user.userName}
-                  {...userProgress}
-                />;
+                return (
+                  <UserProgressItem
+                    key={userProgress.user.userName}
+                    {...userProgress}
+                  />
+                );
               })}
             </div>
           )}
