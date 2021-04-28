@@ -75,7 +75,7 @@ export const createStore = () => {
 
   dispatch({ type: "updateConnectionStatus", payload: "connecting" });
 
-  client.waitForConnected().then(async () => {
+  client.addEventListener("connected", async () => {
     dispatch({ type: "updateConnectionStatus", payload: "connected" });
     dispatch({
       type: "setLocale",
