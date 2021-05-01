@@ -67,12 +67,14 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
                 <Pill>
                   <StarIcon size="0.8rem" /> {media.rating}
                 </Pill>
-                <Pill>
-                  <ContentRatingSymbol
-                    rating={media.contentRating!}
-                    size="1rem"
-                  />
-                </Pill>
+                {media.contentRating && (
+                  <Pill>
+                    <ContentRatingSymbol
+                      rating={media.contentRating}
+                      size="1rem"
+                    />
+                  </Pill>
+                )}
                 {media.genres.map((genre) => (
                   <Pill key={genre}>{genre}</Pill>
                 ))}
