@@ -1,0 +1,10 @@
+.userProgress {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.userName {
+  margin-left: var(--s2);
+}

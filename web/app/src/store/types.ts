@@ -47,12 +47,15 @@ export interface Store {
   translations?: Translations;
   config?: AppConfig;
   user?: User;
+  createRoom?: {
+    availableFilters?: Filters;
+    filterValues?: Record<string, FilterValue[]>;
+  };
   room?: {
     name: string;
     joined: boolean;
     media?: Media[];
     matches?: Match[];
-    availableFilters?: Filters;
-    filterValues?: Record<string, FilterValue[]>;
+    users?: Array<{ user: User; progress: number }>;
   };
 }

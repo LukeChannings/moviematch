@@ -5,7 +5,10 @@ import {
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { MovieMatchClient } from "../api/moviematch";
-import type { ClientMessage } from "../../../../types/moviematch";
+import type {
+  ClientMessage,
+  ServerMessage,
+} from "../../../../types/moviematch";
 import { reducer } from "./reducer";
 import * as plex from "../api/plex_tv";
 import type { Actions } from "./types";
@@ -31,25 +34,34 @@ const getExistingLogin = async () => {
   return null;
 };
 
+let client: MovieMatchClient;
+
 export const createStore = () => {
-  const client = new MovieMatchClient();
+  if (!client) {
+    client = new MovieMatchClient();
+  }
 
   const forwardActions: Middleware = () =>
     (next) =>
       (action: Actions) => {
-        switch (action.type) {
-          case "login":
-          case "logout":
-          case "createRoom":
-          case "joinRoom":
-          case "leaveRoom":
-          case "rate":
-          case "setLocale":
-          case "setup":
-          case "requestFilters":
-          case "requestFilterValues":
-            client[action.type]((action as any).payload);
-            break;
+        if (action.type in client) {
+          client[action.type as ServerMessage["type"]](
+            "payload" in action ? action.payload as any : undefined,
+          );
+        }
+
+        if (action.type === "plexLogin") {
+          plex.signIn();
+        }
+
+        if (action.type === "loginSuccess") {
+          localStorage.setItem("userName", action.payload.userName!);
+        }
+
+        if (action.type === "logout") {
+          localStorage.removeItem("userName");
+          localStorage.removeItem("plexClientId");
+          localStorage.removeItem("plexToken");
         }
         return next(action);
       };
@@ -63,7 +75,7 @@ export const createStore = () => {
 
   dispatch({ type: "updateConnectionStatus", payload: "connecting" });
 
-  client.waitForConnected().then(async () => {
+  client.addEventListener("connected", async () => {
     dispatch({ type: "updateConnectionStatus", payload: "connected" });
     dispatch({
       type: "setLocale",

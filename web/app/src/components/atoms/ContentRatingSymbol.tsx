@@ -1,10 +1,5 @@
 import React from "react";
 
-import MPAA_G from "./RatingSymbols/MpaaG";
-import MPAA_PG13 from "./RatingSymbols/MpaaPg13";
-import MPAA_PG from "./RatingSymbols/MpaaPg";
-import MPAA_R from "./RatingSymbols/MpaaR";
-import MPAA_NC17 from "./RatingSymbols/MpaaNc17";
 import BBFC_U from "./RatingSymbols/BbfcU";
 import BBFC_PG from "./RatingSymbols/BbfcPg";
 import BBFC_12A from "./RatingSymbols/Bbfc12A";
@@ -20,11 +15,6 @@ export interface ContentRatingProps {
 const iconUrls: Partial<
   Record<string, (props: React.SVGProps<SVGSVGElement>) => JSX.Element | null>
 > = {
-  "G": MPAA_G,
-  "PG": MPAA_PG,
-  "PG-13": MPAA_PG13,
-  "R": MPAA_R,
-  "NC-17": MPAA_NC17,
   "gb/U": BBFC_U,
   "gb/PG": BBFC_PG,
   "gb/12A": BBFC_12A,

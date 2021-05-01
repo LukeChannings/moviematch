@@ -53,6 +53,21 @@ export const reducer: Reducer<Store, Actions> = (
         ...state,
         toasts: state.toasts.filter((toast) => toast !== action.payload),
       };
+    case "loginSuccess": {
+      if (action.payload) {
+        return {
+          ...state,
+          user: action.payload,
+          ...(!state.config?.requiresConfiguration
+            ? {
+              route: "join",
+            }
+            : {}),
+        };
+      }
+      break;
+    }
+    case "createRoom":
     case "joinRoom": {
       return {
         ...state,
@@ -65,26 +80,14 @@ export const reducer: Reducer<Store, Actions> = (
         return {
           ...state,
           route: "room",
+          error: undefined,
           room: {
             ...state.room,
             joined: true,
             matches: action.payload.previousMatches,
             media: action.payload.media,
+            users: action.payload.users,
           },
-        };
-      }
-      break;
-    }
-    case "loginSuccess": {
-      if (action.payload) {
-        return {
-          ...state,
-          user: action.payload,
-          ...(!state.config?.requiresConfiguration
-            ? {
-              route: "join",
-            }
-            : {}),
         };
       }
       break;
@@ -111,18 +114,61 @@ export const reducer: Reducer<Store, Actions> = (
     case "requestFiltersSuccess": {
       return {
         ...state,
-        room: { ...state.room!, availableFilters: action.payload },
+        createRoom: { ...state.createRoom!, availableFilters: action.payload },
       };
     }
     case "requestFilterValuesSuccess": {
       return {
         ...state,
-        room: {
-          ...state.room!,
+        createRoom: {
+          ...state.createRoom!,
           filterValues: {
-            ...state.room?.filterValues,
+            ...state.createRoom?.filterValues,
             [action.payload.request.key]: action.payload.values,
           },
+        },
+      };
+    }
+    case "match": {
+      return {
+        ...state,
+        room: {
+          ...state.room!,
+          matches: [...(state.room?.matches ?? []), action.payload],
+        },
+      };
+    }
+    case "userJoinedRoom": {
+      return {
+        ...state,
+        room: {
+          ...state.room!,
+          users: [...state.room?.users ?? [], action.payload],
+        },
+      };
+    }
+    case "userLeftRoom": {
+      return {
+        ...state,
+        room: {
+          ...state.room!,
+          users: (state.room?.users ?? []).filter(({ user }) =>
+            user.userName !== action.payload.userName
+          ),
+        },
+      };
+    }
+    case "userProgress": {
+      return {
+        ...state,
+        room: {
+          ...state.room!,
+          users: (state.room?.users ?? []).map((userProgress) => {
+            if (userProgress.user.userName === action.payload.user.userName) {
+              return { ...userProgress, progress: action.payload.progress };
+            }
+            return userProgress;
+          }),
         },
       };
     }

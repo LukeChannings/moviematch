@@ -24,34 +24,6 @@
   justify-content: flex-end;
 }
 
-.user {
-  display: grid;
-  grid-auto-flow: column;
-  gap: var(--s1);
-  align-items: center;
-  color: var(--mm-white);
-}
-
-.userName {
-  margin-left: var(--s1);
-  letter-spacing: 0;
-}
-
-.shareButton {
-  background: transparent;
-  border: none;
-  color: currentColor;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  cursor: pointer;
-  padding: 0;
-}
-
-.shareButton .ShareIcon {
-  margin-left: var(--s2);
-}
-
 .matchCountWrapper {
   position: relative;
   margin: auto;

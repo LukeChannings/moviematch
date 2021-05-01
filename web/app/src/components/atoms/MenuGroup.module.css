@@ -1,0 +1,10 @@
+.menuGroup {
+  border-bottom: 1px solid var(--mm-white);
+  padding-bottom: var(--s3);
+  margin-bottom: var(--s2);
+}
+
+.title {
+  font-size: 0.7rem;
+  padding: var(--s1) 0 var(--s2);
+}

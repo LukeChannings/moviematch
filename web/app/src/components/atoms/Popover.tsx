@@ -1,58 +1,42 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { animated, useSpring } from "@react-spring/web";
+import React, { CSSProperties, forwardRef, HTMLAttributes } from "react";
 
 import styles from "./Popover.module.css";
 
-interface PopoverProps {
-  className?: string;
-  children: (popoverOpen: boolean) => ReactNode;
+interface PopoverProps extends HTMLAttributes<HTMLDivElement> {
+  isOpen: boolean;
+  arrowStyles?: CSSProperties;
+  arrowProps?: { [key: string]: string };
 }
 
-export const PopoverButton = ({ className, children }: PopoverProps) => {
-  const [isOpen, setOpen] = useState(false);
-  const popoverRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (isOpen) {
-      const handleOutsideClick = (e: MouseEvent) => {
-        if (
-          e.target instanceof HTMLElement &&
-          popoverRef.current?.contains(e.target)
-        ) {
-          return;
-        }
-        setOpen(false);
-      };
+export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
+  ({ children, arrowProps, arrowStyles, isOpen, ...props }, ref) => {
+    const { opacity } = useSpring({
+      opacity: isOpen ? 1 : 0,
+      config: {
+        duration: 150,
+      },
+    });
 
-      document.addEventListener("mouseup", handleOutsideClick, { once: true });
-      return () => {
-        document.removeEventListener("mouseup", handleOutsideClick);
-      };
-    }
-  }, [isOpen]);
-  return (
-    <button
-      className={`${styles.popoverButton} ${className ?? ""}`}
-      onClick={() => setOpen(!isOpen)}
-      ref={popoverRef}
-    >
-      {children(isOpen)}
-    </button>
-  );
-};
-
-export const Popover = ({ children }: { children: ReactNode }) => (
-  <div className={styles.popover}>{children}</div>
-);
-
-interface PopoverMenuButtonProps {
-  children: ReactNode;
-  onPress: () => void;
-}
-
-export const PopoverMenuButton = ({
-  children,
-  onPress,
-}: PopoverMenuButtonProps) => (
-  <button className={styles.popoverMenuButton} onClick={onPress}>
-    {children}
-  </button>
+    return (
+      <animated.div
+        {...props}
+        ref={ref}
+        style={{
+          ...props.style,
+          ...(!isOpen ? { pointerEvents: "none" } : {}),
+          opacity,
+        }}
+        className={styles.popover}
+      >
+        <div
+          {...arrowProps}
+          data-popper-arrow
+          className={styles.popoverArrow}
+          style={arrowStyles}
+        />
+        {children}
+      </animated.div>
+    );
+  },
 );

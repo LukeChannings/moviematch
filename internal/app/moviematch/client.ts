@@ -45,9 +45,10 @@ export class Client {
   constructor(ws: WebSocket, ctx: RouteContext) {
     this.ws = ws;
     this.ctx = ctx;
+    this.isLoggedIn = false;
+
     this.listenForMessages();
     this.sendConfig();
-    this.isLoggedIn = false;
   }
 
   private sendConfig() {
@@ -144,8 +145,15 @@ export class Client {
     }
   }
 
-  private getUsername() {
+  getUsername() {
     return this.anonymousUserName ?? this.plexUser?.username;
+  }
+
+  getUser(): User {
+    return {
+      userName: this.getUsername()!,
+      avatarImage: this.plexUser?.thumb,
+    };
   }
 
   private async handleLogin(login: Login) {
@@ -158,6 +166,7 @@ export class Client {
       }
 
       this.anonymousUserName = login.userName;
+      this.isLoggedIn = true;
 
       const user: User = {
         userName: login.userName,
@@ -179,6 +188,8 @@ export class Client {
           permissions: [],
         };
 
+        this.isLoggedIn = true;
+
         this.sendMessage({ type: "loginSuccess", payload: user });
       } catch (err) {
         log.error(
@@ -186,7 +197,6 @@ export class Client {
           err,
         );
       }
-      this.isLoggedIn = true;
     } else {
       const error: LoginError = {
         name: "MalformedMessage",
@@ -201,6 +211,11 @@ export class Client {
     const userName = this.getUsername();
     if (userName) {
       this.room?.users.delete(userName);
+
+      this.isLoggedIn = false;
+      delete this.anonymousUserName;
+      delete this.plexUser;
+
       this.sendMessage({ type: "logoutSuccess" });
     } else {
       this.sendMessage({
@@ -241,6 +256,7 @@ export class Client {
             false,
           ),
           media: await this.room.getMediaForUser(userName),
+          users: await this.room.getUsers(),
         },
       });
     } catch (err) {
@@ -286,7 +302,19 @@ export class Client {
             false,
           ),
           media: await this.room.getMediaForUser(userName),
+          users: await this.room.getUsers(),
         },
+      });
+      const userProgress = this.room.userProgress.get(this.getUsername()!) ?? 0;
+      const mediaSize = (await this.room.media).size;
+      console.log({
+        userProgress,
+        mediaSize,
+        result: userProgress / mediaSize,
+      });
+      this.room.notifyJoin({
+        user: this.getUser(),
+        progress: userProgress / mediaSize,
       });
     } catch (err) {
       let error: JoinRoomError["name"];
@@ -322,9 +350,11 @@ export class Client {
     if (this.room && userName) {
       this.room.users.delete(userName);
 
-      return this.sendMessage({
+      this.sendMessage({
         type: "leaveRoomSuccess",
       });
+
+      this.room.notifyLeave(this.getUser());
     } else {
       return this.sendMessage({
         type: "leaveRoomError",

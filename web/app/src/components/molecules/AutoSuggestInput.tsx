@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useCombobox, useMultipleSelection } from "downshift";
+import {
+  useCombobox,
+  UseComboboxGetItemPropsOptions,
+  useMultipleSelection,
+  UseMultipleSelectionGetDropdownProps,
+} from "downshift";
 import { usePopper } from "react-popper";
 
 import type { FilterValue } from "../../../../../types/moviematch";
@@ -52,19 +57,25 @@ export const AutoSuggestInput = ({
     onChange(selectedItems);
   }, [selectedItems]);
 
-  const getFilteredItems = () =>
-    items.filter(
-      (item) =>
-        !selectedItems.includes(item) &&
-        item.title.toLowerCase().startsWith(inputValue.toLowerCase()),
-    );
-  const comboBox = useCombobox({
+  const filteredItems = items.filter(
+    (item) =>
+      !selectedItems.includes(item) &&
+      item.title.toLowerCase().startsWith(inputValue.toLowerCase()),
+  );
+
+  const {
+    isOpen,
+    openMenu,
+    getMenuProps,
+    getInputProps,
+    getComboboxProps,
+    highlightedIndex,
+    getItemProps,
+  } = useCombobox({
     inputValue,
-    defaultHighlightedIndex: 0,
     selectedItem: null,
-    items: getFilteredItems(),
-    stateReducer: (_state, actionAndChanges) => {
-      const { changes, type } = actionAndChanges;
+    items: filteredItems,
+    stateReducer: (_state, { changes, type }) => {
       switch (type) {
         case useCombobox.stateChangeTypes.InputKeyDownEnter:
         case useCombobox.stateChangeTypes.ItemClick:
@@ -75,8 +86,7 @@ export const AutoSuggestInput = ({
       }
       return changes;
     },
-    onStateChange: (change) => {
-      const { inputValue, type, selectedItem } = change;
+    onStateChange: ({ inputValue, type, selectedItem }) => {
       switch (type) {
         case useCombobox.stateChangeTypes.InputChange:
           setInputValue(inputValue!);
@@ -86,46 +96,34 @@ export const AutoSuggestInput = ({
           if (typeof selectedItem?.value === "string") {
             setInputValue("");
             addSelectedItem(selectedItem);
-            if (updatePopper) {
-              updatePopper();
-            }
           }
           break;
         default:
           break;
       }
+
+      if (updatePopper) {
+        updatePopper();
+      }
     },
   });
 
-  const {
-    isOpen,
-    openMenu,
-    getMenuProps,
-    getInputProps,
-    getComboboxProps,
-    highlightedIndex,
-    getItemProps,
-  } = comboBox;
-
-  const filteredItems = getFilteredItems();
-  const menuProps = getMenuProps();
-  const inputProps = getInputProps(
-    getDropdownProps({ preventKeyAction: isOpen }),
-  );
-
   return (
     <>
-      <div {...getComboboxProps()} className={styles.container}>
+      <div {...getComboboxProps({ className: styles.container })}>
         <div className={styles.selections}>
           {selectedItems.map((selectedItem, index) => (
-            <>
+            <React.Fragment
+              key={`selected-item-${selectedItem.value}`}
+            >
               {index !== 0 && (
-                <span className={styles.selectionsDelimiterLabel}>
+                <span
+                  className={styles.selectionsDelimiterLabel}
+                >
                   or
                 </span>
               )}
               <Pill
-                key={`selected-item-${index}`}
                 onRemove={(e) => {
                   e.stopPropagation();
                   removeSelectedItem(selectedItem);
@@ -133,64 +131,73 @@ export const AutoSuggestInput = ({
               >
                 {selectedItem.title}
               </Pill>
-            </>
+            </React.Fragment>
           ))}
           <input
-            className={styles.input}
-            name={inputName}
-            {...inputProps}
-            ref={(el) => {
-              setReferenceElement(el);
-              inputProps.ref(el);
-            }}
-            onFocus={() => {
-              if (!isOpen) {
-                openMenu();
-              }
-            }}
-            data-test-handle={inputName + "-autosuggest-input"}
+            {...getInputProps(
+              getDropdownProps({
+                preventKeyAction: isOpen,
+                className: styles.input,
+                name: inputName,
+                ref: (el: HTMLInputElement | null) => {
+                  if (el instanceof HTMLInputElement) {
+                    setReferenceElement(el);
+                  }
+                },
+                onFocus: () => {
+                  if (!isOpen) {
+                    openMenu();
+                  }
+                },
+                "data-test-handle": inputName + "-autosuggest-input",
+              } as UseMultipleSelectionGetDropdownProps),
+            )}
           />
         </div>
       </div>
-      {isOpen && filteredItems.length !== 0 && (
-        <ul
-          {...menuProps}
-          ref={(menuEl) => {
-            if (menuEl) {
+      <ul
+        {...getMenuProps({
+          ...attributes.popper,
+          ref: (menuEl) => {
+            if (menuEl instanceof HTMLUListElement) {
               setPopperElement(menuEl);
-              menuProps.ref(menuEl);
             }
-          }}
-          style={popperStyles.popper}
-          {...attributes.popper}
-          className={styles.suggestions}
+          },
+          style: {
+            ...popperStyles.popper,
+            display: isOpen && filteredItems.length !== 0 ? "block" : "none",
+          },
+          className: styles.suggestions,
+        })}
+      >
+        <div
+          data-popper-arrow
+          className={styles.suggestionsArrow}
+          style={popperStyles.arrow}
+          {...attributes.arrow}
         >
-          <div
-            data-popper-arrow
-            className={styles.suggestionsArrow}
-            style={popperStyles.arrow}
-            {...attributes.arrow}
-          >
-          </div>
-          <div
-            className={styles.suggestionsScrollBox}
-            data-test-handle={inputName + "-suggestions"}
-          >
-            {getFilteredItems().map((item, index) => (
-              <li
-                className={index === highlightedIndex
+        </div>
+        <div
+          className={styles.suggestionsScrollBox}
+          data-test-handle={inputName + "-suggestions"}
+        >
+          {filteredItems.map((item, index) => (
+            <li
+              {...getItemProps({
+                item,
+                index,
+                className: index === highlightedIndex
                   ? styles.highlightedSuggestion
-                  : styles.suggestion}
-                key={`${item.value}${index}`}
-                data-test-handle={`${inputName}-suggestion-${item.title}`}
-                {...getItemProps({ item, index })}
-              >
-                {item.title}
-              </li>
-            ))}
-          </div>
-        </ul>
-      )}
+                  : styles.suggestion,
+                key: `${item.value}${index}`,
+                "data-test-handle": `${inputName}-suggestion-${item.title}`,
+              } as UseComboboxGetItemPropsOptions<FilterValue>)}
+            >
+              {item.title}
+            </li>
+          ))}
+        </div>
+      </ul>
     </>
   );
 };
