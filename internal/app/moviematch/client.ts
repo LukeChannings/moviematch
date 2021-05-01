@@ -256,7 +256,7 @@ export class Client {
             false,
           ),
           media: await this.room.getMediaForUser(userName),
-          users: this.room.getUsers(),
+          users: await this.room.getUsers(),
         },
       });
     } catch (err) {
@@ -302,12 +302,19 @@ export class Client {
             false,
           ),
           media: await this.room.getMediaForUser(userName),
-          users: this.room.getUsers(),
+          users: await this.room.getUsers(),
         },
+      });
+      const userProgress = this.room.userProgress.get(this.getUsername()!) ?? 0;
+      const mediaSize = (await this.room.media).size;
+      console.log({
+        userProgress,
+        mediaSize,
+        result: userProgress / mediaSize,
       });
       this.room.notifyJoin({
         user: this.getUser(),
-        progress: this.room.userProgress.get(this.getUsername()!) ?? 0,
+        progress: userProgress / mediaSize,
       });
     } catch (err) {
       let error: JoinRoomError["name"];

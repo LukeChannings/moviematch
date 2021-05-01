@@ -14,6 +14,7 @@ export const Avatar = ({ userName, avatarUrl, progress = 0 }: AvatarProps) => {
     .split("")
     .filter((_) => /[\p{Letter}-]/gu.test(_))
     .reduce((sum, _, i) => sum + _.charCodeAt(0) ** (i + 1), 0) % 360;
+  const letter = userName.toUpperCase()[0];
 
   const random = Date.now();
   const avatarImageId = `${userName}AvatarImage` + random;
@@ -37,7 +38,7 @@ export const Avatar = ({ userName, avatarUrl, progress = 0 }: AvatarProps) => {
         width="28"
         height="28"
       >
-        <circle cx="16" cy="16" r="13" fill="#C4C4C4" />
+        <circle cx="16" cy="16" r="13" fill="#fff" />
       </mask>
       {avatarUrl && (
         <g mask={`url(#${avatarMask})`}>
@@ -54,12 +55,12 @@ export const Avatar = ({ userName, avatarUrl, progress = 0 }: AvatarProps) => {
         {!avatarUrl &&
           <text
             x="50%"
-            y="50%"
+            y="55%"
             textAnchor="middle"
             dy=".3em"
             className={styles.letter}
           >
-            L
+            {letter}
           </text>}
       </g>
     </svg>

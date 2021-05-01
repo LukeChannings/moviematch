@@ -155,12 +155,13 @@ export class Room {
     return matches;
   };
 
-  getUsers = (): Array<{ user: User; progress: number }> => {
+  getUsers = async (): Promise<Array<{ user: User; progress: number }>> => {
+    const mediaSize = (await this.media).size;
     return [...this.users.values()].map((client) => {
       const user = client.getUser();
       return {
         user,
-        progress: this.userProgress.get(user.userName) ?? 0,
+        progress: (this.userProgress.get(user.userName) ?? 0) / mediaSize,
       };
     });
   };
@@ -183,7 +184,7 @@ export class Room {
     this.broadcastMessage({
       type: "userProgress",
       payload: { user, progress },
-    }, user.userName);
+    });
   };
 
   notifyMatch = (match: Match) => {

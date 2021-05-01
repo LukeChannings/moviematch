@@ -61,6 +61,8 @@ export const UserMenu = () => {
   if (!user) return null;
 
   const areOthersInRoom = room?.users && room?.users?.length > 1;
+  const progress =
+    room?.users?.find((_) => _.user.userName === user.userName)?.progress ?? 0;
 
   return (
     <>
@@ -75,7 +77,11 @@ export const UserMenu = () => {
         <ExpandIcon />
         {user && (
           <>
-            <Avatar userName={user.userName} avatarUrl={user.avatarImage} />
+            <Avatar
+              userName={user.userName}
+              avatarUrl={user.avatarImage}
+              progress={progress * 100}
+            />
             <p className={styles.userName}>{user.userName}</p>
           </>
         )}
@@ -91,7 +97,7 @@ export const UserMenu = () => {
         <UserProgressItem
           key={user.userName}
           user={user}
-          progress={0}
+          progress={progress}
           style={!areOthersInRoom ? { marginBottom: "var(--s2)" } : {}}
         />
         <MenuGroup title="Also in the room:">

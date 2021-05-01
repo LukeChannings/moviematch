@@ -26,7 +26,7 @@
 
 @media screen and (min-width: 52em) {
   .list {
-    --card-height: 50vh;
+    --card-height: max(50vh, 25rem);
   }
 }
 
