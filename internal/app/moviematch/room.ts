@@ -14,7 +14,7 @@ import {
 } from "/types/moviematch.ts";
 import { memo } from "/internal/app/moviematch/util/memo.ts";
 import { Client } from "/internal/app/moviematch/client.ts";
-import { RouteContext } from "./types.ts";
+import type { RouteContext } from "./types.ts";
 
 export class RoomExistsError extends Error {
   name = "RoomExistsError";
