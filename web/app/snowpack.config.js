@@ -1,4 +1,5 @@
 const os = require("os");
+const proxy = require("http2-proxy");
 const { VERSION = "dev" } = process.env;
 
 console.log(`Building version ${VERSION}`);
@@ -25,6 +26,17 @@ module.exports = {
     static: { url: "/", static: true },
     src: { url: "/dist" },
   },
+  routes: [
+    {
+      src: "/api/.*",
+      dest: (req, res) => {
+        return proxy.web(req, res, {
+          hostname: "localhost",
+          port: 8000,
+        });
+      },
+    },
+  ],
   plugins: [
     "@snowpack/plugin-react-refresh",
     "@snowpack/plugin-dotenv",
