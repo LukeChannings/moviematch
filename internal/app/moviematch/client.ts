@@ -307,11 +307,7 @@ export class Client {
       });
       const userProgress = this.room.userProgress.get(this.getUsername()!) ?? 0;
       const mediaSize = (await this.room.media).size;
-      console.log({
-        userProgress,
-        mediaSize,
-        result: userProgress / mediaSize,
-      });
+
       this.room.notifyJoin({
         user: this.getUser(),
         progress: userProgress / mediaSize,
