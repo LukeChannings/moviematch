@@ -1,6 +1,9 @@
 import { log } from "/deps.ts";
+import type {
+  FilterValue,
+  FilterValues,
+} from "./types/library_filter_values.ts";
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
-import { FilterValue, FilterValues } from "./types/library_filter_values.ts";
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
 import { Identity } from "/internal/app/plex/types/identity.ts";
 import { Libraries, Library } from "/internal/app/plex/types/libraries_list.ts";

@@ -12,7 +12,7 @@ import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 import { createProvider as createPlexProvider } from "/internal/app/moviematch/providers/plex.ts";
 import type { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
-import { RouteHandler } from "./types.ts";
+import type { RouteHandler } from "./types.ts";
 
 export class ProviderUnavailableError extends Error {}
 
