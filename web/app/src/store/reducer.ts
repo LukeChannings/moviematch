@@ -134,7 +134,12 @@ export const reducer: Reducer<Store, Actions> = (
         ...state,
         room: {
           ...state.room!,
-          matches: [...(state.room?.matches ?? []), action.payload],
+          matches: [
+            ...(state.room?.matches ?? []).filter((_) =>
+              _.media.id !== action.payload.media.id
+            ),
+            action.payload,
+          ],
         },
       };
     }
