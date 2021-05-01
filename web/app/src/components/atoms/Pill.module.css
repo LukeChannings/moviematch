@@ -10,6 +10,7 @@
   align-items: center;
   place-content: center;
   justify-content: center;
+  text-decoration: none;
 }
 
 .pillWithRemoveButton {
@@ -36,6 +37,7 @@
   line-height: 1.1;
   display: flex;
   place-content: center;
+  gap: var(--s1);
 }
 
 .icon {
