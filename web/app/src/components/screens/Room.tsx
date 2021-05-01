@@ -41,17 +41,7 @@ export const RoomScreen = () => {
         renderCard={(card) => <Card media={card} key={card.id} />}
       />
 
-      <RoomInfoBar
-        addToast={(toast) => {
-          dispatch({ type: "addToast", payload: toast });
-        }}
-        logout={async () => {
-          dispatch({ type: "logout" });
-        }}
-        leaveRoom={async () => {
-          dispatch({ type: "leaveRoom" });
-        }}
-      />
+      <RoomInfoBar />
       <SegmentedControls
         name="sortMatches"
         value={matchOrder}

@@ -1,0 +1,21 @@
+.menuButton {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  padding: var(--s2);
+  white-space: nowrap;
+  text-align: center;
+  padding: var(--s1) var(--s3);
+  background-color: var(--mm-add-highlight-color);
+  color: var(--mm-black);
+  border-radius: var(--s1);
+}
+
+@media (hover: hover) {
+  .menuButton:hover {
+    background: var(--mm-pale-blue);
+    color: var(--mm-white);
+  }
+}

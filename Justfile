@@ -109,7 +109,7 @@ install-node-modules:
 
 install-deno-dependencies:
   deno install -qAf --unstable https://deno.land/x/denon@2.4.7/denon.ts
-  deno run -A --unstable https://raw.githubusercontent.com/lucacasonato/deno-puppeteer/main/install.ts
+  PUPPETEER_PRODUCT=chrome deno run -A --unstable https://deno.land/x/puppeteer@9.0.0/install.ts
 
 clean: clean-ui clean-server
 

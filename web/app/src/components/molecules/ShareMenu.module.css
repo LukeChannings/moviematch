@@ -1,0 +1,21 @@
+.shareButton {
+  background: transparent;
+  border: none;
+  color: currentColor;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.roomName {
+  display: none;
+  margin-right: var(--s2);
+}
+
+@media screen and (min-width: 26.5em) {
+  .roomName {
+    display: block;
+  }
+}

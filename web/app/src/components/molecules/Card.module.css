@@ -21,6 +21,7 @@
 }
 
 .linkCard {
+  composes: card;
   cursor: pointer;
 }
 

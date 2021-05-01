@@ -69,7 +69,10 @@ export type ClientMessage =
     type: "requestFilterValuesSuccess";
     payload: { request: FilterValueRequest; values: FilterValue[] };
   }
-  | { type: "requestFilterValuesError" };
+  | { type: "requestFilterValuesError" }
+  | { type: "userJoinedRoom"; payload: UserProgress }
+  | { type: "userLeftRoom"; payload: User }
+  | { type: "userProgress"; payload: UserProgress };
 
 // Translations
 export type TranslationKey =
@@ -129,7 +132,7 @@ export type Permissions = "CanCreateRoom";
 
 export interface User {
   userName: string;
-  permissions: Permissions[];
+  permissions?: Permissions[]; // Not available in user*Room messages
   avatarImage?: string;
 }
 
@@ -187,6 +190,8 @@ export interface JoinRoomError {
 export interface JoinRoomSuccess {
   previousMatches: Match[];
   media: Media[];
+
+  users: Array<{ user: User; progress: number }>;
 }
 
 // Leave
@@ -271,4 +276,10 @@ export interface FilterValue {
 
 export interface FilterValueRequest {
   key: string;
+}
+
+export interface UserProgress {
+  user: User;
+  // A percentage of the way through the room the user is
+  progress: number;
 }

@@ -27,14 +27,26 @@ type FilterClientMessageByType<
 > = A extends { type: ClientMessageType } ? A : never;
 
 export class MovieMatchClient extends EventTarget {
-  ws: WebSocket;
+  ws!: WebSocket;
   reconnectionAttempts = 0;
 
   constructor() {
     super();
+    this.connect();
+  }
+
+  private connect() {
+    if (this.ws) {
+      this.ws.removeEventListener("message", this.handleMessage);
+      this.ws.removeEventListener("open", this.handleOpen);
+      this.ws.removeEventListener("close", this.handleClose);
+    }
+    console.log("connecting");
+
     this.ws = new WebSocket(API_URL);
     this.ws.addEventListener("message", this.handleMessage);
-    this.ws.addEventListener("close", this.handleClose);
+    this.ws.addEventListener("close", this.handleClose, { once: true });
+    this.ws.addEventListener("open", this.handleOpen, { once: true });
   }
 
   private handleMessage = (e: MessageEvent<string>) => {
@@ -57,8 +69,17 @@ export class MovieMatchClient extends EventTarget {
     });
   };
 
+  private handleOpen = () => {
+    this.reconnectionAttempts = 0;
+    this.dispatchEvent(new Event("connected"));
+  };
+
   private handleClose = () => {
     this.dispatchEvent(new Event("disconnected"));
+
+    setTimeout(() => this.connect(), this.reconnectionAttempts * 1_000);
+
+    this.reconnectionAttempts += 1;
   };
 
   waitForMessage = <K extends ClientMessage["type"]>(
