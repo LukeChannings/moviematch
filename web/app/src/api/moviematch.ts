@@ -41,7 +41,6 @@ export class MovieMatchClient extends EventTarget {
       this.ws.removeEventListener("open", this.handleOpen);
       this.ws.removeEventListener("close", this.handleClose);
     }
-    console.log("connecting");
 
     this.ws = new WebSocket(API_URL);
     this.ws.addEventListener("message", this.handleMessage);

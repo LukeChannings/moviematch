@@ -7,6 +7,7 @@ import { ContentRatingSymbol } from "../atoms/ContentRatingSymbol";
 import { StarIcon } from "../atoms/StarIcon";
 
 import styles from "./Card.module.css";
+import { OpenInNewIcon } from "../atoms/OpenInNewIcon";
 
 export interface CardProps {
   title?: ReactNode;
@@ -78,6 +79,12 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
                 {media.genres.map((genre) => (
                   <Pill key={genre}>{genre}</Pill>
                 ))}
+                {!href && (
+                  <Pill href={media.linkUrl}>
+                    <span>Open in Plex</span>
+                    <OpenInNewIcon />
+                  </Pill>
+                )}
               </div>
               <p className={styles.moreInfoDescription}>
                 {media.description}

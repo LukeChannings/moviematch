@@ -11,7 +11,7 @@ import type {
 } from "../../../../types/moviematch";
 import { reducer } from "./reducer";
 import * as plex from "../api/plex_tv";
-import type { Actions } from "./types";
+import type { Actions, Dispatch, Store } from "./types";
 
 const getExistingLogin = async () => {
   const plexLoginStatus = plex.getLogin();
@@ -41,7 +41,7 @@ export const createStore = () => {
     client = new MovieMatchClient();
   }
 
-  const forwardActions: Middleware = () =>
+  const forwardActions: Middleware<Dispatch, Store> = ({ getState }) =>
     (next) =>
       (action: Actions) => {
         if (action.type in client) {
@@ -60,9 +60,30 @@ export const createStore = () => {
 
         if (action.type === "logout") {
           localStorage.removeItem("userName");
-          localStorage.removeItem("plexClientId");
           localStorage.removeItem("plexToken");
+          localStorage.removeItem("plexTvPin");
         }
+
+        if (
+          action.type === "joinRoomSuccess" ||
+          action.type === "createRoomSuccess"
+        ) {
+          const roomName = getState().room?.name;
+          if (roomName) {
+            const newUrl = new URL(location.href);
+            newUrl.searchParams.set("roomName", roomName);
+            history.replaceState(null, document.title, newUrl.href);
+          }
+        }
+
+        if (
+          action.type === "leaveRoomSuccess" || action.type === "logoutSuccess"
+        ) {
+          const newUrl = new URL(location.href);
+          newUrl.searchParams.delete("roomName");
+          history.replaceState(null, document.title, newUrl.href);
+        }
+
         return next(action);
       };
 
