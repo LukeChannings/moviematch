@@ -13,7 +13,7 @@ export const Pill = ({ children, onRemove, href }: PillProps) => {
 
   const props =
     (Tag === "a"
-      ? { href }
+      ? { href, target: "_blank" }
       : { onClick: onRemove } as HTMLAttributes<HTMLElement>);
 
   return (
