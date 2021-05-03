@@ -18,7 +18,7 @@ export const MatchesList = forwardRef<HTMLUListElement, MatchesListProps>(
             </p>
           )
           : (
-            <ul className={styles.gridList} ref={ref}>
+            <ul className={styles.list} ref={ref}>
               {Children.map(children, (child) => {
                 if (isValidElement(child)) {
                   return (
