@@ -76,6 +76,13 @@ jobs:
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Compile MovieMatch
         run: just build-binary all
+      - run: |
+          just test-e2e linux-amd64
+        name: E2E Tests
+        if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
+        env:
+          PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Get Release Notes
         run: |
           RELEASE_NOTES=$(deno eval -p "(await Deno.readTextFile('./RELEASE_NOTES.markdown')).match(/##\sv${{needs.build_info.outputs.version}}(?<notes>(.|\n)*?)^##\s/m)?.groups?.notes?.trim() ?? ''")
