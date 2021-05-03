@@ -1,6 +1,6 @@
 # Release Notes
 
-## v2.0.0-alpha.8
+## v2.0.0-beta.1
 
 - [CI]: Run end-to-end tests everywhere
 - [Docs]: Add information about common crashes to the FAQ
@@ -12,6 +12,11 @@
 - [UI] Refactor the store from `useReducer` + `Context` to Redux
 - [UI] Refactor to CSS Modules
 - [Bugfix] Fix #74
+- [Feature] Implement a new User menu showing other users in a room, as well as user progress
+- [Feature] Use icons from [Iconic](https://iconic.app)
+- [Feature] Show matches as a grid on larger screens
+- [Feature] Show a like / dislike button on larger screens
+- [Feature] Add an 'open in plex' link to the card stack cards
 
 ## v2.0.0-alpha.7
 
