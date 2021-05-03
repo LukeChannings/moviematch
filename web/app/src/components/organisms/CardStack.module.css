@@ -1,5 +1,6 @@
 .stack {
   --card-height: min(calc(80vmin * 1.5), calc(var(--vh) * 75), 410px);
+  --card-width: calc(var(--card-height) * 0.66666);
   position: relative;
   width: 100%;
   display: flex;
@@ -43,3 +44,42 @@
   opacity: 0;
   animation: fadeIn 150ms ease-in both;
 }
+
+.control {
+  display: none;
+  position: absolute;
+  top: 50%;
+  /* transform: translateX(-50%); */
+  border: none;
+  background-color: var(--mm-add-color);
+  font-size: 4rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background-color 200ms ease-in-out;
+}
+
+@media (hover: hover) {
+  .control:hover {
+    background-color: var(--mm-add-highlight-color);
+  }
+}
+
+.dislikeButton {
+  composes: control;
+  --strokeColor: var(--mm-failure-color);
+  left: calc(50% - ((var(--card-width) + 23rem) / 2));
+}
+
+.likeButton {
+  composes: control;
+  --fillColor: hsl(112, 80%, 30%);
+  --strokeColor: transparent;
+  right: calc(50% - ((var(--card-width) + 23rem) / 2));
+}
+
+@media screen and (min-width: 50em) {
+  .control {
+    display: initial;
+  }
+}
+

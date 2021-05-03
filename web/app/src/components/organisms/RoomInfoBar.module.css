@@ -49,7 +49,7 @@
 
 @media screen and (min-width: 52em) {
   .infoBar {
-    width: 52em;
+    width: 52rem;
     border-radius: 11px;
   }
 

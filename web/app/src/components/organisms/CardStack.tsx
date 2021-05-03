@@ -13,6 +13,8 @@ import { Tr } from "../atoms/Tr";
 import { useStore } from "../../store";
 
 import styles from "./CardStack.module.css";
+import { HeartIcon } from "../icons/HeartIcon";
+import { CloseIcon } from "../icons/CloseIcon";
 const { abs, sign } = Math;
 
 type Card = Media;
@@ -69,6 +71,7 @@ export const CardStack = memo(
     const vw = useViewportWidth((n) => n / 2);
     const [{ connectionStatus }] = useStore(["connectionStatus"]);
     const [elRef, ew] = useFirstChildWidth();
+
     const [{ items }, dispatch] = useReducer(
       function reducer(
         { items, index }: { items: StackItem<Card>[]; index: number },
@@ -174,6 +177,24 @@ export const CardStack = memo(
       },
     );
 
+    const rateItem = (direction: "left" | "right") => {
+      const item = items.reduceRight<StackItem<Media> | null>(
+        (item, _) => item || (!_.removed ? _ : null),
+        null,
+      );
+
+      if (item) {
+        dispatch({
+          type: "remove",
+          payload: {
+            id: item.id,
+            direction,
+          },
+        });
+        dispatch({ type: "add" });
+      }
+    };
+
     useEffect(() => {
       const handler = (e: KeyboardEvent) => {
         if (connectionStatus !== "connected") {
@@ -181,20 +202,7 @@ export const CardStack = memo(
         }
 
         if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
-          const item = items.reduceRight<StackItem<Media> | null>(
-            (item, _) => item || (!_.removed ? _ : null),
-            null,
-          );
-          if (item) {
-            dispatch({
-              type: "remove",
-              payload: {
-                id: item.id,
-                direction: e.code === "ArrowLeft" ? "left" : "right",
-              },
-            });
-            dispatch({ type: "add" });
-          }
+          rateItem(e.code === "ArrowLeft" ? "left" : "right");
         }
       };
       window.addEventListener("keydown", handler);
@@ -204,6 +212,7 @@ export const CardStack = memo(
     const bind = useGesture(
       {
         onDrag({ args: [id], down, delta: [x], movement: [mx] }) {
+          console.log(id, down, x, mx);
           if (down && connectionStatus === "connected") {
             const p = abs(mx / (vw + ew));
             let isAfterId = false;
@@ -270,6 +279,18 @@ export const CardStack = memo(
               <Tr name="RATE_SECTION_EXHAUSTED_CARDS" />
             </p>
           )}
+          <button
+            className={styles.dislikeButton}
+            onClick={() => rateItem("left")}
+          >
+            <CloseIcon />
+          </button>
+          <button
+            className={styles.likeButton}
+            onClick={() => rateItem("right")}
+          >
+            <HeartIcon />
+          </button>
           {items.map((item) => {
             const { x, y, z, opacity } = item.controller.springs;
             return (

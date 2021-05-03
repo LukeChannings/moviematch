@@ -84,6 +84,7 @@
   height: 100%;
   display: flex;
   flex-direction: column-reverse;
+  cursor: ew-resize;
 }
 
 .title {
