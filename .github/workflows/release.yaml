@@ -65,6 +65,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+      - run: just install
+        name: Install dependencies
       - name: Lint
         run: just lint
       - name: Unit tests
