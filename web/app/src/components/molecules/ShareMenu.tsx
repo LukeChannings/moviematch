@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { Dispatch, useStore } from "../../store";
-import { ShareIcon } from "../atoms/ShareIcon";
+import { ShareIcon } from "../icons/ShareIcon";
 
 import styles from "./ShareMenu.module.css";
 
@@ -41,7 +41,7 @@ export const ShareMenu = () => {
   return (
     <button className={styles.shareButton} onClick={handleShare}>
       <span className={styles.roomName}>{room.name}</span>
-      <ShareIcon size="1.5rem" />
+      <ShareIcon size="1.4rem" />
     </button>
   );
 };

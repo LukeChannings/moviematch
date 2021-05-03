@@ -6,22 +6,28 @@
 }
 
 .list {
-  display: grid;
+  display: flex;
   position: relative;
-  grid-auto-flow: column;
   list-style: none;
   width: 100vw;
-  grid-gap: var(--s4);
+  gap: var(--s4);
   overflow: auto;
   padding: var(--s4) 0 var(--s3) 10vw;
+}
+
+.horizontalList {
+  composes: list;
   scroll-snap-type: x mandatory;
-  grid-auto-columns: max-content;
+}
+
+.gridList {
+  composes: list;
+  flex-wrap: wrap;
 }
 
 .list::after {
   content: "";
-  width: calc(10vw - var(--s4));
-  display: block;
+  flex: 0 0 calc(10vw - var(--s4));
 }
 
 @media screen and (min-width: 52em) {

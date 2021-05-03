@@ -11,7 +11,7 @@
 
 .roomName {
   display: none;
-  margin-right: var(--s2);
+  margin-right: var(--s1);
 }
 
 @media screen and (min-width: 26.5em) {

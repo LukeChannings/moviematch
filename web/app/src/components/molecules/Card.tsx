@@ -1,13 +1,13 @@
 import React, { forwardRef, ReactNode, useState } from "react";
 import type { Media } from "../../../../../types/moviematch";
 
-import { InfoIcon } from "../atoms/InfoIcon";
+import { InfoIcon } from "../icons/InfoIcon";
+import { ContentRatingSymbol } from "../icons/ContentRatingSymbol";
+import { StarIcon } from "../icons/StarIcon";
 import { Pill } from "../atoms/Pill";
-import { ContentRatingSymbol } from "../atoms/ContentRatingSymbol";
-import { StarIcon } from "../atoms/StarIcon";
 
 import styles from "./Card.module.css";
-import { OpenInNewIcon } from "../atoms/OpenInNewIcon";
+import { ShareIcon } from "../icons/ShareIcon";
 
 export interface CardProps {
   title?: ReactNode;
@@ -66,7 +66,7 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
                 <Pill>{media.year}</Pill>
                 <Pill>{formatTime(+media.duration)}</Pill>
                 <Pill>
-                  <StarIcon size="0.8rem" /> {media.rating}
+                  <StarIcon height="0.8rem" width="0.5rem" /> {media.rating}
                 </Pill>
                 {media.contentRating && (
                   <Pill>
@@ -82,7 +82,7 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
                 {!href && (
                   <Pill href={media.linkUrl}>
                     <span>Open in Plex</span>
-                    <OpenInNewIcon />
+                    <ShareIcon />
                   </Pill>
                 )}
               </div>
@@ -103,7 +103,7 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
             setShowMoreInfo(!showMoreInfo);
           }}
         >
-          <InfoIcon />
+          <InfoIcon size="2rem" />
         </button>
       </Tag>
     );

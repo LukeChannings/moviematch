@@ -9,6 +9,7 @@ function SvgBbfc18(props: React.SVGProps<SVGSVGElement>) {
       height="1em"
       {...props}
     >
+      <title>Rated 18</title>
       <defs>
         <clipPath id="BBFC_18_svg__a">
           <path d="M444.047 273.898h55.984v55.985h-55.984zm0 0" />

@@ -3,13 +3,13 @@ import { usePopper } from "react-popper";
 import { useDispatch } from "react-redux";
 import { Dispatch, useStore } from "../../store";
 import { Avatar } from "../atoms/Avatar";
-import { ExpandIcon } from "../atoms/ExpandIcon";
 import { MenuButton } from "../atoms/MenuButton";
 import { MenuGroup } from "../atoms/MenuGroup";
 import { Popover } from "../atoms/Popover";
 
 import styles from "./UserMenu.module.css";
 import { UserProgressItem } from "./UserProgressItem";
+import { ChevronDownIcon } from "../icons/ChevronDown";
 
 export const UserMenu = () => {
   const [{ user, room }] = useStore(["user", "room"]);
@@ -74,7 +74,7 @@ export const UserMenu = () => {
           setOpen(!isOpen);
         }}
       >
-        <ExpandIcon />
+        <ChevronDownIcon height="1.5rem" width="0.5rem" />
         {user && (
           <>
             <Avatar
