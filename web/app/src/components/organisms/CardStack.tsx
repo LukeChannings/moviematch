@@ -236,7 +236,7 @@ export const CardStack = memo(
         },
         onDragEnd({ args: [id], movement: [x], velocities: [vx] }) {
           const p = abs(x / (vw + ew));
-          if (p > 0.5 || abs(vx) > 0.5 && connectionStatus === "connected") {
+          if (p > 0.5 || (abs(vx) > 0.5 && connectionStatus === "connected")) {
             // TODO: dispatch is called once, but the
             // remove action is handled twice. Investigate why this
             // is, and if `useReducer` is the best tool for the job.
@@ -279,18 +279,22 @@ export const CardStack = memo(
               <Tr name="RATE_SECTION_EXHAUSTED_CARDS" />
             </p>
           )}
-          <button
-            className={styles.dislikeButton}
-            onClick={() => rateItem("left")}
-          >
-            <CloseIcon />
-          </button>
-          <button
-            className={styles.likeButton}
-            onClick={() => rateItem("right")}
-          >
-            <HeartIcon />
-          </button>
+          {!isEmpty && (
+            <>
+              <button
+                className={styles.dislikeButton}
+                onClick={() => rateItem("left")}
+              >
+                <CloseIcon />
+              </button>
+              <button
+                className={styles.likeButton}
+                onClick={() => rateItem("right")}
+              >
+                <HeartIcon />
+              </button>
+            </>
+          )}
           {items.map((item) => {
             const { x, y, z, opacity } = item.controller.springs;
             return (

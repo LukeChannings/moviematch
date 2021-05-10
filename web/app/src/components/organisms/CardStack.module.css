@@ -43,13 +43,14 @@
   font-size: 1.3rem;
   opacity: 0;
   animation: fadeIn 150ms ease-in both;
+  margin-top: calc(15px * 3);
 }
 
 .control {
   display: none;
   position: absolute;
   top: 50%;
-  /* transform: translateX(-50%); */
+  transform: translateY(-50%);
   border: none;
   background-color: var(--mm-add-color);
   font-size: 4rem;
