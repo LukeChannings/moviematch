@@ -6,6 +6,7 @@
   color: var(--mm-white);
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .userName {
@@ -17,6 +18,8 @@
     display: block;
     margin-left: var(--s1);
     letter-spacing: 0;
+    user-select: none;
+    -webkit-user-select: none;
   }
 }
 

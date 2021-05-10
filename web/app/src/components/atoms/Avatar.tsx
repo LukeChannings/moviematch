@@ -28,8 +28,9 @@ export const Avatar = ({ userName, avatarUrl, progress = 0 }: AvatarProps) => {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       style={{ "--hue": nameHue, "--progress": progress } as CSSProperties}
+      className={styles.avatar}
     >
-      <circle cx="16" cy="16" r="13" className={styles.avatar} />
+      <circle cx="16" cy="16" r="13" className={styles.avatarCircle} />
       <mask
         id={avatarMask}
         maskUnits="userSpaceOnUse"

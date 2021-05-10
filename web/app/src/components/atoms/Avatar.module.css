@@ -1,4 +1,8 @@
 .avatar {
+  pointer-events: none;
+}
+
+.avatarCircle {
   --size: 2rem;
 
   stroke: hsl(var(--hue) 50% 70%);
