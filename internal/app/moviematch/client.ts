@@ -160,6 +160,18 @@ export class Client {
     log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
     if ("userName" in login) {
+      if (getConfig().requirePlexTvLogin) {
+        this.sendMessage({
+          type: "loginError",
+          payload: {
+            name: "PlexLoginRequired",
+            message:
+              "Anonymous logins are not allowed. Please sign in with Plex.",
+          },
+        });
+        return;
+      }
+
       if (this.anonymousUserName && login.userName !== this.anonymousUserName) {
         log.debug(`Logging out ${this.anonymousUserName}`);
         this.room?.users.delete(this.anonymousUserName);

@@ -117,7 +117,7 @@ export type Login =
   | { plexClientId: string; plexToken: string };
 
 export interface LoginError {
-  name: "MalformedMessage";
+  name: "MalformedMessage" | "PlexLoginRequired";
   message: string;
 }
 

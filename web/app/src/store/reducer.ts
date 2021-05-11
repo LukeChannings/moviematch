@@ -103,7 +103,13 @@ export const reducer: Reducer<Store, Actions> = (
     case "loginError":
     case "joinRoomError":
     case "createRoomError": {
-      return { ...state, error: action.payload };
+      let route = state.route;
+
+      if (action.type === "loginError") route = "login";
+      if (action.type === "joinRoomError") route = "join";
+      if (action.type === "createRoomError") route = "createRoom";
+
+      return { ...state, error: action.payload, route };
     }
     case "leaveRoomSuccess": {
       return { ...state, room: undefined, route: "join" };
