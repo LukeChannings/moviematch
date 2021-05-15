@@ -17,7 +17,7 @@ on:
         required: true
 
 env:
-  DENO_VERSION: 1.9.2
+  DENO_VERSION: 1.10.1
 
 jobs:
   build_info:
