@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type {
   Filter,
   Filters,
@@ -45,7 +45,10 @@ export const FilterField = ({
     }
   }, [key, operator, value]);
 
-  const filter = filters.filters.find((_) => _.key === key);
+  const filter = useMemo(
+    () => filters.filters.find((_) => _.key === key),
+    [key],
+  );
 
   return (
     <fieldset
@@ -60,9 +63,18 @@ export const FilterField = ({
           {},
         )}
         onChange={(e) => {
-          setKey(e.target.value);
-          setOperator("=");
-          setValue([]);
+          const newFilter = filters.filters.find(
+            (_) => _.key === e.target.value,
+          );
+          if (newFilter) {
+            setKey(e.target.value);
+            setOperator("=");
+            setValue(
+              newFilter.type === "boolean"
+                ? [{ title: "boolean", value: "1" }]
+                : [],
+            );
+          }
         }}
       />
       {filter && (
@@ -77,7 +89,9 @@ export const FilterField = ({
               }),
               {},
             )}
-            onChange={(e) => setOperator(e.target.value)}
+            onChange={(e) => {
+              setOperator(e.target.value);
+            }}
           />
           {filter.type !== "boolean" && (
             <AutoSuggestInput
