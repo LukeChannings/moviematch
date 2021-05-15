@@ -1,6 +1,6 @@
 /**
  * A generic interface that the Plex provider implements.
- * 
+ *
  * The point of this is to:
  * - Keep the Plex API integration (/internal/app/plex) portable, so it can possibly be published separately and used by others
  * - Allow MovieMatch to have its own clean data structures, excluding some of the Plex weirdness (since it's converted from XML, it is not idiomatic)
