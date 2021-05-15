@@ -7,7 +7,6 @@
 - [Bugfix] error messages for Login / Join / CreateRoom are now shown to the user
 - [Bugfix] Boolean filters now work as expected
 - [Bugfix] `requirePlexTvLogin` config option now works as expected
-- Upgrade Deno to 1.10.1
 
 ## v2.0.0-beta.1
 

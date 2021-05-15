@@ -69,7 +69,7 @@ compile rust_target target:
   if [ "{{rust_target}}" == "aarch64-unknown-linux-gnu" ]; then
     docker run --rm --platform linux/arm64 -v {{build_dir}}:{{build_dir}} lukechannings/deno compile {{deno_compile_options}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
   else
-    deno compile {{deno_compile_options}} --lite --target {{rust_target}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
+    deno compile {{deno_compile_options}} --target {{rust_target}} --output {{build_dir}}/{{target}}/moviematch {{build_dir}}/moviematch.js
   fi
 
 test:
