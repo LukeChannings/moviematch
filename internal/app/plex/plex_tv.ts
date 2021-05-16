@@ -5,7 +5,7 @@
 
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { parseXML } from "/internal/app/plex/util.ts";
-import { Users } from "/internal/app/plex/types/users.ts";
+import { HomeUsers, Users } from "/internal/app/plex/types/users.ts";
 import { PlexMediaContainer } from "/internal/app/plex/types/common.ts";
 
 const APP_NAME = "MovieMatch";
@@ -74,11 +74,7 @@ export const getPlexUsers = async ({
     "X-Plex-Client-Identifier": clientId,
     "X-Plex-Token": plexToken,
   });
-  const req = await fetch(`https://plex.tv/api/users?${String(search)}`, {
-    headers: {
-      accept: "application/json",
-    },
-  });
+  const req = await fetch(`https://plex.tv/api/users?${String(search)}`);
 
   if (!req.ok) {
     throw new Error(`${req.status}: ${await req.text()}`);
@@ -111,4 +107,35 @@ export const getPlexUsers = async ({
   });
 
   return users as PlexMediaContainer<Users>;
+};
+
+export const getPlexHomeUsers = async ({
+  clientId,
+  plexToken,
+}: {
+  clientId: string;
+  plexToken: string;
+}) => {
+  const search = new URLSearchParams({
+    "X-Plex-Product": APP_NAME,
+    "X-Plex-Client-Identifier": clientId,
+    "X-Plex-Token": plexToken,
+  });
+
+  const req = await fetch(`https://plex.tv/api/home/users?${String(search)}`);
+
+  if (!req.ok) {
+    throw new Error(`${req.status}: ${await req.text()}`);
+  }
+
+  const users = parseXML(await req.text(), (_elementName, key, value) => {
+    if (key === "id") return Number(value);
+    if (["admin", "guest", "restricted", "protected"].includes(key)) {
+      return value === "1";
+    }
+    if (key === "hasPassword") return value === "true";
+    return value;
+  });
+
+  return users as PlexMediaContainer<HomeUsers>;
 };

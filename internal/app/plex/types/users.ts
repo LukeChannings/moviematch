@@ -41,3 +41,26 @@ export interface Server {
   owned: boolean;
   pending: boolean;
 }
+
+export interface HomeUsers {
+  friendlyName: string;
+  identifier: string;
+  machineIdentifier: string;
+  size: string;
+  User: HomeUser[];
+}
+
+export interface HomeUser {
+  id: number;
+  uuid: string;
+  admin: boolean;
+  guest: boolean;
+  restricted: boolean;
+  restrictionProfile: string;
+  hasPassword: boolean;
+  protected: boolean;
+  title: string;
+  username: string;
+  email: string;
+  thumb: string;
+}

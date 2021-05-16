@@ -1,5 +1,5 @@
 import { assert, yup } from "/deps.ts";
-import { getPlexUsers } from "./plex_tv.ts";
+import { getPlexHomeUsers, getPlexUsers } from "./plex_tv.ts";
 
 const { array, boolean, number, object, string } = yup;
 
@@ -59,6 +59,36 @@ try {
     });
 
     usersSchema.validate(users.MediaContainer);
+  });
+
+  Deno.test("Plex TV -> getPlexHomeUsers", async () => {
+    const users = await getPlexHomeUsers({
+      clientId,
+      plexToken: TEST_PLEX_TOKEN,
+    });
+
+    const homeUsersSchema = object({
+      friendlyName: string().required(),
+      identifier: string().required(),
+      machineIdentifier: string().required(),
+      size: string().required(),
+      User: array(object({
+        id: number().required(),
+        uuid: string().required(),
+        admin: boolean().required(),
+        guest: boolean().required(),
+        restricted: boolean().required(),
+        restrictionProfile: string(),
+        hasPassword: boolean().required(),
+        protected: boolean().required(),
+        title: string().required(),
+        username: string().required(),
+        email: string().required(),
+        thumb: string().required(),
+      })),
+    });
+
+    homeUsersSchema.validate(users.MediaContainer);
   });
 } catch (err) {
   console.log(err);
