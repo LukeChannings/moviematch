@@ -108,8 +108,8 @@ install-node-modules:
   cd {{ui_dir}} && npm install
 
 install-deno-dependencies:
-  deno install -qAf https://deno.land/x/denon@2.4.7/denon.ts
-  PUPPETEER_PRODUCT=chrome deno run -A https://deno.land/x/puppeteer@9.0.0/install.ts
+  deno install --unstable -qAf https://deno.land/x/denon@2.4.7/denon.ts
+  PUPPETEER_PRODUCT=chrome deno run --unstable -A https://deno.land/x/puppeteer@9.0.0/install.ts
 
 clean: clean-ui clean-server
 
