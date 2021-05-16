@@ -6,10 +6,9 @@ import type {
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
 import { Identity } from "/internal/app/plex/types/identity.ts";
+import { PlexMediaContainer } from "/internal/app/plex/types/common.ts";
 import { Libraries, Library } from "/internal/app/plex/types/libraries_list.ts";
 import { LibraryItems, Meta } from "/internal/app/plex/types/library_items.ts";
-
-type PlexMediaContainer<T> = { MediaContainer: T };
 
 export interface PlexApiOptions {
   language?: string;

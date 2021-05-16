@@ -4,6 +4,9 @@
  */
 
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
+import { parseXML } from "/internal/app/plex/util.ts";
+import { Users } from "/internal/app/plex/types/users.ts";
+import { PlexMediaContainer } from "/internal/app/plex/types/common.ts";
 
 const APP_NAME = "MovieMatch";
 
@@ -59,7 +62,7 @@ export const getUser = async ({
   return user;
 };
 
-export const getUsers = async ({
+export const getPlexUsers = async ({
   clientId,
   plexToken,
 }: {
@@ -81,7 +84,31 @@ export const getUsers = async ({
     throw new Error(`${req.status}: ${await req.text()}`);
   }
 
-  const users = await req.json();
+  const users = parseXML(await req.text(), (elementName, key, value) => {
+    if (
+      (elementName === "Server" &&
+        ["id", "serverId", "numLibraries", "allLibraries"].includes(key)) ||
+      (elementName === "User" && key === "id")
+    ) {
+      return Number(value);
+    }
+    if (
+      (elementName === "Server" && ["owned", "pending"].includes(key)) ||
+      (elementName === "User" && [
+        "protected",
+        "home",
+        "allowTuners",
+        "allowSync",
+        "allowCameraUpload",
+        "allowChannels",
+        "allowSubtitleAdmin",
+        "restricted",
+      ].includes(key))
+    ) {
+      return value === "1";
+    }
+    return value;
+  });
 
-  return users;
+  return users as PlexMediaContainer<Users>;
 };

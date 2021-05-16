@@ -10,7 +10,7 @@ import {
   MovieMatchProvider,
 } from "/internal/app/moviematch/providers/types.ts";
 import { FieldType } from "/internal/app/plex/types/library_items.ts";
-import { filterToQueryString } from "/internal/app/plex/filters.ts";
+import { filterToQueryString } from "/internal/app/plex/util.ts";
 
 export interface PlexProviderConfig {
   url: string;

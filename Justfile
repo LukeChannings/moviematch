@@ -5,7 +5,7 @@ build_dir := justfile_directory() + "/build"
 ui_dir := justfile_directory() + "/web/app"
 ui_build_dir := ui_dir + "/build"
 deno_options := "-A --unstable --import-map=./configs/import_map.json"
-deno_compile_options := "--allow-read --allow-write --allow-env --allow-net --unstable"
+deno_compile_options := "--unstable --allow-read --allow-write --allow-env --allow-net"
 deno_fmt_ignore := build_dir + "," + ui_dir + "/node_modules" + "," + ui_build_dir
 default_target := os() + "-" + arch()
 
@@ -41,7 +41,7 @@ build-bundle: clean build-ui
   mkdir -p {{build_dir}}
   deno run {{ deno_options }} ./cmd/moviematch/pkger.ts {{ui_build_dir}} web/template/index.html configs/localization VERSION > {{build_dir}}/pkg.ts
   sed 's/pkger.ts/pkger_release.ts/' < configs/import_map.json > {{build_dir}}/import_map.json
-  deno bundle --lock deps.lock --unstable --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
+  deno bundle --lock deps.lock --import-map=build/import_map.json ./cmd/moviematch/main.ts > {{build_dir}}/moviematch.js
 
 build-binary target=default_target: build-bundle
   #!/usr/bin/env bash
@@ -99,7 +99,7 @@ test-e2e target:
 
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}
-  deno lint --unstable --ignore={{build_dir}},{{ui_dir}}
+  deno lint --ignore={{build_dir}},{{ui_dir}}
   cd {{ui_dir}} && npx tsc
 
 install: install-node-modules install-deno-dependencies
@@ -108,8 +108,8 @@ install-node-modules:
   cd {{ui_dir}} && npm install
 
 install-deno-dependencies:
-  deno install -qAf --unstable https://deno.land/x/denon@2.4.7/denon.ts
-  PUPPETEER_PRODUCT=chrome deno run -A --unstable https://deno.land/x/puppeteer@9.0.0/install.ts
+  deno install -qAf https://deno.land/x/denon@2.4.7/denon.ts
+  PUPPETEER_PRODUCT=chrome deno run -A https://deno.land/x/puppeteer@9.0.0/install.ts
 
 clean: clean-ui clean-server
 
@@ -120,7 +120,7 @@ clean-server:
   rm -rf {{build_dir}}
 
 clean-deno-cache:
-  rm -rf $(deno info --unstable --json | jq .denoDir)
+  rm -rf $(deno info --json | jq .denoDir)
 
 alias fmt := format
 
@@ -128,7 +128,7 @@ format:
   deno fmt --ignore={{deno_fmt_ignore}}
 
 update-lockfile:
-  deno cache --reload --lock deps.lock --lock-write --unstable --import-map=./configs/import_map.json ./cmd/moviematch/main.ts
+  deno cache --reload --unstable --lock deps.lock --lock-write --import-map=./configs/import_map.json ./cmd/moviematch/main.ts
 
 install-githooks:
   #!/bin/bash
