@@ -41,7 +41,7 @@ export { walk } from "https://deno.land/std@0.97.0/fs/walk.ts";
 // Third-party dependencies
 export { Accepts } from "https://deno.land/x/accepts@2.1.0/mod.ts";
 // @deno-types="https://cdn.skypack.dev/yup@0.32.9?dts"
-export * as yup from "https://cdn.skypack.dev/pin/yup@v0.32.9-7S9NI8QRAljrd7rctNp1/mode=imports/optimized/yup.js";
+export * as yup from "https://cdn.skypack.dev/pin/yup@v0.32.9-V1IHphwO2td6lU13qiPi/mode=imports/optimized/yup.js";
 export * as base64 from "https://deno.land/x/base64@v0.2.1/mod.ts";
 export { gzip } from "https://deno.land/x/compress@v0.3.6/mod.ts";
 export { lookup as lookupMimeType } from "https://deno.land/x/media_types@v2.7.1/mod.ts";
