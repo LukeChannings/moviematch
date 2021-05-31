@@ -28,9 +28,6 @@ Deno.test("validateConfig", () => {
     ]],
     [{ servers: [{ url: "http://localhost", token: "abc123" }] }, []],
     [{
-      servers: [{ type: "jellyfin", url: "http://localhost", token: "abc123" }],
-    }, ["ServerTypeInvalid"]],
-    [{
       servers: [{
         libraryTitleFilter: 123,
         url: "http://localhost",
@@ -98,10 +95,6 @@ Deno.test("validateConfig", () => {
     [{ basicAuth: { userName: "luke", password: "test" } }, [
       "ServersMustBeArray",
     ]],
-    [{ requirePlexTvLogin: "what?" }, [
-      "RequirePlexTvLoginInvalid",
-      "ServersMustBeArray",
-    ]],
     [{ tlsConfig: "/foo.crt" }, [
       "TlsConfigInvalid",
       "ServersMustBeArray",
@@ -111,10 +104,29 @@ Deno.test("validateConfig", () => {
       "TlsConfigKeyFileInvalid",
       "ServersMustBeArray",
     ]],
+    [{ permittedAuthTypes: 123 }, [
+      "PermittedAuthTypesInvalid",
+      "ServersMustBeArray",
+    ]],
+    [{ permittedAuthTypes: { foo: "bar" } }, [
+      "PermittedAuthTypeUnknownKey",
+      "PermittedAuthTypeValueNotArray",
+      "ServersMustBeArray",
+    ]],
+    [{ permittedAuthTypes: { foo: ["bar"] } }, [
+      "PermittedAuthTypeUnknownKey",
+      "PermittedAuthTypeUnknownPermission",
+      "ServersMustBeArray",
+    ]],
+    [{ permittedAuthTypes: { anonymous: ["JoinRoom"] } }, [
+      "ServersMustBeArray",
+    ]],
   ];
 
   for (const [config, expectedErrors] of cases) {
-    const actualErrors = validateConfig(config).map((err) => err.name);
+    const actualErrors = (validateConfig(config)?.errors ?? []).map((err) =>
+      err.name
+    );
     assert(
       expectedErrors.sort().join("") === actualErrors.sort().join(""),
       `Expected ${JSON.stringify(expectedErrors)}, got ${

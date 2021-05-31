@@ -408,11 +408,11 @@ export class Client {
     const currentConfig = getConfig();
     if (currentConfig.servers.length === 0) {
       const configErrors = validateConfig(config);
-      if (configErrors.length) {
+      if (configErrors) {
         this.sendMessage({
           type: "setupError",
           payload: {
-            "message": JSON.stringify(configErrors),
+            "message": JSON.stringify(configErrors.errors),
             "type": "INVALID_CONFIG",
           },
         });

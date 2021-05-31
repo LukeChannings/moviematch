@@ -3,7 +3,7 @@ import { Config } from "/types/moviematch.ts";
 import { handler as serveStaticHandler } from "/internal/app/moviematch/handlers/serve_static.ts";
 import { handler as rootHandler } from "/internal/app/moviematch/handlers/template.ts";
 import { handler as healthHandler } from "/internal/app/moviematch/handlers/health.ts";
-import { handler as apiHandler } from "/internal/app/moviematch/handlers/api.ts";
+import { handler as websocketHandler } from "/internal/app/moviematch/handlers/websocket.ts";
 import { handler as basicAuthHandler } from "/internal/app/moviematch/handlers/basic_auth.ts";
 import { handler as posterHandler } from "/internal/app/moviematch/handlers/poster.ts";
 import { handler as linkHandler } from "/internal/app/moviematch/handlers/link.ts";
@@ -19,7 +19,7 @@ export class ProviderUnavailableError extends Error {}
 const routes: Array<readonly [RegExp | string, RouteHandler[]]> = [
   ["/", [basicAuthHandler, rootHandler]],
   ["/health", [healthHandler]],
-  ["/api/ws", [apiHandler]],
+  ["/api/ws", [websocketHandler]],
   [
     /^\/api\/poster\/(?<providerIndex>[0-9]+)\/(?<key>[0-9/]+)$/,
     [basicAuthHandler, posterHandler],
@@ -93,6 +93,75 @@ export const Application = (
         server.close();
         appStatusCode = undefined;
       });
+
+      log.info(
+        `Server listening on ${
+          config.tlsConfig ? "https://" : "http://"
+        }${config.hostname}:${config.port}`,
+      );
+
+      try {
+        const handling = new Set<Promise<void>>();
+
+        for await (const req of server) {
+          const url = urlFromReqUrl(req.url);
+          const [path, handlers] = routes.find(([path]) => {
+            if (typeof path === "string") {
+              return path === url.pathname;
+            } else {
+              return path.test(url.pathname);
+            }
+          }) ?? [];
+
+          if (!handlers || !path) {
+            log.error(`No handlers for ${url.pathname}`);
+          } else {
+            (async () => {
+              const dfd = deferred<void>();
+              handling.add(dfd);
+              let response;
+              let params;
+              if (path instanceof RegExp) {
+                params = path.exec(url.pathname)?.groups;
+              }
+              for (const handler of handlers) {
+                response = await handler(req, {
+                  providers,
+                  config,
+                  path,
+                  params,
+                });
+                if (response) {
+                  break;
+                }
+              }
+
+              if (!response) {
+                response = {
+                  status: 404,
+                };
+              }
+
+              try {
+                await req.respond(response);
+              } catch {
+                // Pass
+              }
+
+              dfd.resolve();
+              handling.delete(dfd);
+            })();
+          }
+        }
+
+        log.info("Shutting down...");
+
+        await Promise.all(handling);
+      } finally {
+        log.info("Server closed");
+      }
+
+      statusCode.resolve(appStatusCode);
     } catch (err) {
       log.critical(
         `Failed to start an HTTP server. ${
@@ -102,75 +171,6 @@ export const Application = (
         }`,
       );
     }
-
-    log.info(
-      `Server listening on ${
-        config.tlsConfig ? "https://" : "http://"
-      }${config.hostname}:${config.port}`,
-    );
-
-    try {
-      const handling = new Set<Promise<void>>();
-
-      for await (const req of server!) {
-        const url = urlFromReqUrl(req.url);
-        const [path, handlers] = routes.find(([path]) => {
-          if (typeof path === "string") {
-            return path === url.pathname;
-          } else {
-            return path.test(url.pathname);
-          }
-        }) ?? [];
-
-        if (!handlers || !path) {
-          log.error(`No handlers for ${url.pathname}`);
-        } else {
-          (async () => {
-            const dfd = deferred<void>();
-            handling.add(dfd);
-            let response;
-            let params;
-            if (path instanceof RegExp) {
-              params = path.exec(url.pathname)?.groups;
-            }
-            for (const handler of handlers) {
-              response = await handler(req, {
-                providers,
-                config,
-                path,
-                params,
-              });
-              if (response) {
-                break;
-              }
-            }
-
-            if (!response) {
-              response = {
-                status: 404,
-              };
-            }
-
-            try {
-              await req.respond(response);
-            } catch {
-              // Pass
-            }
-
-            dfd.resolve();
-            handling.delete(dfd);
-          })();
-        }
-      }
-
-      log.info("Shutting down...");
-
-      await Promise.all(handling);
-    } finally {
-      log.info("Server closed");
-    }
-
-    statusCode.resolve(appStatusCode);
   })();
 
   return {

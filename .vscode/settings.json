@@ -21,5 +21,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "debug.javascript.unmapMissingSources": true,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "deno.codeLens.implementations": true
 }

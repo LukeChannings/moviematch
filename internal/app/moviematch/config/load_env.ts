@@ -1,3 +1,4 @@
+import { log } from "/deps.ts";
 import { requestEnv } from "/internal/app/moviematch/util/permission.ts";
 import { Config } from "/types/moviematch.ts";
 
@@ -30,7 +31,7 @@ const trimRecord = (value: Record<string, unknown>) => {
 };
 
 const getTrimmedEnv = (
-  key: ConfigEnvVariableName,
+  key: ConfigEnvVariableName | "CONFIG_JSON",
   Type: typeof String | typeof Number | typeof EnvBool | typeof EnvList =
     String,
 ) => {
@@ -61,16 +62,43 @@ export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
     keyFile: getTrimmedEnv("TLS_KEY"),
   });
 
-  const config = trimRecord({
+  let jsonConfig: Partial<Config> = {};
+
+  try {
+    const jsonConfigRaw = getTrimmedEnv("CONFIG_JSON");
+    if (typeof jsonConfigRaw === "string") {
+      jsonConfig = JSON.parse(jsonConfigRaw);
+    }
+  } catch (err) {
+    log.info(
+      `It looks like CONFIG_JSON environment variable was set, parsing failed. ${
+        String(err)
+      }`,
+    );
+  }
+
+  const requirePlexLogin = getTrimmedEnv("REQUIRE_PLEX_LOGIN", EnvBool);
+  return trimRecord({
     hostname: getTrimmedEnv("HOST"),
     port: getTrimmedEnv("PORT", Number),
     logLevel: getTrimmedEnv("LOG_LEVEL"),
     rootPath: getTrimmedEnv("ROOT_PATH"),
-    requirePlexTvLogin: getTrimmedEnv("REQUIRE_PLEX_LOGIN", EnvBool),
+    permittedAuthTypes: requirePlexLogin
+      ? {
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      }
+      : undefined,
     servers: server ? [server] : undefined,
     basicAuth,
     tlsConfig,
+    ...jsonConfig,
   });
-
-  return config!;
 };

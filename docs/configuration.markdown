@@ -15,8 +15,26 @@ Here's a simple example:
 host: 0.0.0.0
 port: 8000
 servers:
-  - url: https://plex.example.com
+  - url: https://plex.foo.com
     token: abcdef12346
+    useForAuth: true
+  - url: https://plex.bar.com
+    token: abcdef12346
+    useForAuth: true
+permittedAuthTypes:
+  anonymous:
+    - JoinRoom
+  plex:
+    - JoinRoom
+  plexFriends:
+    - JoinRoom
+    - CreateRoom
+  plexOwner:
+    - JoinRoom
+    - CreateRoom
+    - DeleteRoom
+    - ResetRoom
+    - Reconfigure
 ```
 
 MovieMatch will read the config from `config.yaml` by default.

@@ -76,26 +76,26 @@ test:
   # https://github.com/denoland/deno/issues/9284
   deno test {{ deno_options }} internal
 
-test-e2e target:
+test-e2e:
   #!/bin/bash
+  rm -f screenshots/e2e_*
   export PORT=8765
+  deno test {{ deno_options }} tests/websocket
+
+start-binary target:
+  #!/bin/bash
+  export PORT="${PORT:-8765}"
   export MOVIEMATCH_URL="http://localhost:$PORT"
 
   chmod +x ./build/{{target}}/moviematch*
-  ./build/{{target}}/moviematch* &
+  2>/dev/null 1>/dev/null ./build/{{target}}/moviematch* &
   MM_PID="$!"
 
   while true ; do
-    curl -sf "${MOVIEMATCH_URL}/health" && break
-    echo "Waiting for MovieMatch to start"
+    curl -sfo /dev/null "${MOVIEMATCH_URL}/health" && break
     sleep 1
   done
-
-  rm screenshots/e2e_*
-  deno test {{ deno_options }} e2e-tests
-  STATUS="$?"
-  kill $MM_PID
-  exit $STATUS
+  echo "$MM_PID"
 
 lint:
   deno fmt --check --ignore={{deno_fmt_ignore}}

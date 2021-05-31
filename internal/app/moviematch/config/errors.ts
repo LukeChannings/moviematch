@@ -11,7 +11,6 @@ export class LogLevelInvalid extends MovieMatchError {}
 export class ServersMustBeArray extends MovieMatchError {}
 export class ServersMustNotBeEmpty extends MovieMatchError {}
 export class ServerMustBeRecord extends MovieMatchError {}
-export class ServerTypeInvalid extends MovieMatchError {}
 export class ServerUrlMustBeString extends MovieMatchError {}
 export class ServerUrlInvalid extends MovieMatchError {}
 export class ServerTokenMustBeString extends MovieMatchError {}
@@ -22,7 +21,12 @@ export class ServerLinkTypeInvalid extends MovieMatchError {}
 export class BasicAuthInvalid extends MovieMatchError {}
 export class BasicAuthUserNameInvalid extends MovieMatchError {}
 export class BasicAuthPasswordInvalid extends MovieMatchError {}
-export class RequirePlexTvLoginInvalid extends MovieMatchError {}
+
+export class PermittedAuthTypesInvalid extends MovieMatchError {}
+export class PermittedAuthTypeUnknownKey extends MovieMatchError {}
+export class PermittedAuthTypeValueNotArray extends MovieMatchError {}
+export class PermittedAuthTypeUnknownPermission extends MovieMatchError {}
+
 export class TlsConfigInvalid extends MovieMatchError {}
 export class TlsConfigCertFileInvalid extends MovieMatchError {}
 export class TlsConfigKeyFileInvalid extends MovieMatchError {}

@@ -85,7 +85,17 @@ Deno.test("Config -> loadFromEnv", async () => {
       rootPath: "/moviematch",
     }],
     [{ "REQUIRE_PLEX_LOGIN": "1" }, {
-      requirePlexTvLogin: true,
+      permittedAuthTypes: {
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }],
   ];
 

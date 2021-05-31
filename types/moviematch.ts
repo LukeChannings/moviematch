@@ -7,20 +7,36 @@ export interface BasicAuth {
   password: string;
 }
 
+export const permittedAuthTypeKeys = [
+  "anonymous",
+  "plex",
+  "plexFriends",
+  "plexOwner",
+] as const;
+
 export interface Config {
   hostname: string;
   port: number;
   logLevel: "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
   rootPath: string;
-  servers: Array<{
-    type?: "plex";
-    url: string;
-    token: string;
-    libraryTitleFilter?: string[];
-    libraryTypeFilter: LibraryType[];
-    linkType?: "app" | "webLocal" | "webExternal";
-  }>;
-  requirePlexTvLogin: boolean;
+  servers: Array<
+    {
+      url: string;
+      token: string;
+      libraryTitleFilter?: string[];
+      libraryTypeFilter: LibraryType[];
+      linkType?: "app" | "webLocal" | "webExternal";
+      // If no servers have useForAuth set to true then the
+      // first server will be used for auth automatically.
+      useForAuth?: boolean;
+    }
+  >;
+  permittedAuthTypes?: Partial<
+    Record<
+      typeof permittedAuthTypeKeys[number],
+      Permissions[]
+    >
+  >;
   basicAuth?: BasicAuth;
   tlsConfig?: {
     certFile: string;
@@ -71,6 +87,11 @@ export type ClientMessage =
   | { type: "userJoinedRoom"; payload: UserProgress }
   | { type: "userLeftRoom"; payload: User }
   | { type: "userProgress"; payload: UserProgress };
+
+export type FilterClientMessageByType<
+  A extends ClientMessage,
+  ClientMessageType extends string,
+> = A extends { type: ClientMessageType } ? A : never;
 
 // Translations
 export type TranslationKey =
@@ -126,7 +147,15 @@ export interface LogoutError {
   message: string;
 }
 
-export type Permissions = "CanCreateRoom";
+export const userPermissions = [
+  "CreateRoom",
+  "JoinRoom",
+  "DeleteRoom",
+  "ResetRoom",
+  "Reconfigure",
+] as const;
+
+export type Permissions = typeof userPermissions[number];
 
 export interface User {
   userName: string;

@@ -66,7 +66,7 @@ export async function loadConfig(
 
   cachedConfig = config as Config;
 
-  return [cachedConfig, configErrors];
+  return [cachedConfig, configErrors?.errors ?? []];
 }
 
 export async function updateConfiguration(config: Record<string, unknown>) {

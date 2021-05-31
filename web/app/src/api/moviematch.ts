@@ -2,6 +2,7 @@ import type {
   ClientMessage,
   Config,
   CreateRoomRequest,
+  FilterClientMessageByType,
   FilterValueRequest,
   JoinRoomRequest,
   Locale,
@@ -20,11 +21,6 @@ const API_URL = (() => {
     return url.href;
   }
 })();
-
-type FilterClientMessageByType<
-  A extends ClientMessage,
-  ClientMessageType extends string,
-> = A extends { type: ClientMessageType } ? A : never;
 
 export class MovieMatchClient extends EventTarget {
   ws!: WebSocket;

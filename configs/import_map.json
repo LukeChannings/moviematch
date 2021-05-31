@@ -3,6 +3,7 @@
     "/internal/": "../internal/",
     "/types/": "../types/",
     "/build/": "../build/",
+    "/tests/": "../tests/",
     "/deps.ts": "../deps.ts",
     "pkger": "../internal/app/moviematch/util/pkger.ts"
   }

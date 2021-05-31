@@ -1,17 +1,28 @@
 import { Config } from "/types/moviematch.ts";
 
 const defaultServerConfig: Partial<Config["servers"][number]> = {
-  type: "plex",
   libraryTypeFilter: ["movie"],
 };
 
 const defaultConfig: Partial<Config> = {
   hostname: "0.0.0.0",
   port: 8000,
-  // TODO: Set this to INFO when 2.0.0 is stable
+  // TODO: Set this to INFO when 2.0 is stable
   logLevel: "DEBUG",
   rootPath: "",
   servers: [],
+  permittedAuthTypes: {
+    anonymous: ["JoinRoom"],
+    plex: ["JoinRoom"],
+    plexFriends: ["JoinRoom", "CreateRoom"],
+    plexOwner: [
+      "JoinRoom",
+      "CreateRoom",
+      "DeleteRoom",
+      "ResetRoom",
+      "Reconfigure",
+    ],
+  },
 };
 
 export const applyDefaults = (

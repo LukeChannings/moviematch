@@ -10,6 +10,18 @@ Deno.test("Config -> applyDefaults", () => {
       logLevel: "DEBUG",
       rootPath: "",
       servers: [],
+      permittedAuthTypes: {
+        anonymous: ["JoinRoom"],
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }],
     [{ hostname: "127.0.0.1" }, {
       hostname: "127.0.0.1",
@@ -17,6 +29,18 @@ Deno.test("Config -> applyDefaults", () => {
       logLevel: "DEBUG",
       rootPath: "",
       servers: [],
+      permittedAuthTypes: {
+        anonymous: ["JoinRoom"],
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }],
     [{ hostname: "127.0.0.1", port: 8888 }, {
       hostname: "127.0.0.1",
@@ -24,6 +48,18 @@ Deno.test("Config -> applyDefaults", () => {
       logLevel: "DEBUG",
       rootPath: "",
       servers: [],
+      permittedAuthTypes: {
+        anonymous: ["JoinRoom"],
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }],
     [{ hostname: "127.0.0.1", port: 8888, logLevel: "DEBUG" }, {
       hostname: "127.0.0.1",
@@ -31,6 +67,18 @@ Deno.test("Config -> applyDefaults", () => {
       logLevel: "DEBUG",
       rootPath: "",
       servers: [],
+      permittedAuthTypes: {
+        anonymous: ["JoinRoom"],
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }],
     [{
       hostname: "127.0.0.1",
@@ -38,12 +86,36 @@ Deno.test("Config -> applyDefaults", () => {
       logLevel: "DEBUG",
       rootPath: "/moviematch",
       servers: [],
+      permittedAuthTypes: {
+        anonymous: ["JoinRoom"],
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }, {
       hostname: "127.0.0.1",
       port: 8888,
       logLevel: "DEBUG",
       rootPath: "/moviematch",
       servers: [],
+      permittedAuthTypes: {
+        anonymous: ["JoinRoom"],
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }],
     [{
       hostname: "127.0.0.1",
@@ -56,10 +128,21 @@ Deno.test("Config -> applyDefaults", () => {
       rootPath: "",
       servers: [
         {
-          type: "plex",
           libraryTypeFilter: ["movie"],
         } as unknown as Config["servers"][number],
       ],
+      permittedAuthTypes: {
+        anonymous: ["JoinRoom"],
+        plex: ["JoinRoom"],
+        plexFriends: ["JoinRoom", "CreateRoom"],
+        plexOwner: [
+          "JoinRoom",
+          "CreateRoom",
+          "DeleteRoom",
+          "ResetRoom",
+          "Reconfigure",
+        ],
+      },
     }],
   ];
 

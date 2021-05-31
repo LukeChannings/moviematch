@@ -30,12 +30,23 @@ Deno.test("Config -> loadConfig", async () => {
         rootPath: "",
         servers: [
           {
-            type: "plex",
             libraryTypeFilter: ["movie"],
             url: "https://plex.example.com",
             token: "abc123",
           },
         ],
+        permittedAuthTypes: {
+          anonymous: ["JoinRoom"],
+          plex: ["JoinRoom"],
+          plexFriends: ["JoinRoom", "CreateRoom"],
+          plexOwner: [
+            "JoinRoom",
+            "CreateRoom",
+            "DeleteRoom",
+            "ResetRoom",
+            "Reconfigure",
+          ],
+        },
       },
       [],
     ],
@@ -53,12 +64,23 @@ servers:
         rootPath: "",
         servers: [
           {
-            type: "plex",
             libraryTypeFilter: ["movie"],
             url: "https://plex.example.com",
             token: "abc123",
           },
         ],
+        permittedAuthTypes: {
+          anonymous: ["JoinRoom"],
+          plex: ["JoinRoom"],
+          plexFriends: ["JoinRoom", "CreateRoom"],
+          plexOwner: [
+            "JoinRoom",
+            "CreateRoom",
+            "DeleteRoom",
+            "ResetRoom",
+            "Reconfigure",
+          ],
+        },
       },
       [],
     ],
@@ -76,12 +98,56 @@ servers:
         rootPath: "",
         servers: [
           {
-            type: "plex",
             libraryTypeFilter: ["show"],
             url: "https://plex.example.com",
             token: "abc123",
           },
         ],
+        permittedAuthTypes: {
+          anonymous: ["JoinRoom"],
+          plex: ["JoinRoom"],
+          plexFriends: ["JoinRoom", "CreateRoom"],
+          plexOwner: [
+            "JoinRoom",
+            "CreateRoom",
+            "DeleteRoom",
+            "ResetRoom",
+            "Reconfigure",
+          ],
+        },
+      },
+      [],
+    ],
+    [
+      `
+port: 8888
+servers:
+  - url: https://plex.example.com
+    token: abc123`,
+      { PORT: "9000", LIBRARY_TYPE_FILTER: "show", REQUIRE_PLEX_LOGIN: "1" },
+      {
+        hostname: "0.0.0.0",
+        port: 9000,
+        logLevel: "DEBUG",
+        rootPath: "",
+        servers: [
+          {
+            libraryTypeFilter: ["show"],
+            url: "https://plex.example.com",
+            token: "abc123",
+          },
+        ],
+        permittedAuthTypes: {
+          plex: ["JoinRoom"],
+          plexFriends: ["JoinRoom", "CreateRoom"],
+          plexOwner: [
+            "JoinRoom",
+            "CreateRoom",
+            "DeleteRoom",
+            "ResetRoom",
+            "Reconfigure",
+          ],
+        },
       },
       [],
     ],

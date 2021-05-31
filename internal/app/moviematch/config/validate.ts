@@ -1,8 +1,12 @@
 import { log } from "/deps.ts";
-import { LibaryTypes, LibraryType } from "/types/moviematch.ts";
+import {
+  LibaryTypes,
+  LibraryType,
+  permittedAuthTypeKeys,
+  userPermissions,
+} from "/types/moviematch.ts";
 import { addRedaction } from "/internal/app/moviematch/logger.ts";
 import {
-  assert,
   isRecord,
   MovieMatchError,
 } from "/internal/app/moviematch/util/assert.ts";
@@ -13,8 +17,11 @@ import {
   ConfigMustBeRecord,
   HostNameMustBeString,
   LogLevelInvalid,
+  PermittedAuthTypesInvalid,
+  PermittedAuthTypeUnknownKey,
+  PermittedAuthTypeUnknownPermission,
+  PermittedAuthTypeValueNotArray,
   PortMustBeNumber,
-  RequirePlexTvLoginInvalid,
   ServerBasePathInvalid,
   ServerLibraryTitleFilterInvalid,
   ServerLibraryTypeFilterInvalid,
@@ -23,7 +30,6 @@ import {
   ServersMustBeArray,
   ServersMustNotBeEmpty,
   ServerTokenMustBeString,
-  ServerTypeInvalid,
   ServerUrlInvalid,
   ServerUrlMustBeString,
   TlsConfigCertFileInvalid,
@@ -33,10 +39,12 @@ import {
 
 export const validateConfig = (
   value: unknown,
-): MovieMatchError[] => {
+): AggregateError | undefined => {
   const errors: MovieMatchError[] = [];
 
   try {
+    // If it's not a record then there isn't any point in the following
+    // checks, so it's okay that this throws.
     isRecord(value, "config", ConfigMustBeRecord);
 
     if (value.hostname) {
@@ -86,16 +94,6 @@ export const validateConfig = (
       for (const server of value.servers) {
         try {
           isRecord(server, "server", ServerMustBeRecord);
-
-          if (server.type) {
-            if (server.type !== "plex") {
-              errors.push(
-                new ServerTypeInvalid(
-                  `"plex" is the only valid server type. Got "${server.type}"`,
-                ),
-              );
-            }
-          }
 
           if (typeof server.url !== "string") {
             errors.push(
@@ -215,13 +213,46 @@ export const validateConfig = (
       }
     }
 
-    if (value.requirePlexTvLogin) {
+    if (value.permittedAuthTypes) {
       try {
-        assert(
-          typeof value.requirePlexTvLogin === "boolean",
-          'requirePlexTvLogin must be "true" or "false"',
-          RequirePlexTvLoginInvalid,
+        isRecord(
+          value.permittedAuthTypes,
+          "permittedAuthTypes",
+          PermittedAuthTypesInvalid,
         );
+        for (
+          const [key, permissions] of Object.entries(value.permittedAuthTypes)
+        ) {
+          if (!(permittedAuthTypeKeys as readonly string[]).includes(key)) {
+            errors.push(
+              new PermittedAuthTypeUnknownKey(
+                `${key} is not a known auth key. Should be one of these: ${
+                  permittedAuthTypeKeys.join(" ")
+                }`,
+              ),
+            );
+          }
+
+          if (Array.isArray(permissions)) {
+            for (const permission of permissions) {
+              if (!userPermissions.includes(permission)) {
+                errors.push(
+                  new PermittedAuthTypeUnknownPermission(
+                    `${permission} is not a known permission. Should be one of these: ${
+                      userPermissions.join(" ")
+                    }`,
+                  ),
+                );
+              }
+            }
+          } else {
+            errors.push(
+              new PermittedAuthTypeValueNotArray(
+                `The value for ${key} was not a list of permissions`,
+              ),
+            );
+          }
+        }
       } catch (err) {
         errors.push(err);
       }
@@ -244,5 +275,10 @@ export const validateConfig = (
     errors.push(err);
   }
 
-  return errors;
+  if (errors.length) {
+    return new AggregateError(
+      errors,
+      `There were ${errors.length} error(s) found with the config`,
+    );
+  }
 };
