@@ -1,5 +1,5 @@
 import { assert } from "/deps.ts";
-import { createProvider } from "/internal/app/moviematch/providers/plex.ts";
+import { createProvider } from "/internal/app/moviematch/providers/_plex.ts";
 
 try {
   const TEST_PLEX_URL = Deno.env.get("TEST_PLEX_URL");
