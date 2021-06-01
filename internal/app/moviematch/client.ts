@@ -56,16 +56,21 @@ export class Client {
       throw new Error(`Cannot send config when WebSocket is closed`);
     }
 
-    const requiresConfiguration = getConfig().servers.length === 0;
+    const config = getConfig();
+
+    const requiresSetup = config.servers.length === 0;
+    const requirePlexLogin = Boolean(
+      config.permittedAuthTypes?.anonymous?.length,
+    );
 
     this.sendMessage({
       type: "config",
       payload: {
-        requiresConfiguration,
-        requirePlexLogin: getConfig().requirePlexTvLogin,
-        ...(requiresConfiguration
+        requiresSetup,
+        requirePlexLogin,
+        ...(requiresSetup
           ? {
-            initialConfiguration: getConfig(),
+            initialConfiguration: config,
           }
           : {}),
       },
@@ -160,7 +165,7 @@ export class Client {
     log.debug(`Handling login event: ${JSON.stringify(login)}`);
 
     if ("userName" in login) {
-      if (getConfig().requirePlexTvLogin) {
+      if (!getConfig().permittedAuthTypes?.anonymous?.length) {
         this.sendMessage({
           type: "loginError",
           payload: {

@@ -1,26 +1,3 @@
 {
-  "deno.enable": true,
-  "deno.unstable": true,
-  "deno.lint": false,
-  "deno.importMap": "configs/import_map.json",
-  "deno.codeLens.referencesAllFunctions": true,
-  "deno.codeLens.references": true,
-  "[javascript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "debug.javascript.unmapMissingSources": true,
-  "editor.formatOnSave": true,
-  "deno.codeLens.implementations": true
+  "deno.enable": true
 }

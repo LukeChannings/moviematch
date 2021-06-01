@@ -29,7 +29,7 @@ export const reducer: Reducer<Store, Actions> = (
       };
     }
     case "config": {
-      if (action.payload.requiresConfiguration) {
+      if (action.payload.requiresSetup) {
         return { ...state, config: action.payload, route: "config" };
       }
       return {
@@ -58,7 +58,7 @@ export const reducer: Reducer<Store, Actions> = (
         return {
           ...state,
           user: action.payload,
-          ...(!state.config?.requiresConfiguration
+          ...(!state.config?.requiresSetup
             ? {
               route: "join",
             }

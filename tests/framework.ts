@@ -2,6 +2,7 @@ import {
   ClientMessage,
   Config,
   FilterClientMessageByType,
+  ServerMessage,
 } from "/types/moviematch.ts";
 import { iter } from "https://deno.land/std@0.97.0/io/util.ts";
 import { deferred } from "/deps.ts";
@@ -57,6 +58,13 @@ export const testMovieMatch = async (
     }
   }
 
+  (async () => {
+    for await (const line of stdout) {
+      const textLine = textDecoder.decode(line);
+      console.log(textLine);
+    }
+  })();
+
   const webSocketUrl = new URL(url.href);
   webSocketUrl.protocol = "ws";
   webSocketUrl.pathname = "/api/ws";
@@ -64,7 +72,6 @@ export const testMovieMatch = async (
   fn({
     url,
     webSocketUrl,
-    stdout,
     test: (testName, fn) =>
       Deno.test(
         name + " - " + testName,
@@ -95,13 +102,15 @@ testMovieMatch.port = 1234;
 export interface MovieMatchInstance {
   url: URL;
   webSocketUrl: URL;
-  stdout: AsyncIterableIterator<Uint8Array>;
 
   // A wrapper around Deno.test that also provides the
   // test function with a webSocket to the MovieMatch instance.
   test: (
     name: string,
-    fn: (() => Promise<void>) | ((websocket: WebSocket) => Promise<void>),
+    fn:
+      | (() => Promise<void>)
+      | (() => void)
+      | ((websocket: WebSocket) => Promise<void>),
   ) => void;
 }
 
@@ -112,13 +121,19 @@ export const waitForMessage = <
   type: K | K[],
 ): Promise<FilterClientMessageByType<ClientMessage, K>> =>
   new Promise((res) => {
-    ws.addEventListener("message", (e: MessageEvent) => {
+    const handler = (e: MessageEvent) => {
       const msg: ClientMessage = JSON.parse(e.data);
       if (
         msg.type === type ||
         (Array.isArray(type) && type.includes(msg.type as K))
       ) {
         res(msg as FilterClientMessageByType<ClientMessage, K>);
+        ws.removeEventListener("message", handler);
       }
-    }, { once: true });
+    };
+    ws.addEventListener("message", handler);
   });
+
+export const sendMessage = (ws: WebSocket, message: ServerMessage) => {
+  ws.send(JSON.stringify(message));
+};

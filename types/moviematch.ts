@@ -93,6 +93,11 @@ export type FilterClientMessageByType<
   ClientMessageType extends string,
 > = A extends { type: ClientMessageType } ? A : never;
 
+export type FilterServerMessageByType<
+  A extends ServerMessage,
+  ServerMessageType extends string,
+> = A extends { type: ServerMessageType } ? A : never;
+
 // Translations
 export type TranslationKey =
   | "LANG"
@@ -118,7 +123,7 @@ export type TranslationKey =
 // Configure message
 
 export interface AppConfig {
-  requiresConfiguration: boolean;
+  requiresSetup: boolean;
   requirePlexLogin: boolean;
   initialConfiguration?: Partial<Config>;
 }
@@ -259,11 +264,14 @@ export interface SetupSuccess {
   hostname: string;
   port: number;
 }
-
-export interface SetupError {
-  message: string;
-  type: string;
-}
+export type SetupError =
+  | { type: "SetupNotAllowed"; message: string }
+  | { type: "InvalidConfig"; message: string; errors: string[] }
+  | {
+    type: "ProviderAvailabilityError";
+    message: string;
+    unavailableUrls: string[];
+  };
 
 // Filters
 

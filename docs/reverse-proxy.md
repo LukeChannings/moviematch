@@ -1,6 +1,7 @@
 # Running MovieMatch behind a reverse proxy
 
-Many people choose to run services behind a reverse proxy. This page aims to provide some documentation to spare lots of duplicated effort (and bug tickets).
+Many people choose to run services behind a reverse proxy. This page aims to
+provide some documentation to spare lots of duplicated effort (and bug tickets).
 
 ## Nginx
 
@@ -71,7 +72,8 @@ backend moviematch-http
 
 ## Apache2
 
-Make sure to enable Apache2 mods first: a2enmod mod_proxy mod_proxy_wstunnel mod_rewrite
+Make sure to enable Apache2 mods first: a2enmod mod_proxy mod_proxy_wstunnel
+mod_rewrite
 
 ```xml
 <VirtualHost *:80>

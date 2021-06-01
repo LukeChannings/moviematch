@@ -4,7 +4,8 @@
 
 - [Bugfix] You can now toggle the user menu by tapping the avatar multiple times
 - [Bugfix] Like / Dislike buttons now disappear when there are no more cards
-- [Bugfix] error messages for Login / Join / CreateRoom are now shown to the user
+- [Bugfix] error messages for Login / Join / CreateRoom are now shown to the
+  user
 - [Bugfix] Boolean filters now work as expected
 - [Bugfix] `requirePlexTvLogin` config option now works as expected
 
@@ -15,12 +16,14 @@
 - [Testing] Improvements to end-to-end tests
 - [Testing] Include the UI in linting tests (tsc)
 - [Compat] Rename `basePath` to `rootPath`
-- [Bugfix] The server is now notified when a user logs out and will remove them from the room
+- [Bugfix] The server is now notified when a user logs out and will remove them
+  from the room
 - [Bugfix] More robust messages for filter values and setup
 - [UI] Refactor the store from `useReducer` + `Context` to Redux
 - [UI] Refactor to CSS Modules
 - [Bugfix] Fix #74
-- [Feature] Implement a new User menu showing other users in a room, as well as user progress
+- [Feature] Implement a new User menu showing other users in a room, as well as
+  user progress
 - [Feature] Use icons from [Iconic](https://iconic.app)
 - [Feature] Show matches as a grid on larger screens
 - [Feature] Show a like / dislike button on larger screens
@@ -31,9 +34,11 @@
 - [Bugfix] Improve Card Stack for different screen sizes
 - [Bugfix] MovieMatch would fail to start on Windows
 - [Bugfix] Having Reduced Motion enabled would break the Card Stack
-- [Bugfix] The server is no longer sent duplicate ratings when a card is dismissed
+- [Bugfix] The server is no longer sent duplicate ratings when a card is
+  dismissed
 - [Feature] Provide ARM64 Linux binary
-- [CI] Run end-to-end tests for macOS, Linux, and Windows against the release binary
+- [CI] Run end-to-end tests for macOS, Linux, and Windows against the release
+  binary
 
 ## v2.0.0-alpha.6
 
@@ -50,33 +55,42 @@
 - [Bugfix] Don't allow an item to be rated twice by the same user.
 - [Housekeeping] Remove built-in dev server (using Snowpack now)
 - [Testing] Validate plexApi.getLibraryItems()
-- [Config] Rename `BASE_PATH` back to `ROOT_PATH` (it was causing too much confusion)
-- [Feat] Don't overscroll the page (`overscroll-behavior` isn't supported in Safari yet)
-- [Feat] Scroll to the beginning of the matches list when the sort type is changed
+- [Config] Rename `BASE_PATH` back to `ROOT_PATH` (it was causing too much
+  confusion)
+- [Feat] Don't overscroll the page (`overscroll-behavior` isn't supported in
+  Safari yet)
+- [Feat] Scroll to the beginning of the matches list when the sort type is
+  changed
 - [Bugfix] The server is notified when a user leaves a room deliberately
 - [CI] Now using [Just](https://github.com/casey/just) for scripting
 
 ## v2.0.0-alpha.4
 
 - Upgrade Deno to 1.8.2
-- Don't fail entire test suite if TEST_PLEX_URL and TEST_PLEX_TOKEN are missing (fixes failing tests on PRs)
+- Don't fail entire test suite if TEST_PLEX_URL and TEST_PLEX_TOKEN are missing
+  (fixes failing tests on PRs)
 - Move to [Snowpack](https://www.snowpack.dev) for UI tooling
 - Improvements to `<CardStack />` component (#58)
 - Improvements to `<Card />` component (#9)
 
 ## v2.0.0-alpha.3
 
-- Publish the JS bundle to the release artefacts (Fixes an issue with Docker images not building for ARM64 under QEMU)
-- Ask for permission before using read/write/env/net if run with `deno run` without any permission flags
+- Publish the JS bundle to the release artefacts (Fixes an issue with Docker
+  images not building for ARM64 under QEMU)
+- Ask for permission before using read/write/env/net if run with `deno run`
+  without any permission flags
 - Fix a regression in room creation filters
 - Fixes to the CI pipeline
 
 ## v2.0.0-alpha.2
 
-- Rewrite configuration handling with extensive testing and stability improvements
+- Rewrite configuration handling with extensive testing and stability
+  improvements
 - Default log level to `DEBUG`
 - Implement AutoSuggest input for filter values
-- Disable focus ring until a user presses the tab key (that'd be the first thing a keyboard user would press), and disable focus ring again when a pointer is used
+- Disable focus ring until a user presses the tab key (that'd be the first thing
+  a keyboard user would press), and disable focus ring again when a pointer is
+  used
 - Implement match sorting based on "most recent" or "most likes" (#20)
 - Upgrade to Deno v1.8.0
 
@@ -84,9 +98,12 @@
 
 ### New features
 
-- Provide standalone binaries for Linux, macOS, and Windows. (No need to install Docker or Deno)
-- Support configuring MovieMatch in the application, providing a more user-friendly setup experience.
-- Allow configuration via environment variables and a more structured (and safe) YAML format for more advanced use cases
+- Provide standalone binaries for Linux, macOS, and Windows. (No need to install
+  Docker or Deno)
+- Support configuring MovieMatch in the application, providing a more
+  user-friendly setup experience.
+- Allow configuration via environment variables and a more structured (and safe)
+  YAML format for more advanced use cases
 - Implement a new User Interface
 - Support sharing the room URL more easily (#7)
 - Support for logging out or leaving a room by tapping on your user name
@@ -97,9 +114,11 @@
 
 ### Bug fixes
 
-- The UI is now compiled with [`esbuild`](https://esbuild.github.io), which provides improved support for older browsers. (#28)
+- The UI is now compiled with [`esbuild`](https://esbuild.github.io), which
+  provides improved support for older browsers. (#28)
 - Improved logging throughout
-- The logger will automatically redact any Plex URL or Token, making it safer for sharing logs when reporting issues
+- The logger will automatically redact any Plex URL or Token, making it safer
+  for sharing logs when reporting issues
 
 ### Known issues
 
@@ -134,7 +153,9 @@
 
 ## v1.6.0
 
-- [Bugfix] Environment variables exported to deno were not trimmed of whitespace, whereas values specified in an `.env` file were. This release ensures environment variables passed using both methods are trimmed. (#36)
+- [Bugfix] Environment variables exported to deno were not trimmed of
+  whitespace, whereas values specified in an `.env` file were. This release
+  ensures environment variables passed using both methods are trimmed. (#36)
 
 ## v1.5.0
 
@@ -154,9 +175,11 @@
 ## v1.2.0
 
 - [Bugfix] Fix too eager checking of the PLEX_TOKEN validity
-- [Bugfix] In some cases items were skipped because their poster metadata was irregular
+- [Bugfix] In some cases items were skipped because their poster metadata was
+  irregular
 - [Bugfix] Handle the eventuality of a user getting to the end of the card stack
-- [Bugfix] Handle the case where the batch size is bigger than the library size (#3)
+- [Bugfix] Handle the case where the batch size is bigger than the library size
+  (#3)
 - [Bugfix] Support for setting a custom root path
 - [Bugfix] Handle SIGINT correctly
 - [Bugfix] Don't display the year for non-Movies
@@ -169,11 +192,15 @@
 
 - Added an example .env file
 - Improved documentation for running with Deno
-- [Bugfix] Card animation played from the beginning when the cursor was released outside of the viewport
-- [Bugfix] The WebSocket URL is incorrect when MovieMatch is hosted under a sub-path
+- [Bugfix] Card animation played from the beginning when the cursor was released
+  outside of the viewport
+- [Bugfix] The WebSocket URL is incorrect when MovieMatch is hosted under a
+  sub-path
 - [Bugfix] No warning is given when a malformed Plex Token is passed
-- [Bugfix] Explicitly log when the Plex API request failed due to an authorisation error
-- [Bugfix] Fetching random movies was unaware of previously fetched movies and would return the same random movie more than once
+- [Bugfix] Explicitly log when the Plex API request failed due to an
+  authorisation error
+- [Bugfix] Fetching random movies was unaware of previously fetched movies and
+  would return the same random movie more than once
 - Improves issue templates (Thanks @flying-sausages)
 
 ## v1.0.2

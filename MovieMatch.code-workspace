@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+    {
+			"path": "./web"
+		}
+  ],
+  "settings": {
+    "deno.importMap": "configs/import_map.json",
+    "deno.lint": true,
+    "deno.suggest.completeFunctionCalls": true,
+    "deno.unstable": true
+  }
+}

@@ -9,8 +9,10 @@ import { handler as posterHandler } from "/internal/app/moviematch/handlers/post
 import { handler as linkHandler } from "/internal/app/moviematch/handlers/link.ts";
 import { urlFromReqUrl } from "/internal/app/moviematch/util/url.ts";
 
-import { createProvider as createPlexProvider } from "/internal/app/moviematch/providers/plex.ts";
-import type { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
+import {
+  createProvider,
+  MovieMatchProvider,
+} from "/internal/app/moviematch/providers/provider.ts";
 import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import type { RouteHandler } from "./types.ts";
 
@@ -55,13 +57,7 @@ export const Application = (
     let appStatusCode: number | undefined = 0;
 
     const providers: MovieMatchProvider[] = config.servers.map(
-      (server, index) => {
-        if (typeof server.type === "string" && server.type !== "plex") {
-          throw new Error(`server type ${server.type} unhandled.`);
-        }
-
-        return createPlexProvider(String(index), server);
-      },
+      (server, index) => createProvider(String(index + server.url), server),
     );
 
     for (const provider of providers) {
