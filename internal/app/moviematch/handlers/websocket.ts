@@ -104,11 +104,15 @@ class Socket extends MMEventTarget<
 
     const unavailableUrls: string[] = [];
 
-    for (const provider of providers) {
+    console.log(newConfig.servers, providers);
+
+    for await (const provider of providers) {
       if (!await provider.isAvailable()) {
         unavailableUrls.push(provider.options.url);
       }
     }
+
+    console.log("unavailableUrls", unavailableUrls);
 
     if (unavailableUrls.length) {
       return this.sendMessage({

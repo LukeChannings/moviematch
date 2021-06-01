@@ -1,6 +1,6 @@
 import { Response, ServerRequest } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
-import { MovieMatchProvider } from "/internal/app/moviematch/providers/types.ts";
+import { MovieMatchProvider } from "/internal/app/moviematch/providers/provider.ts";
 
 export interface RouteContext {
   config: Config;

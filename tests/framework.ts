@@ -51,19 +51,19 @@ export const testMovieMatch = async (
   const textDecoder = new TextDecoder();
   const stdout = iter(process.stdout);
 
-  for await (const line of stdout) {
-    const textLine = textDecoder.decode(line);
-    if (textLine.includes("Server listening")) {
-      break;
-    }
-  }
+  const serverStarted = deferred<boolean>();
 
   (async () => {
     for await (const line of stdout) {
       const textLine = textDecoder.decode(line);
-      console.log(textLine);
+      if (textLine.includes("Server listening")) {
+        serverStarted.resolve(true);
+        break;
+      }
     }
   })();
+
+  await serverStarted;
 
   const webSocketUrl = new URL(url.href);
   webSocketUrl.protocol = "ws";

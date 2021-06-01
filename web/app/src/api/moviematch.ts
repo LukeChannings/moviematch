@@ -158,7 +158,7 @@ export class MovieMatchClient extends EventTarget {
     ]);
   };
 
-  rate = async (rateRequest: Rate) => {
+  rate = (rateRequest: Rate) => {
     this.sendMessage({
       type: "rate",
       payload: rateRequest,

@@ -64,7 +64,11 @@ export class PlexApi {
   }
 
   async isAvaliable(): Promise<boolean> {
-    return !!(await this.getCapabilities()).size;
+    try {
+      return !!(await this.getCapabilities()).size;
+    } catch {
+      return false;
+    }
   }
 
   getIdentity(): Promise<Identity> {

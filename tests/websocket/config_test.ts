@@ -30,36 +30,30 @@ await testMovieMatch("Config - Unconfigured", {}, ({ test }) => {
     ]);
   });
 
-  // test("configure command fails when a provider is unavailable", (
-  //   ws,
-  // ) => {
-  //   sendMessage(ws, {
-  //     type: "setup",
-  //     payload: {
-  //       servers: [{
-  //         url: "https://plex.1234.com",
-  //         token: "abc123",
-  //       }],
-  //     } as Config,
-  //   });
+  test("configure command fails when a provider is unavailable", async (
+    ws,
+  ) => {
+    sendMessage(ws, {
+      type: "setup",
+      payload: {
+        servers: [{
+          url: "https://plex.example.com",
+          token: "abc123",
+        }],
+      } as Config,
+    });
 
-  //   ws.addEventListener("message", (e) => {
-  //     console.log(e.data);
-  //   });
+    const setupError = await waitForMessage(ws, "setupError");
 
-  //   // const setupError = await waitForMessage(ws, "setupError");
+    assert(
+      setupError.payload.type === "ProviderAvailabilityError",
+      `setupError.payload.type: expected "ProviderAvailabilityError", got "${setupError.payload.type}"`,
+    );
 
-  //   // console.log(setupError);
-
-  //   // assert(
-  //   //   setupError.payload.type === "ProviderAvailabilityError",
-  //   //   `setupError.payload.type: expected "ProviderAvailabilityError", got "${setupError.payload.type}"`,
-  //   // );
-
-  //   // assertEquals(setupError.payload.unavailableUrls, [
-  //   //   "https://plex.example.com",
-  //   // ]);
-  // });
+    assertEquals(setupError.payload.unavailableUrls, [
+      "https://plex.example.com",
+    ]);
+  });
 
   // test("configure command succeeds when the configuration is valid", async () => {
   //   sendMessage(ws, {
