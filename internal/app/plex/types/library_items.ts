@@ -92,7 +92,7 @@ export interface LibraryItem {
   type: ViewGroup;
   title: string;
   contentRating?: ContentRating;
-  summary: string;
+  summary?: string;
   rating?: number;
   viewCount?: number;
   lastViewedAt?: number;

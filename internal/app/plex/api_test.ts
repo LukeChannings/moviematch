@@ -145,7 +145,7 @@ try {
         type: string(),
         title: string().required(),
         contentRating: string(),
-        summary: string().required(),
+        summary: string(),
         rating: number(),
         viewCount: number(),
         lastViewedAt: number(),
