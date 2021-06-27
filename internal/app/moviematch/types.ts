@@ -7,6 +7,7 @@ export interface RouteContext {
   providers: MovieMatchProvider[];
 
   path: string | RegExp;
+  abortController: AbortController;
   params?: Record<string, string>;
 }
 

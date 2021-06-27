@@ -125,6 +125,7 @@ export const Application = (
                   providers,
                   config,
                   path,
+                  abortController: appAbortController,
                   params,
                 });
                 if (response) {

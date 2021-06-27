@@ -62,16 +62,20 @@ export async function loadConfig(
       : {}),
   });
 
-  const configErrors = validateConfig(config);
-
-  cachedConfig = config as Config;
-
-  return [cachedConfig, configErrors?.errors ?? []];
+  try {
+    validateConfig(config);
+  } catch (configErrors: unknown) {
+    return [config as Config, (configErrors as AggregateError)?.errors];
+  }
+  return [config, []];
 }
 
-export async function updateConfiguration(config: Record<string, unknown>) {
-  cachedConfig = config as unknown as Config;
-  const yamlConfig = stringifyYaml(config, { indent: 2 });
+export async function updateConfiguration(config: Config) {
+  cachedConfig = config;
+  const yamlConfig = stringifyYaml(
+    config as unknown as Record<string, unknown>,
+    { indent: 2 },
+  );
 
   const defaultConfigPath = joinPath(Deno.cwd(), "config.yaml");
 

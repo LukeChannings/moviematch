@@ -19,6 +19,7 @@ import { RouteContext } from "/internal/app/moviematch/types.ts";
 import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 import { createProvider } from "/internal/app/moviematch/providers/provider.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
+import { updateConfiguration } from "../config/main.ts";
 
 export const handler = async (req: ServerRequest, ctx: RouteContext) => {
   try {
@@ -136,14 +137,15 @@ class Socket extends MMEventTarget<
 
     const newConfig: Config = e.data.payload;
 
-    const validationError = validateConfig(newConfig);
-    if (validationError) {
+    try {
+      validateConfig(newConfig);
+    } catch (validationError) {
       return this.sendMessage({
         type: "setupError",
         payload: {
           type: "InvalidConfig",
           message: validationError.message,
-          errors: validationError.errors.map((_) => _.name),
+          errors: (validationError as AggregateError).errors.map((_) => _.name),
         },
       });
     }
@@ -171,7 +173,17 @@ class Socket extends MMEventTarget<
       });
     }
 
-    // TODO: Actually update config and restart the server!
+    await updateConfiguration(newConfig);
+
+    await this.sendMessage({
+      type: "setupSuccess",
+      payload: {
+        hostname: newConfig.hostname,
+        port: newConfig.port,
+      },
+    });
+
+    this.#context.abortController.abort();
   }
 
   private handleLogin(

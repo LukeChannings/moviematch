@@ -1,5 +1,6 @@
 import { log } from "/deps.ts";
 import {
+  Config,
   LibaryTypes,
   LibraryType,
   permittedAuthTypeKeys,
@@ -37,9 +38,9 @@ import {
   TlsConfigKeyFileInvalid,
 } from "/internal/app/moviematch/config/errors.ts";
 
-export const validateConfig = (
+export function validateConfig(
   value: unknown,
-): AggregateError | undefined => {
+): asserts value is Config {
   const errors: MovieMatchError[] = [];
 
   try {
@@ -276,9 +277,9 @@ export const validateConfig = (
   }
 
   if (errors.length) {
-    return new AggregateError(
+    throw new AggregateError(
       errors,
       `There were ${errors.length} error(s) found with the config`,
     );
   }
-};
+}

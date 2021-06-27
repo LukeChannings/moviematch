@@ -1,6 +1,11 @@
 import { assert, assertEquals } from "/deps.ts";
 import { Config } from "/types/moviematch.ts";
-import { getWebSocket, startMovieMatch, waitForMessage } from "../framework.ts";
+import {
+  getUniquePort,
+  getWebSocket,
+  startMovieMatch,
+  waitForMessage,
+} from "../framework.ts";
 
 Deno.test("requiresSetup is true", async () => {
   const { url, stop } = await startMovieMatch({});
@@ -70,6 +75,38 @@ Deno.test({
     assertEquals(setupError.payload.unavailableUrls, [
       "https://plex.example.com",
     ]);
+
+    await stop();
+  },
+});
+
+Deno.test({
+  name: "configure succeeds when Plex server is available",
+  fn: async () => {
+    const { url, stop } = await startMovieMatch({});
+    const ws = await getWebSocket(url);
+    const port = getUniquePort();
+
+    ws.send(JSON.stringify({
+      type: "setup",
+      payload: {
+        port,
+        servers: [
+          {
+            url: Deno.env.get("TEST_PLEX_URL"),
+            token: Deno.env.get("TEST_PLEX_TOKEN"),
+          },
+        ],
+      } as Config,
+    }));
+
+    const setupSuccess = await waitForMessage(ws, "setupSuccess");
+
+    assertEquals(
+      setupSuccess.payload.port,
+      port,
+      "The new port is sent in the setup success",
+    );
 
     await stop();
   },
