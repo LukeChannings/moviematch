@@ -238,7 +238,7 @@ export interface Media {
   id: string;
   type: LibraryType;
   title: string;
-  description: string;
+  description?: string;
   tagline?: string;
   year?: number;
   posterUrl?: string;
