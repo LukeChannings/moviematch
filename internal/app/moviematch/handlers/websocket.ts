@@ -18,11 +18,9 @@ import { MMEventTarget } from "/internal/app/moviematch/util/event_target.ts";
 import { RouteContext } from "/internal/app/moviematch/types.ts";
 import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 import { createProvider } from "/internal/app/moviematch/providers/provider.ts";
+import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 
-export const handler = async (
-  req: ServerRequest,
-  ctx: RouteContext,
-) => {
+export const handler = async (req: ServerRequest, ctx: RouteContext) => {
   try {
     const webSocket = await acceptWebSocket({
       bufReader: req.r,
@@ -50,8 +48,19 @@ class Socket extends MMEventTarget<
     this.#ws = webSocket;
     this.#context = context;
     this.listenForMessages();
-    this.sendConfig();
     this.addListener("setup", this.handleSetup as (evt: MessageEvent) => void);
+    this.addListener(
+      "config",
+      this.handleConfig as (evt: MessageEvent) => void,
+    );
+    this.addListener(
+      "login",
+      this.handleLogin as (evt: MessageEvent) => void,
+    );
+    this.addListener(
+      "logout",
+      this.handleLogout as (evt: MessageEvent) => void,
+    );
   }
 
   private async listenForMessages() {
@@ -69,6 +78,47 @@ class Socket extends MMEventTarget<
     }
 
     this.finished.resolve();
+  }
+
+  private async handleConfig(
+    e: MessageEvent<FilterServerMessageByType<ServerMessage, "config">>,
+  ) {
+    if (!e.data.payload.locale) {
+      return this.sendMessage({
+        type: "configError",
+        payload: {
+          name: "MISSING_LOCALE",
+          message: "locale is missing from payload.",
+        },
+      });
+    }
+
+    if (this.#ws.isClosed) {
+      throw new Error(`Cannot send config when WebSocket is closed`);
+    }
+
+    const requiresSetup = this.#doesRequireConfiguration();
+    const requirePlexLogin = Boolean(
+      this.#context.config.permittedAuthTypes?.anonymous?.length,
+    );
+
+    const translations = await getTranslations(
+      new Headers([["accept-language", e.data.payload.locale]]),
+    );
+
+    this.sendMessage({
+      type: "configSuccess",
+      payload: {
+        requiresSetup,
+        requirePlexLogin,
+        ...(requiresSetup
+          ? {
+            initialConfiguration: this.#context.config,
+          }
+          : {}),
+        translations,
+      },
+    });
   }
 
   private async handleSetup(
@@ -104,15 +154,11 @@ class Socket extends MMEventTarget<
 
     const unavailableUrls: string[] = [];
 
-    console.log(newConfig.servers, providers);
-
     for await (const provider of providers) {
-      if (!await provider.isAvailable()) {
+      if (!(await provider.isAvailable())) {
         unavailableUrls.push(provider.options.url);
       }
     }
-
-    console.log("unavailableUrls", unavailableUrls);
 
     if (unavailableUrls.length) {
       return this.sendMessage({
@@ -128,31 +174,19 @@ class Socket extends MMEventTarget<
     // TODO: Actually update config and restart the server!
   }
 
-  #doesRequireConfiguration = () => this.#context.config.servers.length === 0;
-
-  private sendConfig() {
-    if (this.#ws.isClosed) {
-      throw new Error(`Cannot send config when WebSocket is closed`);
-    }
-
-    const requiresSetup = this.#doesRequireConfiguration();
-    const requirePlexLogin = Boolean(
-      this.#context.config.permittedAuthTypes?.anonymous?.length,
-    );
-
-    this.sendMessage({
-      type: "config",
-      payload: {
-        requiresSetup,
-        requirePlexLogin,
-        ...(requiresSetup
-          ? {
-            initialConfiguration: this.#context.config,
-          }
-          : {}),
-      },
-    });
+  private handleLogin(
+    // e: MessageEvent<FilterServerMessageByType<ServerMessage, "login">>,
+  ) {
+    // pass
   }
+
+  private handleLogout(
+    // e: MessageEvent<FilterServerMessageByType<ServerMessage, "logout">>,
+  ) {
+    // pass
+  }
+
+  #doesRequireConfiguration = () => this.#context.config.servers.length === 0;
 
   private async sendMessage(msg: ClientMessage) {
     try {

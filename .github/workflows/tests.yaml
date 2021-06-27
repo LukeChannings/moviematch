@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  DENO_VERSION: 1.10.3
+  DENO_VERSION: 1.11.1
 
 jobs:
   test:

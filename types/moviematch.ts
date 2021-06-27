@@ -19,23 +19,18 @@ export interface Config {
   port: number;
   logLevel: "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
   rootPath: string;
-  servers: Array<
-    {
-      url: string;
-      token: string;
-      libraryTitleFilter?: string[];
-      libraryTypeFilter: LibraryType[];
-      linkType?: "app" | "webLocal" | "webExternal";
-      // If no servers have useForAuth set to true then the
-      // first server will be used for auth automatically.
-      useForAuth?: boolean;
-    }
-  >;
+  servers: Array<{
+    url: string;
+    token: string;
+    libraryTitleFilter?: string[];
+    libraryTypeFilter: LibraryType[];
+    linkType?: "app" | "webLocal" | "webExternal";
+    // If no servers have useForAuth set to true then the
+    // first server will be used for auth automatically.
+    useForAuth?: boolean;
+  }>;
   permittedAuthTypes?: Partial<
-    Record<
-      typeof permittedAuthTypeKeys[number],
-      Permissions[]
-    >
+    Record<typeof permittedAuthTypeKeys[number], Permissions[]>
   >;
   basicAuth?: BasicAuth;
   tlsConfig?: {
@@ -46,35 +41,38 @@ export interface Config {
 
 export type Message = ServerMessage | ClientMessage;
 
-// Messages intended for the Server
+// Messages sent from the client to the server
 export type ServerMessage =
+  | { type: "config"; payload: UIConfigRequest }
   | { type: "login"; payload: Login }
   | { type: "logout" }
   | { type: "createRoom"; payload: CreateRoomRequest }
   | { type: "joinRoom"; payload: JoinRoomRequest }
   | { type: "leaveRoom" }
   | { type: "rate"; payload: Rate }
-  | { type: "setLocale"; payload: Locale }
   | { type: "setup"; payload: Config }
   | { type: "requestFilters" }
   | { type: "requestFilterValues"; payload: FilterValueRequest };
 
-// Messages intended for the UI
+// Messages sent from the server to the client
 export type ClientMessage =
-  | { type: "loginError"; payload: LoginError }
-  | { type: "loginSuccess"; payload: User }
-  | { type: "logoutError"; payload: LogoutError }
-  | { type: "logoutSuccess" }
-  | { type: "createRoomError"; payload: CreateRoomError }
-  | { type: "createRoomSuccess"; payload: JoinRoomSuccess }
-  | { type: "joinRoomError"; payload: JoinRoomError }
-  | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
-  | { type: "leaveRoomSuccess" }
-  | { type: "leaveRoomError"; payload: LeaveRoomError }
+  | { type: "configSuccess"; payload: UIConfig }
+  | { type: "configError"; payload: UIConfigError }
   | { type: "match"; payload: Match }
   | { type: "media"; payload: Media[] }
-  | { type: "config"; payload: AppConfig }
-  | { type: "translations"; payload: Translations }
+  | { type: "userJoinedRoom"; payload: UserProgress }
+  | { type: "userLeftRoom"; payload: User }
+  | { type: "userProgress"; payload: UserProgress }
+  | { type: "loginSuccess"; payload: User }
+  | { type: "loginError"; payload: LoginError }
+  | { type: "logoutSuccess" }
+  | { type: "logoutError"; payload: LogoutError }
+  | { type: "createRoomSuccess"; payload: JoinRoomSuccess }
+  | { type: "createRoomError"; payload: CreateRoomError }
+  | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
+  | { type: "joinRoomError"; payload: JoinRoomError }
+  | { type: "leaveRoomSuccess" }
+  | { type: "leaveRoomError"; payload: LeaveRoomError }
   | { type: "setupSuccess"; payload: SetupSuccess }
   | { type: "setupError"; payload: SetupError }
   | { type: "requestFiltersSuccess"; payload: Filters }
@@ -83,10 +81,7 @@ export type ClientMessage =
     type: "requestFilterValuesSuccess";
     payload: { request: FilterValueRequest; values: FilterValue[] };
   }
-  | { type: "requestFilterValuesError" }
-  | { type: "userJoinedRoom"; payload: UserProgress }
-  | { type: "userLeftRoom"; payload: User }
-  | { type: "userProgress"; payload: UserProgress };
+  | { type: "requestFilterValuesError" };
 
 export type FilterClientMessageByType<
   A extends ClientMessage,
@@ -120,18 +115,22 @@ export type TranslationKey =
   | "COPY_LINK_FAILURE"
   | "LOGOUT";
 
-// Configure message
+// UI Configuration
 
-export interface AppConfig {
+export interface UIConfigRequest {
+  locale: string;
+}
+
+export interface UIConfig {
   requiresSetup: boolean;
   requirePlexLogin: boolean;
   initialConfiguration?: Partial<Config>;
+  translations: Translations;
 }
 
-// Translations message
-
-export interface Locale {
-  language: string;
+export interface UIConfigError {
+  name: string;
+  message: string;
 }
 
 export type Translations = Record<TranslationKey, string>;
@@ -163,6 +162,7 @@ export const userPermissions = [
 export type Permissions = typeof userPermissions[number];
 
 export interface User {
+  id: string;
   userName: string;
   permissions?: Permissions[]; // Not available in user*Room messages
   avatarImage?: string;

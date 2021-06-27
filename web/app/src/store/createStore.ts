@@ -99,8 +99,8 @@ export const createStore = () => {
   client.addEventListener("connected", async () => {
     dispatch({ type: "updateConnectionStatus", payload: "connected" });
     dispatch({
-      type: "setLocale",
-      payload: { language: navigator.language },
+      type: "config",
+      payload: { locale: navigator.language },
     });
 
     const existingLogin = await getExistingLogin();

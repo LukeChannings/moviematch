@@ -5,10 +5,10 @@ import type {
   FilterClientMessageByType,
   FilterValueRequest,
   JoinRoomRequest,
-  Locale,
   Login,
   Rate,
   ServerMessage,
+  UIConfigRequest,
 } from "../../../../types/moviematch";
 
 const API_URL = (() => {
@@ -185,12 +185,12 @@ export class MovieMatchClient extends EventTarget {
     ]);
   };
 
-  setLocale = async (locale: Locale) => {
+  config = async (uiConfigRequest: UIConfigRequest) => {
     await this.waitForConnected();
 
     this.sendMessage({
-      type: "setLocale",
-      payload: locale,
+      type: "config",
+      payload: uiConfigRequest,
     });
   };
 

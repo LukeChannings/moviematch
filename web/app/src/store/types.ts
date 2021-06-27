@@ -2,7 +2,6 @@ import type { Dispatch as ReduxDispatch } from "redux";
 import type { Toast } from "src/components/atoms/Toast";
 import type { Routes } from "src/types";
 import type {
-  AppConfig,
   ClientMessage,
   Filters,
   FilterValue,
@@ -10,6 +9,7 @@ import type {
   Media,
   ServerMessage,
   Translations,
+  UIConfig,
   User,
 } from "../../../../types/moviematch";
 
@@ -26,7 +26,7 @@ export type ClientActions =
 export type Actions =
   | {
     type: "connect";
-    payload: { config: AppConfig; translations: Translations };
+    payload: { config: UIConfig; translations: Translations };
   }
   | { type: "disconnect" }
   | {
@@ -45,7 +45,7 @@ export interface Store {
   error?: { type?: string; message?: string };
   toasts: Toast[];
   translations?: Translations;
-  config?: AppConfig;
+  config?: Omit<UIConfig, "translations">;
   user?: User;
   createRoom?: {
     availableFilters?: Filters;

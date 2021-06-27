@@ -28,13 +28,16 @@ export const reducer: Reducer<Store, Actions> = (
           : state.toasts.filter(({ id }) => id !== "connection-failure"),
       };
     }
-    case "config": {
+    case "configSuccess": {
+      const { translations, ...config } = action.payload;
+
       if (action.payload.requiresSetup) {
-        return { ...state, config: action.payload, route: "config" };
+        return { ...state, config, route: "config", translations };
       }
       return {
         ...state,
-        config: action.payload,
+        config,
+        translations,
       };
     }
     case "navigate":
@@ -114,9 +117,6 @@ export const reducer: Reducer<Store, Actions> = (
     case "leaveRoomSuccess": {
       return { ...state, room: undefined, route: "join" };
     }
-    case "translations": {
-      return { ...state, translations: action.payload };
-    }
     case "requestFiltersSuccess": {
       return {
         ...state,
@@ -141,8 +141,8 @@ export const reducer: Reducer<Store, Actions> = (
         room: {
           ...state.room!,
           matches: [
-            ...(state.room?.matches ?? []).filter((_) =>
-              _.media.id !== action.payload.media.id
+            ...(state.room?.matches ?? []).filter(
+              (_) => _.media.id !== action.payload.media.id,
             ),
             action.payload,
           ],
@@ -154,7 +154,7 @@ export const reducer: Reducer<Store, Actions> = (
         ...state,
         room: {
           ...state.room!,
-          users: [...state.room?.users ?? [], action.payload],
+          users: [...(state.room?.users ?? []), action.payload],
         },
       };
     }
@@ -163,8 +163,8 @@ export const reducer: Reducer<Store, Actions> = (
         ...state,
         room: {
           ...state.room!,
-          users: (state.room?.users ?? []).filter(({ user }) =>
-            user.userName !== action.payload.userName
+          users: (state.room?.users ?? []).filter(
+            ({ user }) => user.userName !== action.payload.userName,
           ),
         },
       };

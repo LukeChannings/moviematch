@@ -7,20 +7,23 @@ import {
 import { iter } from "https://deno.land/std@0.97.0/io/util.ts";
 import { deferred } from "/deps.ts";
 
-// This is a set of utilities that simplify writing clear tests against MovieMatch.
-// We need to start an instance of MovieMatch with various configurations and test
-// them using a websocket.
+interface Instance {
+  url: URL;
+  process: Deno.Process;
+  stop: () => Promise<number>;
+}
 
-// testMovieMatch -
-// starts an instance of MovieMatch with a specific Config and
-// passes a callback function a `MovieMatchInstance`
-export const testMovieMatch = async (
-  name: string,
+export const getUniquePort = (() => {
+  let port = 3421;
+  return () => port++;
+})();
+
+export const startMovieMatch = async (
   config: Partial<Config>,
-  fn: (instance: MovieMatchInstance) => void,
-) => {
-  const PORT = testMovieMatch.port;
-  testMovieMatch.port += 1;
+  printStdout = false,
+): Promise<Instance> => {
+  const hostname = "0.0.0.0";
+  const port = getUniquePort();
 
   const process = Deno.run({
     cmd: [
@@ -33,90 +36,65 @@ export const testMovieMatch = async (
       "cmd/moviematch/main.ts",
     ],
     env: {
-      "CONFIG_PATH": "/dev/null",
-      "CONFIG_JSON": JSON.stringify(
-        {
-          ...config,
-          hostname: "0.0.0.0",
-          port: PORT,
-          logLevel: "DEBUG",
-        } as Config,
-      ),
+      CONFIG_PATH: "/dev/null",
+      CONFIG_JSON: JSON.stringify({
+        ...config,
+        hostname,
+        port,
+        logLevel: "DEBUG",
+      } as Config),
     },
     stdout: "piped",
   });
 
-  const url = new URL(`http://0.0.0.0:${PORT}`);
+  const url = new URL(`http://${hostname}:${port}`);
 
-  const textDecoder = new TextDecoder();
-  const stdout = iter(process.stdout);
-
-  const serverStarted = deferred<boolean>();
+  const healthy = deferred<void>();
 
   (async () => {
-    for await (const line of stdout) {
-      const textLine = textDecoder.decode(line);
-      if (textLine.includes("Server listening")) {
-        serverStarted.resolve(true);
-        break;
+    const textDecoder = new TextDecoder();
+    for await (const data of iter(process.stdout)) {
+      const line = textDecoder.decode(data);
+      if (printStdout) {
+        console.log(`[MM] ${line}`);
+      }
+      if (line.includes("Server listening")) {
+        healthy.resolve();
       }
     }
   })();
 
-  await serverStarted;
+  await healthy;
 
-  const webSocketUrl = new URL(url.href);
-  webSocketUrl.protocol = "ws";
-  webSocketUrl.pathname = "/api/ws";
-
-  fn({
+  return {
     url,
-    webSocketUrl,
-    test: (testName, fn) =>
-      Deno.test(
-        name + " - " + testName,
-        fn.length === 0 ? (fn as () => Promise<void>) : async () => {
-          const websocket = new WebSocket(webSocketUrl.href);
-          const ready = deferred();
-          websocket.onopen = ready.resolve;
-          let error;
-          try {
-            await ready;
-            await fn(websocket);
-          } catch (err) {
-            error = err ?? "Unknown error";
-          } finally {
-            websocket.close();
-          }
+    process,
+    stop: async () => {
+      process.kill(Deno.Signal.SIGINT);
+      const status = await process.status();
+      process.close();
+      process.stdout.close();
 
-          if (error) {
-            throw error;
-          }
-        },
-      ),
-  });
+      return status.code;
+    },
+  };
 };
 
-testMovieMatch.port = 1234;
+export const getWebSocket = async (url: URL): Promise<WebSocket> => {
+  const wsUrl = new URL(url.href);
+  wsUrl.protocol = wsUrl.protocol === "https" ? "wss" : "ws";
+  wsUrl.pathname = "/api/ws";
 
-export interface MovieMatchInstance {
-  url: URL;
-  webSocketUrl: URL;
+  const ws = new WebSocket(wsUrl.href);
+  const ready = deferred();
 
-  // A wrapper around Deno.test that also provides the
-  // test function with a webSocket to the MovieMatch instance.
-  test: (
-    name: string,
-    fn:
-      | (() => Promise<void>)
-      | (() => void)
-      | ((websocket: WebSocket) => Promise<void>),
-  ) => void;
-}
+  ws.addEventListener("open", () => ready.resolve(), { once: true });
 
-export const waitForMessage = <
-  K extends ClientMessage["type"],
->(
+  await ready;
+  return ws;
+};
+
+export const waitForMessage = <K extends ClientMessage["type"]>(
   ws: WebSocket,
   type: K | K[],
 ): Promise<FilterClientMessageByType<ClientMessage, K>> =>
