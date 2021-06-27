@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  DENO_VERSION: 1.11.1
+  DENO_VERSION: 1.11.2
 
 jobs:
   test:
@@ -32,14 +32,12 @@ jobs:
         env:
           TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
-      - run: |
-          just build-binary linux-amd64
-          just test-e2e linux-amd64
+      - run: just test-e2e
         name: E2E Tests
         # if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
         env:
-          PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
-          PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+          TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
+          TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
       - name: Upload screenshots on failure
         uses: actions/upload-artifact@v2
         if: ${{ failure() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') }}
