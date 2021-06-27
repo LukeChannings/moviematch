@@ -124,9 +124,12 @@ Deno.test("validateConfig", () => {
   ];
 
   for (const [config, expectedErrors] of cases) {
-    const actualErrors = (validateConfig(config)?.errors ?? []).map((err) =>
-      err.name
-    );
+    let actualErrors = [];
+    try {
+      validateConfig(config);
+    } catch (err) {
+      actualErrors = (err as AggregateError).errors.map((err) => err.name);
+    }
     assert(
       expectedErrors.sort().join("") === actualErrors.sort().join(""),
       `Expected ${JSON.stringify(expectedErrors)}, got ${
