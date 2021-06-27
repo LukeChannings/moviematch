@@ -12,14 +12,10 @@ import type {
 } from "../../../../types/moviematch";
 
 const API_URL = (() => {
-  if (import.meta.env.API_URI) {
-    return import.meta.env.API_URI;
-  } else {
-    const url = new URL(location.href);
-    url.pathname = document.body.dataset.rootPath + "/api/ws";
-    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-    return url.href;
-  }
+  const url = new URL(location.href);
+  url.pathname = document.body.dataset.rootPath + "/api/ws";
+  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+  return url.href;
 })();
 
 export class MovieMatchClient extends EventTarget {
