@@ -4,8 +4,10 @@ import {
   FilterClientMessageByType,
   ServerMessage,
 } from "/types/moviematch.ts";
-import { iter } from "https://deno.land/std@0.97.0/io/util.ts";
-import { deferred } from "/deps.ts";
+import { load } from "https://deno.land/x/tiny_env@1.0.0/mod.ts";
+import { deferred, iter } from "/deps.ts";
+
+load();
 
 interface Instance {
   url: URL;

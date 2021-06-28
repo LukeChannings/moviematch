@@ -73,15 +73,11 @@ compile rust_target target:
   fi
 
 test:
-  # https://github.com/denoland/deno/issues/9284
-  [ -e .env ] && source .env || true
   deno test {{ deno_options }} internal
 
 test-e2e:
   #!/bin/bash
   rm -f screenshots/e2e_*
-  export PORT=8765
-  [ -e .env ] && source .env || true
   deno test {{ deno_options }} tests/websocket
 
 start-binary target:

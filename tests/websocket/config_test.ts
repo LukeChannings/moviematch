@@ -5,7 +5,7 @@ import {
   getWebSocket,
   startMovieMatch,
   waitForMessage,
-} from "../framework.ts";
+} from "../_utils.ts";
 
 Deno.test("requiresSetup is true when config is empty", async () => {
   const { url, stop } = await startMovieMatch({});
