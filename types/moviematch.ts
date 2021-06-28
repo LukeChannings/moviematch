@@ -30,7 +30,7 @@ export interface Config {
     useForAuth?: boolean;
   }>;
   permittedAuthTypes?: Partial<
-    Record<typeof permittedAuthTypeKeys[number], Permissions[]>
+    Record<typeof permittedAuthTypeKeys[number], Permission[]>
   >;
   basicAuth?: BasicAuth;
   tlsConfig?: {
@@ -137,12 +137,17 @@ export type Translations = Record<TranslationKey, string>;
 
 // Login (when login is required to create a new room)
 
-export type Login =
-  | { userName: string }
-  | { plexClientId: string; plexToken: string };
+export type Login = AnonymousLogin | PlexLogin;
+export type AnonymousLogin = { userName: string };
+export type PlexLogin = { plexClientId: string; plexToken: string };
 
 export interface LoginError {
-  name: "MalformedMessage" | "PlexLoginRequired";
+  name:
+    | "ServerNotSetUp"
+    | "MalformedMessage"
+    | "AnonymousLoginNotPermitted"
+    | "PlexLoginNotPermitted"
+    | "AlreadyConnected";
   message: string;
 }
 
@@ -152,19 +157,19 @@ export interface LogoutError {
 }
 
 export const userPermissions = [
-  "CreateRoom",
   "JoinRoom",
+  "CreateRoom",
   "DeleteRoom",
   "ResetRoom",
   "Reconfigure",
 ] as const;
 
-export type Permissions = typeof userPermissions[number];
+export type Permission = typeof userPermissions[number];
 
 export interface User {
   id: string;
   userName: string;
-  permissions?: Permissions[]; // Not available in user*Room messages
+  permissions?: Permission[]; // Not available in user*Room messages
   avatarImage?: string;
 }
 

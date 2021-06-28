@@ -103,8 +103,13 @@ export const getWebSocket = async (url: URL): Promise<WebSocket> => {
 export const waitForMessage = <K extends ClientMessage["type"]>(
   ws: WebSocket,
   type: K | K[],
+  timeoutMs = 2_000,
 ): Promise<FilterClientMessageByType<ClientMessage, K>> =>
-  new Promise((res) => {
+  new Promise((res, rej) => {
+    const timeoutId = setTimeout(
+      () => rej(new Error(`${type} took longer than ${timeoutMs}ms`)),
+      timeoutMs,
+    );
     const handler = (e: MessageEvent) => {
       const msg: ClientMessage = JSON.parse(e.data);
       if (
@@ -112,9 +117,11 @@ export const waitForMessage = <K extends ClientMessage["type"]>(
         (Array.isArray(type) && type.includes(msg.type as K))
       ) {
         res(msg as FilterClientMessageByType<ClientMessage, K>);
+        clearInterval(timeoutId);
         ws.removeEventListener("message", handler);
       }
     };
+
     ws.addEventListener("message", handler);
   });
 

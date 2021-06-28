@@ -20,6 +20,7 @@ import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 import { createProvider } from "/internal/app/moviematch/providers/provider.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
 import { updateConfiguration } from "../config/main.ts";
+import { getUser } from "../user/user.ts";
 
 export const handler = async (req: ServerRequest, ctx: RouteContext) => {
   try {
@@ -183,9 +184,53 @@ class Socket extends MMEventTarget<
     this.#context.abortController.abort();
   }
 
-  private handleLogin() {
-    // e: MessageEvent<FilterServerMessageByType<ServerMessage, "login">>,
-    // pass
+  private handleLogin(
+    e: MessageEvent<FilterServerMessageByType<ServerMessage, "login">>,
+  ) {
+    if (this.#doesRequireConfiguration()) {
+      return this.sendMessage({
+        type: "loginError",
+        payload: {
+          name: "ServerNotSetUp",
+          message: "The server needs to be set up before users can log in.",
+        },
+      });
+    }
+
+    if (
+      !(
+        "userName" in e.data.payload ||
+        ("plexClientId" in e.data.payload && "plexToken" in e.data.payload)
+      )
+    ) {
+      return this.sendMessage({
+        type: "loginError",
+        payload: {
+          name: "MalformedMessage",
+          message: "The login request was not valid",
+        },
+      });
+    }
+
+    try {
+      const user = getUser({
+        login: e.data.payload,
+        config: this.#context.config,
+        providers: this.#context.providers,
+      });
+      return this.sendMessage({
+        type: "loginSuccess",
+        payload: user,
+      });
+    } catch (err) {
+      return this.sendMessage({
+        type: "loginError",
+        payload: {
+          name: err.name.replace(/Error$/, ""),
+          message: err.message,
+        },
+      });
+    }
   }
 
   private handleLogout() {
