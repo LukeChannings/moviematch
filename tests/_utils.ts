@@ -5,9 +5,13 @@ import {
   ServerMessage,
 } from "/types/moviematch.ts";
 import { load } from "https://deno.land/x/tiny_env@1.0.0/mod.ts";
-import { deferred, iter } from "/deps.ts";
+import { deferred, iter, log } from "/deps.ts";
 
-load();
+try {
+  load();
+} catch {
+  log.info("Didn't find a .env file to load.");
+}
 
 interface Instance {
   url: URL;
