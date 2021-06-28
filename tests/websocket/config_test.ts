@@ -15,14 +15,15 @@ Deno.test("requiresSetup is true when config is empty", async () => {
   assertEquals(
     config.payload.requiresSetup,
     true,
-    "requiresSetup should be true",
+    "requiresSetup should be true"
   );
   assert(
     typeof config.payload.initialConfiguration === "object" &&
       config.payload.initialConfiguration !== null,
-    "initialConfiguration should be an object",
+    "initialConfiguration should be an object"
   );
 
+  ws.addEventListener("close", () => {});
   await stop();
 });
 
@@ -42,7 +43,7 @@ Deno.test("requiresSetup is false when config has servers", async () => {
   assertEquals(
     config.payload.requiresSetup,
     false,
-    "requiresSetup should be false",
+    "requiresSetup should be false"
   );
 
   await stop();
@@ -53,10 +54,12 @@ Deno.test(
   async () => {
     const { url, stop } = await startMovieMatch({});
     const ws = await getWebSocket(url);
-    ws.send(JSON.stringify({
-      type: "setup",
-      payload: { servers: [{}] } as Config,
-    }));
+    ws.send(
+      JSON.stringify({
+        type: "setup",
+        payload: { servers: [{}] } as Config,
+      })
+    );
 
     const setupError = await waitForMessage(ws, "setupError");
 
@@ -68,7 +71,7 @@ Deno.test(
     ]);
 
     await stop();
-  },
+  }
 );
 
 Deno.test({
@@ -76,22 +79,24 @@ Deno.test({
   fn: async () => {
     const { url, stop } = await startMovieMatch({});
     const ws = await getWebSocket(url);
-    ws.send(JSON.stringify({
-      type: "setup",
-      payload: {
-        servers: [
-          {
-            url: "https://plex.example.com",
-            token: "abc123",
-          },
-        ],
-      } as Config,
-    }));
+    ws.send(
+      JSON.stringify({
+        type: "setup",
+        payload: {
+          servers: [
+            {
+              url: "https://plex.example.com",
+              token: "abc123",
+            },
+          ],
+        } as Config,
+      })
+    );
 
     const setupError = await waitForMessage(ws, "setupError");
     assert(
       setupError.payload.type === "ProviderAvailabilityError",
-      `setupError.payload.type: expected "ProviderAvailabilityError", got "${setupError.payload.type}"`,
+      `setupError.payload.type: expected "ProviderAvailabilityError", got "${setupError.payload.type}"`
     );
 
     assertEquals(setupError.payload.unavailableUrls, [
@@ -102,14 +107,13 @@ Deno.test({
   },
 });
 
-Deno.test({
-  name: "configure succeeds when Plex server is available",
-  fn: async () => {
-    const { url, stop } = await startMovieMatch({});
-    const ws = await getWebSocket(url);
-    const port = getUniquePort();
+Deno.test("configure succeeds when Plex server is available", async () => {
+  const { url, stop } = await startMovieMatch({});
+  const ws = await getWebSocket(url);
+  const port = getUniquePort();
 
-    ws.send(JSON.stringify({
+  ws.send(
+    JSON.stringify({
       type: "setup",
       payload: {
         port,
@@ -120,16 +124,16 @@ Deno.test({
           },
         ],
       } as Config,
-    }));
+    })
+  );
 
-    const setupSuccess = await waitForMessage(ws, "setupSuccess");
+  const setupSuccess = await waitForMessage(ws, "setupSuccess");
 
-    assertEquals(
-      setupSuccess.payload.port,
-      port,
-      "The new port is sent in the setup success",
-    );
+  assertEquals(
+    setupSuccess.payload.port,
+    port,
+    "The new port is sent in the setup success"
+  );
 
-    await stop();
-  },
+  await stop();
 });

@@ -52,15 +52,12 @@ class Socket extends MMEventTarget<
     this.addListener("setup", this.handleSetup as (evt: MessageEvent) => void);
     this.addListener(
       "config",
-      this.handleConfig as (evt: MessageEvent) => void,
+      this.handleConfig as (evt: MessageEvent) => void
     );
-    this.addListener(
-      "login",
-      this.handleLogin as (evt: MessageEvent) => void,
-    );
+    this.addListener("login", this.handleLogin as (evt: MessageEvent) => void);
     this.addListener(
       "logout",
-      this.handleLogout as (evt: MessageEvent) => void,
+      this.handleLogout as (evt: MessageEvent) => void
     );
   }
 
@@ -82,7 +79,7 @@ class Socket extends MMEventTarget<
   }
 
   private async handleConfig(
-    e: MessageEvent<FilterServerMessageByType<ServerMessage, "config">>,
+    e: MessageEvent<FilterServerMessageByType<ServerMessage, "config">>
   ) {
     if (!e.data.payload.locale) {
       return this.sendMessage({
@@ -100,11 +97,11 @@ class Socket extends MMEventTarget<
 
     const requiresSetup = this.#doesRequireConfiguration();
     const requirePlexLogin = Boolean(
-      this.#context.config.permittedAuthTypes?.anonymous?.length,
+      this.#context.config.permittedAuthTypes?.anonymous?.length
     );
 
     const translations = await getTranslations(
-      new Headers([["accept-language", e.data.payload.locale]]),
+      new Headers([["accept-language", e.data.payload.locale]])
     );
 
     this.sendMessage({
@@ -114,8 +111,8 @@ class Socket extends MMEventTarget<
         requirePlexLogin,
         ...(requiresSetup
           ? {
-            initialConfiguration: this.#context.config,
-          }
+              initialConfiguration: this.#context.config,
+            }
           : {}),
         translations,
       },
@@ -123,7 +120,7 @@ class Socket extends MMEventTarget<
   }
 
   private async handleSetup(
-    e: MessageEvent<FilterServerMessageByType<ServerMessage, "setup">>,
+    e: MessageEvent<FilterServerMessageByType<ServerMessage, "setup">>
   ) {
     if (!this.#doesRequireConfiguration()) {
       return this.sendMessage({
@@ -186,15 +183,13 @@ class Socket extends MMEventTarget<
     this.#context.abortController.abort();
   }
 
-  private handleLogin(
+  private handleLogin() {
     // e: MessageEvent<FilterServerMessageByType<ServerMessage, "login">>,
-  ) {
     // pass
   }
 
-  private handleLogout(
+  private handleLogout() {
     // e: MessageEvent<FilterServerMessageByType<ServerMessage, "logout">>,
-  ) {
     // pass
   }
 

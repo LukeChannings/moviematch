@@ -48,7 +48,7 @@ interface ApplicationInstance {
 
 export const Application = (
   config: Config,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): ApplicationInstance => {
   const statusCode = deferred<number | undefined>();
 
@@ -57,19 +57,19 @@ export const Application = (
     let appStatusCode: number | undefined = 0;
 
     const providers: MovieMatchProvider[] = config.servers.map(
-      (server, index) => createProvider(String(index + server.url), server),
+      (server, index) => createProvider(String(index + server.url), server)
     );
 
     for (const provider of providers) {
-      if (!await provider.isAvailable()) {
+      if (!(await provider.isAvailable())) {
         throw new ProviderUnavailableError(provider.options.url.substr(0, 5));
       }
     }
 
     try {
-      if (!await requestNet(`${config.hostname}:${config.port}`)) {
+      if (!(await requestNet(`${config.hostname}:${config.port}`))) {
         log.critical(
-          `Permission denied: Cannot start MovieMatch on ${config.hostname}:${config.port}`,
+          `Permission denied: Cannot start MovieMatch on ${config.hostname}:${config.port}`
         );
         Deno.exit(1);
       }
@@ -91,9 +91,9 @@ export const Application = (
       });
 
       log.info(
-        `Server listening on ${
-          config.tlsConfig ? "https://" : "http://"
-        }${config.hostname}:${config.port}`,
+        `Server listening on ${config.tlsConfig ? "https://" : "http://"}${
+          config.hostname
+        }:${config.port}`
       );
 
       try {
@@ -101,13 +101,14 @@ export const Application = (
 
         for await (const req of server) {
           const url = urlFromReqUrl(req.url);
-          const [path, handlers] = routes.find(([path]) => {
-            if (typeof path === "string") {
-              return path === url.pathname;
-            } else {
-              return path.test(url.pathname);
-            }
-          }) ?? [];
+          const [path, handlers] =
+            routes.find(([path]) => {
+              if (typeof path === "string") {
+                return path === url.pathname;
+              } else {
+                return path.test(url.pathname);
+              }
+            }) ?? [];
 
           if (!handlers || !path) {
             log.error(`No handlers for ${url.pathname}`);
@@ -165,7 +166,7 @@ export const Application = (
           err.name === "NotFound" && config.tlsConfig
             ? `Please check that your TLS_CERT and TLS_FILE values are correct.`
             : err.message
-        }`,
+        }`
       );
     }
   })();
