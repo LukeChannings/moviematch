@@ -7,7 +7,7 @@ import {
   waitForMessage,
 } from "../framework.ts";
 
-Deno.test("requiresSetup is true", async () => {
+Deno.test("requiresSetup is true when config is empty", async () => {
   const { url, stop } = await startMovieMatch({});
   const ws = await getWebSocket(url);
   ws.send(JSON.stringify({ type: "config", payload: { locale: "en" } }));
@@ -21,6 +21,28 @@ Deno.test("requiresSetup is true", async () => {
     typeof config.payload.initialConfiguration === "object" &&
       config.payload.initialConfiguration !== null,
     "initialConfiguration should be an object",
+  );
+
+  await stop();
+});
+
+Deno.test("requiresSetup is false when config has servers", async () => {
+  const { url, stop } = await startMovieMatch({
+    servers: [
+      {
+        url: Deno.env.get("TEST_PLEX_URL")!,
+        token: Deno.env.get("TEST_PLEX_TOKEN")!,
+        libraryTypeFilter: ["show"],
+      },
+    ],
+  });
+  const ws = await getWebSocket(url);
+  ws.send(JSON.stringify({ type: "config", payload: { locale: "en" } }));
+  const config = await waitForMessage(ws, "configSuccess");
+  assertEquals(
+    config.payload.requiresSetup,
+    false,
+    "requiresSetup should be false",
   );
 
   await stop();
