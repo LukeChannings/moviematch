@@ -8,13 +8,14 @@ import {
 } from "/types/moviematch.ts";
 import { MovieMatchError } from "/internal/app/moviematch/util/assert.ts";
 import { MovieMatchProvider } from "/internal/app/moviematch/providers/provider.ts";
+import { log } from "/deps.ts";
 
 export interface UserState {
   user: User;
-  connected: boolean;
+  connected?: boolean;
 }
 
-const loggedInUsers = new Map<string, UserState>();
+const userStates = new Map<string, UserState>();
 
 export const getUser = (loginRequest: LoginRequest): User => {
   const loginType = "plexToken" in loginRequest.login ? "plex" : "anonymous";
@@ -32,7 +33,7 @@ export const getUser = (loginRequest: LoginRequest): User => {
     `${loginType}-${(loginRequest.login as AnonymousLogin).userName ??
       (loginRequest.login as PlexLogin).plexClientId}`.toLocaleLowerCase();
 
-  const existingUserState = loggedInUsers.get(userId);
+  const existingUserState = userStates.get(userId);
 
   if (existingUserState) {
     if (existingUserState.connected) {
@@ -54,12 +55,23 @@ export const getUser = (loginRequest: LoginRequest): User => {
         loginRequest.config.permittedAuthTypes as Record<string, Permission[]>
       )[loginType] ?? [],
     },
-    connected: true,
   };
 
-  loggedInUsers.set(userId, userState);
+  userStates.set(userId, userState);
 
   return userState.user;
+};
+
+export const setUserConnectedStatus = (userId: string, status: boolean) => {
+  log.info(`User ${userId} was ${status ? `connected` : `disconnected`}`);
+  const userState = userStates.get(userId);
+  if (!userState) {
+    throw new Error(`No user found with this id`);
+  }
+
+  userState.connected = status;
+
+  return userState.connected;
 };
 
 class AnonymousLoginNotPermittedError extends MovieMatchError {}

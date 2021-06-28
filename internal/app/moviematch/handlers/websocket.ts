@@ -19,8 +19,11 @@ import { RouteContext } from "/internal/app/moviematch/types.ts";
 import { validateConfig } from "/internal/app/moviematch/config/validate.ts";
 import { createProvider } from "/internal/app/moviematch/providers/provider.ts";
 import { getTranslations } from "/internal/app/moviematch/i18n.ts";
-import { updateConfiguration } from "../config/main.ts";
-import { getUser } from "../user/user.ts";
+import { updateConfiguration } from "/internal/app/moviematch/config/main.ts";
+import {
+  getUser,
+  setUserConnectedStatus,
+} from "/internal/app/moviematch/user/user.ts";
 
 export const handler = async (req: ServerRequest, ctx: RouteContext) => {
   try {
@@ -43,6 +46,7 @@ class Socket extends MMEventTarget<
 > {
   #ws: WebSocket;
   #context: RouteContext;
+  #userId?: string;
   finished = deferred<void>();
 
   constructor(webSocket: WebSocket, context: RouteContext) {
@@ -76,6 +80,7 @@ class Socket extends MMEventTarget<
       }
     }
 
+    this.userId = undefined;
     this.finished.resolve();
   }
 
@@ -218,6 +223,9 @@ class Socket extends MMEventTarget<
         config: this.#context.config,
         providers: this.#context.providers,
       });
+
+      this.userId = user.id;
+
       return this.sendMessage({
         type: "loginSuccess",
         payload: user,
@@ -233,9 +241,45 @@ class Socket extends MMEventTarget<
     }
   }
 
-  private handleLogout() {
-    // e: MessageEvent<FilterServerMessageByType<ServerMessage, "logout">>,
-    // pass
+  private handleLogout(
+    _e: MessageEvent<FilterServerMessageByType<ServerMessage, "logout">>,
+  ) {
+    if (!this.#userId) {
+      return this.sendMessage({
+        type: "logoutError",
+        payload: {
+          name: "NotLoggedIn",
+          message: "There is no user logged in on this connection",
+        },
+      });
+    }
+
+    try {
+      this.userId = undefined;
+      this.sendMessage({ type: "logoutSuccess" });
+    } catch (err) {
+      return this.sendMessage({
+        type: "logoutError",
+        payload: {
+          name: err.name,
+          message: err.message,
+        },
+      });
+    }
+  }
+
+  set userId(userId: string | undefined) {
+    if (!userId && this.#userId) {
+      setUserConnectedStatus(this.#userId, false);
+      this.#userId = userId;
+    } else if (userId && !this.#userId) {
+      setUserConnectedStatus(userId, true);
+      this.#userId = userId;
+    }
+  }
+
+  get userId() {
+    return this.#userId;
   }
 
   #doesRequireConfiguration = () => this.#context.config.servers.length === 0;

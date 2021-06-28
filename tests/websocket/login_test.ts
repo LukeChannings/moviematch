@@ -82,7 +82,7 @@ Deno.test("Can't login when there are no permitted auth types", async () => {
   }
 });
 
-Deno.test("Can't login when there are no permitted auth types", async () => {
+Deno.test("Can login anonymously", async () => {
   const { url, stop } = await startMovieMatch({
     servers: [
       {
@@ -110,6 +110,45 @@ Deno.test("Can't login when there are no permitted auth types", async () => {
       userName: "Ted",
       permissions: ["JoinRoom"],
     });
+  } finally {
+    await stop();
+  }
+});
+
+Deno.test("Anonymous usernames are case insensitive", async () => {
+  const { url, stop } = await startMovieMatch({
+    servers: [
+      {
+        url: Deno.env.get("TEST_PLEX_URL")!,
+        token: Deno.env.get("TEST_PLEX_TOKEN")!,
+        libraryTypeFilter: ["show"],
+      },
+    ],
+    permittedAuthTypes: {
+      anonymous: ["JoinRoom"],
+    },
+  });
+  try {
+    const ws1 = await getWebSocket(url);
+    sendMessage(ws1, {
+      type: "login",
+      payload: {
+        userName: "Ted",
+      },
+    });
+    const msg1 = await waitForMessage(ws1, ["loginSuccess", "loginError"]);
+    assertEquals(msg1.type, "loginSuccess");
+
+    const ws2 = await getWebSocket(url);
+    sendMessage(ws2, {
+      type: "login",
+      payload: {
+        userName: "Ted",
+      },
+    });
+    const msg2 = await waitForMessage(ws2, ["loginSuccess", "loginError"]);
+    assertEquals(msg2.type, "loginError");
+    assertEquals((msg2.payload as LoginError).name, "AlreadyConnected");
   } finally {
     await stop();
   }
