@@ -132,5 +132,5 @@ install-githooks:
   #!/bin/bash
   echo -e "#!/bin/bash\njust lint" > .git/hooks/pre-commit
   chmod +x .git/hooks/pre-commit
-  echo -e "#!/bin/bash\njust lint test" > .git/hooks/pre-push
+  echo -e "#!/bin/bash\njust lint test test-e2e" > .git/hooks/pre-push
   chmod +x .git/hooks/pre-push

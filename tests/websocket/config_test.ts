@@ -15,12 +15,12 @@ Deno.test("requiresSetup is true when config is empty", async () => {
   assertEquals(
     config.payload.requiresSetup,
     true,
-    "requiresSetup should be true"
+    "requiresSetup should be true",
   );
   assert(
     typeof config.payload.initialConfiguration === "object" &&
       config.payload.initialConfiguration !== null,
-    "initialConfiguration should be an object"
+    "initialConfiguration should be an object",
   );
 
   ws.addEventListener("close", () => {});
@@ -43,7 +43,7 @@ Deno.test("requiresSetup is false when config has servers", async () => {
   assertEquals(
     config.payload.requiresSetup,
     false,
-    "requiresSetup should be false"
+    "requiresSetup should be false",
   );
 
   await stop();
@@ -58,7 +58,7 @@ Deno.test(
       JSON.stringify({
         type: "setup",
         payload: { servers: [{}] } as Config,
-      })
+      }),
     );
 
     const setupError = await waitForMessage(ws, "setupError");
@@ -71,7 +71,7 @@ Deno.test(
     ]);
 
     await stop();
-  }
+  },
 );
 
 Deno.test({
@@ -90,13 +90,13 @@ Deno.test({
             },
           ],
         } as Config,
-      })
+      }),
     );
 
     const setupError = await waitForMessage(ws, "setupError");
     assert(
       setupError.payload.type === "ProviderAvailabilityError",
-      `setupError.payload.type: expected "ProviderAvailabilityError", got "${setupError.payload.type}"`
+      `setupError.payload.type: expected "ProviderAvailabilityError", got "${setupError.payload.type}"`,
     );
 
     assertEquals(setupError.payload.unavailableUrls, [
@@ -124,7 +124,7 @@ Deno.test("configure succeeds when Plex server is available", async () => {
           },
         ],
       } as Config,
-    })
+    }),
   );
 
   const setupSuccess = await waitForMessage(ws, "setupSuccess");
@@ -132,7 +132,7 @@ Deno.test("configure succeeds when Plex server is available", async () => {
   assertEquals(
     setupSuccess.payload.port,
     port,
-    "The new port is sent in the setup success"
+    "The new port is sent in the setup success",
   );
 
   await stop();

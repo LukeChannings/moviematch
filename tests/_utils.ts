@@ -26,7 +26,7 @@ export const getUniquePort = (() => {
 
 export const startMovieMatch = async (
   config: Partial<Config>,
-  printStdout = false
+  printStdout = false,
 ): Promise<Instance> => {
   const hostname = "0.0.0.0";
   const port = getUniquePort();
@@ -102,7 +102,7 @@ export const getWebSocket = async (url: URL): Promise<WebSocket> => {
 
 export const waitForMessage = <K extends ClientMessage["type"]>(
   ws: WebSocket,
-  type: K | K[]
+  type: K | K[],
 ): Promise<FilterClientMessageByType<ClientMessage, K>> =>
   new Promise((res) => {
     const handler = (e: MessageEvent) => {
