@@ -244,7 +244,7 @@ class Socket extends MMEventTarget<
   private handleLogout(
     _e: MessageEvent<FilterServerMessageByType<ServerMessage, "logout">>,
   ) {
-    if (!this.#userId) {
+    if (!this.userId) {
       return this.sendMessage({
         type: "logoutError",
         payload: {
