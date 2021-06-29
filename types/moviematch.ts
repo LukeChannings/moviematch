@@ -14,6 +14,8 @@ export const permittedAuthTypeKeys = [
   "plexOwner",
 ] as const;
 
+export type AuthType = typeof permittedAuthTypeKeys[number];
+
 export interface Config {
   hostname: string;
   port: number;
@@ -29,9 +31,7 @@ export interface Config {
     // first server will be used for auth automatically.
     useForAuth?: boolean;
   }>;
-  permittedAuthTypes?: Partial<
-    Record<typeof permittedAuthTypeKeys[number], Permission[]>
-  >;
+  permittedAuthTypes?: Partial<Record<AuthType, Permission[]>>;
   basicAuth?: BasicAuth;
   tlsConfig?: {
     certFile: string;
@@ -139,7 +139,7 @@ export type Translations = Record<TranslationKey, string>;
 
 export type Login = AnonymousLogin | PlexLogin;
 export type AnonymousLogin = { userName: string };
-export type PlexLogin = { plexClientId: string; plexToken: string };
+export type PlexLogin = { clientId: string; plexToken: string };
 
 export interface LoginError {
   name:

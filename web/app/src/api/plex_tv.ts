@@ -3,14 +3,14 @@
  * See - https://forums.plex.tv/t/authenticating-with-plex/609370
  */
 const APP_NAME = "MovieMatch";
-const CLIENT_ID = localStorage.getItem("plexClientId") ??
+const CLIENT_ID = localStorage.getItem("clientId") ??
   (() => {
     const characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const clientId = Array.from({ length: 30 })
       .map((_) => characters[Math.floor(Math.random() * characters.length)])
       .join("");
-    localStorage.setItem("plexClientId", clientId);
+    localStorage.setItem("clientId", clientId);
     return clientId;
   })();
 
@@ -91,10 +91,13 @@ export const verifyPin = async (pin: PlexPIN) => {
   }
 };
 
-export const getLogin = (): { pin: PlexPIN } | {
-  token: string;
-  clientId: string;
-} | null => {
+export const getLogin = ():
+  | { pin: PlexPIN }
+  | {
+    token: string;
+    clientId: string;
+  }
+  | null => {
   const token = localStorage.getItem("plexToken");
   const pin = JSON.parse(localStorage.getItem("plexTvPin")!);
 

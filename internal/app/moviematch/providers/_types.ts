@@ -9,6 +9,7 @@
  */
 
 import {
+  AuthType,
   Filter,
   Filters,
   FilterValue,
@@ -24,11 +25,11 @@ export type MovieMatchProviderCtor = <T>(
 ) => MovieMatchProvider;
 
 export interface MovieMatchProvider {
-  options: { url: string };
+  options: { url: string; useForAuth?: boolean };
   isAvailable(): Promise<boolean>;
 
   // determine if a user is authorized to access this particular server.
-  isUserAuthorized(username: string): Promise<boolean>;
+  getUserAuthType(user: unknown): Promise<AuthType>;
 
   getName(): Promise<string>;
 
@@ -36,9 +37,7 @@ export interface MovieMatchProvider {
 
   getFilters(): Promise<Filters>;
 
-  getFilterValues(
-    key: string,
-  ): Promise<FilterValue[]>;
+  getFilterValues(key: string): Promise<FilterValue[]>;
 
   getArtwork(
     key: string,
@@ -50,7 +49,5 @@ export interface MovieMatchProvider {
     options?: { userAgent?: string | null },
   ): Promise<string>;
 
-  getMedia(options: {
-    filters?: Filter[];
-  }): Promise<Media[]>;
+  getMedia(options: { filters?: Filter[] }): Promise<Media[]>;
 }

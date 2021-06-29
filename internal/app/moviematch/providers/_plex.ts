@@ -1,4 +1,5 @@
 import {
+  AuthType,
   Filter,
   Filters,
   Library,
@@ -6,11 +7,10 @@ import {
   Media,
 } from "/types/moviematch.ts";
 import { PlexApi, PlexDeepLinkOptions } from "/internal/app/plex/api.ts";
-import {
-  MovieMatchProvider,
-} from "/internal/app/moviematch/providers/_types.ts";
+import { MovieMatchProvider } from "/internal/app/moviematch/providers/_types.ts";
 import { FieldType } from "/internal/app/plex/types/library_items.ts";
 import { filterToQueryString } from "/internal/app/plex/util.ts";
+import * as plexTv from "/internal/app/plex/plex_tv.ts";
 
 export interface PlexProviderConfig {
   url: string;
@@ -61,12 +61,12 @@ export const createProvider = (
     const plexLibraries = await api.getLibraries();
 
     libraries = plexLibraries
-      .map((library) =>
-        ({
+      .map(
+        (library) => ({
           title: library.title,
           key: library.key,
           type: library.type,
-        }) as Library
+        } as Library),
       )
       .filter((library) =>
         (providerOptions.libraryTypeFilter ?? ["movie"]).includes(library.type)
@@ -78,19 +78,50 @@ export const createProvider = (
   return {
     options: providerOptions,
     isAvailable: () => api.isAvaliable(),
-    isUserAuthorized: () => Promise.resolve(true),
+    getUserAuthType: async (user: plexTv.PlexUser): Promise<AuthType> => {
+      const homeUsers = await plexTv.getPlexHomeUsers({
+        plexToken: providerOptions.token,
+        clientId: "abc123",
+      });
+
+      if (
+        homeUsers.MediaContainer.User.findIndex(
+          (_) => String(_.id) === String(user.id),
+        ) !== -1
+      ) {
+        return "plexOwner";
+      }
+
+      const plexFriends = await plexTv.getPlexUsers({
+        plexToken: providerOptions.token,
+        clientId: "abc123",
+      });
+
+      if (
+        plexFriends.MediaContainer.User.findIndex(
+          (_) => String(_.id) === String(user.id),
+        ) !== -1
+      ) {
+        return "plexFriends";
+      }
+
+      return "plex";
+    },
     getName: () => api.getServerName(),
     getLibraries,
     getFilters: async () => {
       const meta = await api.getAllFilters();
       const availableTypes: LibraryType[] = ["movie", "show"];
 
-      const filters = new Map<string, {
-        title: string;
-        key: string;
-        type: string;
-        libraryTypes: LibraryType[];
-      }>();
+      const filters = new Map<
+        string,
+        {
+          title: string;
+          key: string;
+          type: string;
+          libraryTypes: LibraryType[];
+        }
+      >();
 
       for (const type of meta.Type) {
         if (availableTypes.includes(type.type as LibraryType) && type.Filter) {
@@ -103,7 +134,8 @@ export const createProvider = (
             } else {
               const filterType = type.Field!.find((_) =>
                 _.key === filter.filter
-              )?.type ?? filter.filterType;
+              )?.type ??
+                filter.filterType;
               filters.set(filter.filter, {
                 title: filter.title,
                 key: filter.filter,
@@ -138,12 +170,12 @@ export const createProvider = (
           deduplicatedFilterValues.set(filterValue.key, filterValue.title);
         }
 
-        return [...deduplicatedFilterValues.entries()].map((
-          [value, title],
-        ) => ({
-          value,
-          title,
-        }));
+        return [...deduplicatedFilterValues.entries()].map(
+          ([value, title]) => ({
+            value,
+            title,
+          }),
+        );
       }
 
       return [];
@@ -187,10 +219,9 @@ export const createProvider = (
       const media: Media[] = [];
 
       for (const library of libraries) {
-        const libraryItems = await api.getLibraryItems(
-          library.key,
-          { filters: filterParams },
-        );
+        const libraryItems = await api.getLibraryItems(library.key, {
+          filters: filterParams,
+        });
         if (libraryItems.size) {
           for (const libraryItem of libraryItems.Metadata) {
             let posterUrl;

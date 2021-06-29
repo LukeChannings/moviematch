@@ -189,7 +189,7 @@ class Socket extends MMEventTarget<
     this.#context.abortController.abort();
   }
 
-  private handleLogin(
+  private async handleLogin(
     e: MessageEvent<FilterServerMessageByType<ServerMessage, "login">>,
   ) {
     if (this.#doesRequireConfiguration()) {
@@ -205,7 +205,7 @@ class Socket extends MMEventTarget<
     if (
       !(
         "userName" in e.data.payload ||
-        ("plexClientId" in e.data.payload && "plexToken" in e.data.payload)
+        ("clientId" in e.data.payload && "plexToken" in e.data.payload)
       )
     ) {
       return this.sendMessage({
@@ -218,7 +218,7 @@ class Socket extends MMEventTarget<
     }
 
     try {
-      const user = getUser({
+      const user = await getUser({
         login: e.data.payload,
         config: this.#context.config,
         providers: this.#context.providers,

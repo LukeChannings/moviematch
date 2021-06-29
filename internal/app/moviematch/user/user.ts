@@ -2,13 +2,13 @@ import {
   AnonymousLogin,
   Config,
   Login,
-  Permission,
   PlexLogin,
   User,
 } from "/types/moviematch.ts";
 import { MovieMatchError } from "/internal/app/moviematch/util/assert.ts";
 import { MovieMatchProvider } from "/internal/app/moviematch/providers/provider.ts";
 import { log } from "/deps.ts";
+import * as plexTv from "/internal/app/plex/plex_tv.ts";
 
 export interface UserState {
   user: User;
@@ -17,21 +17,22 @@ export interface UserState {
 
 const userStates = new Map<string, UserState>();
 
-export const getUser = (loginRequest: LoginRequest): User => {
+export const getUser = async (loginRequest: LoginRequest): Promise<User> => {
   const loginType = "plexToken" in loginRequest.login ? "plex" : "anonymous";
+  const { permittedAuthTypes = {} } = loginRequest.config;
+  let plexUser: plexTv.PlexUser | undefined;
 
-  if (
-    loginType === "anonymous" &&
-    loginRequest.config.permittedAuthTypes?.anonymous?.length === 0
-  ) {
-    throw new AnonymousLoginNotPermittedError(
-      `There are no permitted auth types for anonymous logins`,
-    );
+  if (loginType === "plex") {
+    try {
+      plexUser = await plexTv.getUser(loginRequest.login as PlexLogin);
+    } catch {
+      throw new PlexUserUnknownError("Could not validate user with plex.tv");
+    }
   }
 
   const userId =
     `${loginType}-${(loginRequest.login as AnonymousLogin).userName ??
-      (loginRequest.login as PlexLogin).plexClientId}`.toLocaleLowerCase();
+      plexUser?.uuid}`.toLocaleLowerCase();
 
   const existingUserState = userStates.get(userId);
 
@@ -45,21 +46,73 @@ export const getUser = (loginRequest: LoginRequest): User => {
     }
   }
 
-  // check if Plex login is in Plex Friends.
+  let user: User;
 
-  const userState = {
-    user: {
-      id: userId,
-      userName: (loginRequest.login as AnonymousLogin).userName,
-      permissions: (
-        loginRequest.config.permittedAuthTypes as Record<string, Permission[]>
-      )[loginType] ?? [],
-    },
-  };
+  switch (loginType) {
+    case "anonymous": {
+      if (permittedAuthTypes.anonymous?.length === 0) {
+        throw new AnonymousLoginNotPermittedError(
+          "There are no permitted auth types for anonymous logins",
+        );
+      }
 
-  userStates.set(userId, userState);
+      user = {
+        id: userId,
+        userName: (loginRequest.login as AnonymousLogin).userName,
+        permissions: permittedAuthTypes.anonymous ?? [],
+      };
 
-  return userState.user;
+      break;
+    }
+    case "plex": {
+      if (!plexUser) {
+        throw new PlexUserUnknownError();
+      }
+
+      let authProviders = loginRequest.providers.filter(
+        (_) => _.options?.useForAuth,
+      );
+      if (authProviders.length === 0) {
+        authProviders = [loginRequest.providers[0]];
+      }
+
+      const authTypes = await Promise.all(
+        authProviders.map((provider) => provider.getUserAuthType(plexUser)),
+      );
+
+      const authTypesSort = {
+        anonymous: 0,
+        plex: 1,
+        plexFriends: 2,
+        plexOwner: 3,
+      };
+
+      // figure out the highest permission this user has
+      const [authType] = authTypes.sort(
+        (a, b) => authTypesSort[b] - authTypesSort[a],
+      );
+
+      const permissions = permittedAuthTypes[authType] ?? [];
+
+      if (permissions.length === 0) {
+        throw new PlexLoginNotPermittedError(
+          `There are no permitted auth types for ${authType} logins`,
+        );
+      }
+
+      user = {
+        id: userId,
+        userName: plexUser.username,
+        permissions,
+        avatarImage: plexUser.thumb,
+      };
+      break;
+    }
+  }
+
+  userStates.set(userId, { user });
+
+  return user;
 };
 
 export const setUserConnectedStatus = (userId: string, status: boolean) => {
@@ -75,7 +128,8 @@ export const setUserConnectedStatus = (userId: string, status: boolean) => {
 };
 
 class AnonymousLoginNotPermittedError extends MovieMatchError {}
-// class PlexLoginNotPermittedError extends MovieMatchError {}
+class PlexUserUnknownError extends MovieMatchError {}
+class PlexLoginNotPermittedError extends MovieMatchError {}
 class AlreadyConnectedError extends MovieMatchError {}
 
 interface LoginRequest {

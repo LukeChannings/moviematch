@@ -46,7 +46,7 @@ export const createStore = () => {
       (action: Actions) => {
         if (action.type in client) {
           client[action.type as ServerMessage["type"]](
-            "payload" in action ? action.payload as any : undefined,
+            "payload" in action ? (action.payload as any) : undefined,
           );
         }
 
@@ -77,7 +77,8 @@ export const createStore = () => {
         }
 
         if (
-          action.type === "leaveRoomSuccess" || action.type === "logoutSuccess"
+          action.type === "leaveRoomSuccess" ||
+          action.type === "logoutSuccess"
         ) {
           const newUrl = new URL(location.href);
           newUrl.searchParams.delete("roomName");
@@ -111,7 +112,7 @@ export const createStore = () => {
         payload: "token" in existingLogin
           ? {
             plexToken: existingLogin.token,
-            plexClientId: existingLogin.clientId,
+            clientId: existingLogin.clientId,
           }
           : existingLogin,
       });
