@@ -38,6 +38,8 @@ jobs:
         env:
           TEST_PLEX_URL: ${{ secrets.TEST_PLEX_URL }}
           TEST_PLEX_TOKEN: ${{ secrets.TEST_PLEX_TOKEN }}
+          PLEX_USER_ANON_TOKEN: ${{ secrets.PLEX_USER_ANON_TOKEN }}
+          PLEX_USER_FRIEND_TOKEN: ${{ secrets.PLEX_USER_FRIEND_TOKEN }}
       - name: Upload screenshots on failure
         uses: actions/upload-artifact@v2
         if: ${{ failure() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') }}
