@@ -1,12 +1,11 @@
 import { assertEquals } from "/deps.ts";
-import { Login, User } from "/types/moviematch.ts";
+import { ExchangeError, Login, User } from "/types/moviematch.ts";
 import {
   getWebSocket,
   sendMessage,
   startMovieMatch,
   waitForMessage,
 } from "../_utils.ts";
-import { ExchangeError } from "../../types/_async_exchange.ts";
 
 Deno.test("can't login if the server isn't set up", async () => {
   const { url, stop } = await startMovieMatch({});

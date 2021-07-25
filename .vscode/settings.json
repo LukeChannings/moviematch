@@ -4,5 +4,6 @@
     "--allow-all",
     "--import-map",
     "./configs/import_map.json"
-  ]
+  ],
+  "prettier.enable": false
 }
