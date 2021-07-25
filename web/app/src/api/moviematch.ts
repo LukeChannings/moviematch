@@ -1,16 +1,10 @@
 import type {
-  Config,
-  CreateRoomRequest,
-  DeleteRoomRequest,
+  AsyncExchangeTypes,
   ExchangeRequestMessage,
   ExchangeResponseMessage,
+  FilterMessageByRequestType,
   FilterMessageByType,
-  FilterValueRequest,
-  JoinRoomRequest,
-  Login,
-  Rate,
-  ResetRoomRequest,
-  UIConfigRequest,
+  WebSocketAPI,
 } from "../../../../types/moviematch";
 
 const API_URL = (() => {
@@ -51,6 +45,21 @@ export class MovieMatchClient extends EventTarget {
       console.error(err);
     }
   };
+
+  login = this.exchange("login");
+  logout = this.exchange("logout");
+  joinRoom = this.exchange("joinRoom");
+  leaveRoom = this.exchange("leaveRoom");
+  createRoom = this.exchange("createRoom");
+  deleteRoom = this.exchange("deleteRoom");
+  resetRoom = this.exchange("resetRoom");
+  listRooms = this.exchange("listRooms");
+  listUsers = this.exchange("listUsers");
+  rate = this.exchange("rate");
+  requestFilters = this.exchange("requestFilters");
+  requestFilterValues = this.exchange("requestFilterValues");
+  config = this.exchange("config");
+  setup = this.exchange("setup");
 
   waitForConnected = () => {
     if (this.ws.readyState === WebSocket.OPEN) {
@@ -93,173 +102,30 @@ export class MovieMatchClient extends EventTarget {
     });
   };
 
-  login = async (login: Login) => {
-    await this.waitForConnected();
-
-    this.sendMessage({ type: "login", payload: login });
-
-    return await Promise.race([
-      this.waitForMessage("loginSuccess"),
-      this.waitForMessage("loginError"),
-    ]);
-  };
-
-  logout = async () => {
-    await this.waitForConnected();
-
-    this.sendMessage({ type: "logout", payload: undefined });
-
-    return await Promise.race([
-      this.waitForMessage("logoutSuccess"),
-      this.waitForMessage("logoutError"),
-    ]);
-  };
-
-  joinRoom = async (joinRoomRequest: JoinRoomRequest) => {
-    await this.waitForConnected();
-
-    this.sendMessage({
-      type: "joinRoom",
-      payload: joinRoomRequest,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("joinRoomSuccess"),
-      this.waitForMessage("joinRoomError"),
-    ]);
-  };
-
-  leaveRoom = async () => {
-    this.sendMessage({
-      type: "leaveRoom",
-      payload: undefined,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("leaveRoomSuccess"),
-      this.waitForMessage("leaveRoomError"),
-    ]);
-  };
-
-  createRoom = async (createRoomRequest: CreateRoomRequest) => {
-    await this.waitForConnected();
-
-    this.sendMessage({
-      type: "createRoom",
-      payload: createRoomRequest,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("createRoomSuccess"),
-      this.waitForMessage("createRoomError"),
-    ]);
-  };
-
-  deleteRoom = async (deleteRoomRequest: DeleteRoomRequest) => {
-    await this.waitForConnected();
-
-    this.sendMessage({
-      type: "deleteRoom",
-      payload: deleteRoomRequest,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("deleteRoomSuccess"),
-      this.waitForMessage("deleteRoomError"),
-    ]);
-  };
-
-  resetRoom = async (resetRoomRequest: ResetRoomRequest) => {
-    await this.waitForConnected();
-
-    this.sendMessage({
-      type: "resetRoom",
-      payload: resetRoomRequest,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("resetRoomSuccess"),
-      this.waitForMessage("resetRoomError"),
-    ]);
-  };
-
-  listRooms = async () => {
-    await this.waitForConnected();
-
-    this.sendMessage({
-      type: "listRooms",
-      payload: undefined,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("listRoomsSuccess"),
-      this.waitForMessage("listRoomsError"),
-    ]);
-  };
-
-  listUsers = async () => {
-    await this.waitForConnected();
-
-    this.sendMessage({
-      type: "listUsers",
-      payload: undefined,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("listUsersSuccess"),
-      this.waitForMessage("listUsersError"),
-    ]);
-  };
-
-  rate = (rateRequest: Rate) => {
-    this.sendMessage({
-      type: "rate",
-      payload: rateRequest,
-    });
-  };
-
-  requestFilters = async () => {
-    this.sendMessage({ type: "requestFilters", payload: undefined });
-
-    return await Promise.race([
-      this.waitForMessage("requestFiltersSuccess"),
-      this.waitForMessage("requestFiltersError"),
-    ]);
-  };
-
-  requestFilterValues = async (filterValueRequest: FilterValueRequest) => {
-    this.sendMessage({
-      type: "requestFilterValues",
-      payload: filterValueRequest,
-    });
-    return await Promise.race([
-      this.waitForMessage("requestFilterValuesSuccess"),
-      this.waitForMessage("requestFilterValuesError"),
-    ]);
-  };
-
-  config = async (uiConfigRequest: UIConfigRequest) => {
-    await this.waitForConnected();
-
-    this.sendMessage({
-      type: "config",
-      payload: uiConfigRequest,
-    });
-  };
-
-  setup = async (config: Config) => {
-    this.sendMessage({
-      type: "setup",
-      payload: config,
-    });
-
-    return await Promise.race([
-      this.waitForMessage("setupError"),
-      this.waitForMessage("setupSuccess"),
-    ]);
-  };
-
   sendMessage(msg: ExchangeRequestMessage) {
     this.ws.send(JSON.stringify(msg));
+  }
+
+  private exchange<
+    T extends AsyncExchangeTypes,
+    E = FilterMessageByRequestType<WebSocketAPI, T>,
+  >(type: T) {
+    return async (
+      payload: E extends { requestType: T; requestPayload: any }
+        ? E["requestPayload"]
+        : never,
+    ) => {
+      await this.waitForConnected();
+
+      this.sendMessage({
+        type,
+        payload,
+      } as ExchangeRequestMessage);
+
+      return await Promise.race([
+        this.waitForMessage(`${type}Success`),
+        this.waitForMessage(`${type}Error`),
+      ]);
+    };
   }
 }

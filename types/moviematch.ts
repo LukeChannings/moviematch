@@ -117,6 +117,10 @@ export type WebSocketAPI =
   | Notification<"userJoinedRoom", UserProgress>
   | Notification<"userProgress", UserProgress>;
 
+export type AsyncExchangeTypes = FilterMessageByRequestType<
+  WebSocketAPI,
+  string
+>["requestType"];
 export type ExchangeRequestMessage = ExtractExchangeRequestMessage<
   WebSocketAPI
 >;
@@ -390,6 +394,11 @@ export type FilterMessageByType<U, T extends string> = U extends
   | {
     type: T;
   } ? U
+  : never;
+
+export type FilterMessageByRequestType<U, T extends string> = U extends {
+  requestType: T;
+} ? U
   : never;
 
 interface Notification<T extends string, Res = undefined> {

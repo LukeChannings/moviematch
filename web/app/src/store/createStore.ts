@@ -8,10 +8,7 @@ import { MovieMatchClient } from "../api/moviematch";
 import { reducer } from "./reducer";
 import * as plex from "../api/plex_tv";
 import type { Actions, Dispatch, Store } from "./types";
-import type {
-  ExchangeRequestMessage,
-  ExchangeResponseMessage,
-} from "../../../../types/moviematch";
+import type { ExchangeResponseMessage } from "../../../../types/moviematch";
 
 const getExistingLogin = async () => {
   const plexLoginStatus = plex.getLogin();
@@ -44,45 +41,83 @@ export const createStore = () => {
   const forwardActions: Middleware<Dispatch, Store> = ({ getState }) =>
     (next) =>
       (action: Actions) => {
-        if (action.type in client) {
-          client[action.type as ExchangeRequestMessage["type"]](
-            "payload" in action ? (action.payload as any) : undefined,
-          );
-        }
+        (async () => {
+          switch (action.type) {
+            case "setup":
+              client.setup(action.payload);
+              break;
+            case "config":
+              client.config(action.payload);
+              break;
+            case "login": {
+              const response = await client.login(action.payload);
+              if (response.type === "loginSuccess") {
+                localStorage.setItem("userName", response.payload.userName);
+              }
+              break;
+            }
+            case "leaveRoom":
+            case "logout": {
+              const response = await client[action.type](action.payload);
+
+              if (response.type === "logoutSuccess") {
+                localStorage.removeItem("userName");
+                localStorage.removeItem("plexToken");
+                localStorage.removeItem("plexTvPin");
+              }
+
+              if (
+                response.type === "leaveRoomSuccess" ||
+                response.type === "logoutSuccess"
+              ) {
+                const newUrl = new URL(location.href);
+                newUrl.searchParams.delete("roomName");
+                history.replaceState(null, document.title, newUrl.href);
+              }
+              break;
+            }
+            case "createRoom":
+            case "joinRoom": {
+              const response = await client[action.type](action.payload);
+              if (
+                response.type === "joinRoomSuccess" ||
+                response.type === "createRoomSuccess"
+              ) {
+                const roomName = getState().room?.name;
+                if (roomName) {
+                  const newUrl = new URL(location.href);
+                  newUrl.searchParams.set("roomName", roomName);
+                  history.replaceState(null, document.title, newUrl.href);
+                }
+              }
+              break;
+            }
+            case "deleteRoom":
+              client.deleteRoom(action.payload);
+              break;
+            case "resetRoom":
+              client.resetRoom(action.payload);
+              break;
+            case "listRooms":
+              client.listRooms(action.payload);
+              break;
+            case "listUsers":
+              client.listUsers(action.payload);
+              break;
+            case "rate":
+              client.rate(action.payload);
+              break;
+            case "requestFilters":
+              client.requestFilters(action.payload);
+              break;
+            case "requestFilterValues":
+              client.requestFilterValues(action.payload);
+              break;
+          }
+        })();
 
         if (action.type === "plexLogin") {
           plex.signIn();
-        }
-
-        if (action.type === "loginSuccess") {
-          localStorage.setItem("userName", action.payload.userName!);
-        }
-
-        if (action.type === "logout") {
-          localStorage.removeItem("userName");
-          localStorage.removeItem("plexToken");
-          localStorage.removeItem("plexTvPin");
-        }
-
-        if (
-          action.type === "joinRoomSuccess" ||
-          action.type === "createRoomSuccess"
-        ) {
-          const roomName = getState().room?.name;
-          if (roomName) {
-            const newUrl = new URL(location.href);
-            newUrl.searchParams.set("roomName", roomName);
-            history.replaceState(null, document.title, newUrl.href);
-          }
-        }
-
-        if (
-          action.type === "leaveRoomSuccess" ||
-          action.type === "logoutSuccess"
-        ) {
-          const newUrl = new URL(location.href);
-          newUrl.searchParams.delete("roomName");
-          history.replaceState(null, document.title, newUrl.href);
         }
 
         return next(action);
