@@ -1,8 +1,7 @@
 import {
-  ClientMessage,
   Config,
-  FilterClientMessageByType,
-  ServerMessage,
+  ExchangeMessage,
+  FilterMessageByType,
 } from "/types/moviematch.ts";
 import { load } from "https://deno.land/x/tiny_env@1.0.0/mod.ts";
 import { deferred, iter, log } from "/deps.ts";
@@ -100,23 +99,23 @@ export const getWebSocket = async (url: URL): Promise<WebSocket> => {
   return ws;
 };
 
-export const waitForMessage = <K extends ClientMessage["type"]>(
+export const waitForMessage = <K extends ExchangeMessage["type"]>(
   ws: WebSocket,
   type: K | K[],
   timeoutMs = 2_000,
-): Promise<FilterClientMessageByType<ClientMessage, K>> =>
+): Promise<FilterMessageByType<ExchangeMessage, K>> =>
   new Promise((res, rej) => {
     const timeoutId = setTimeout(
       () => rej(new Error(`${type} took longer than ${timeoutMs}ms`)),
       timeoutMs,
     );
     const handler = (e: MessageEvent) => {
-      const msg: ClientMessage = JSON.parse(e.data);
+      const msg: ExchangeMessage = JSON.parse(e.data);
       if (
         msg.type === type ||
         (Array.isArray(type) && type.includes(msg.type as K))
       ) {
-        res(msg as FilterClientMessageByType<ClientMessage, K>);
+        res(msg as FilterMessageByType<ExchangeMessage, K>);
         clearInterval(timeoutId);
         ws.removeEventListener("message", handler);
       }
@@ -125,6 +124,6 @@ export const waitForMessage = <K extends ClientMessage["type"]>(
     ws.addEventListener("message", handler);
   });
 
-export const sendMessage = (ws: WebSocket, message: ServerMessage) => {
+export const sendMessage = (ws: WebSocket, message: ExchangeMessage) => {
   ws.send(JSON.stringify(message));
 };

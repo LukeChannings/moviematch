@@ -5,13 +5,13 @@ import {
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { MovieMatchClient } from "../api/moviematch";
-import type {
-  ClientMessage,
-  ServerMessage,
-} from "../../../../types/moviematch";
 import { reducer } from "./reducer";
 import * as plex from "../api/plex_tv";
 import type { Actions, Dispatch, Store } from "./types";
+import type {
+  ExchangeRequestMessage,
+  ExchangeResponseMessage,
+} from "../../../../types/moviematch";
 
 const getExistingLogin = async () => {
   const plexLoginStatus = plex.getLogin();
@@ -45,7 +45,7 @@ export const createStore = () => {
     (next) =>
       (action: Actions) => {
         if (action.type in client) {
-          client[action.type as ServerMessage["type"]](
+          client[action.type as ExchangeRequestMessage["type"]](
             "payload" in action ? (action.payload as any) : undefined,
           );
         }
@@ -126,7 +126,7 @@ export const createStore = () => {
   });
 
   client.addEventListener("message", (e) => {
-    dispatch((e as MessageEvent<ClientMessage>).data);
+    dispatch((e as MessageEvent<ExchangeResponseMessage>).data);
   });
 
   return store;

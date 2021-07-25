@@ -1,9 +1,8 @@
 import React, { memo } from "react";
 import { useStore } from "../../store";
-import type { TranslationKey } from "../../../../../types/moviematch";
 
 interface TranslationProps {
-  name: TranslationKey;
+  name: string;
   context?: Record<string, string>;
 }
 

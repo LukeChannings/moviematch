@@ -2,13 +2,12 @@ import type { Dispatch as ReduxDispatch } from "redux";
 import type { Toast } from "src/components/atoms/Toast";
 import type { Routes } from "src/types";
 import type {
-  ClientMessage,
+  ExchangeRequestMessage,
+  ExchangeResponseMessage,
   Filters,
   FilterValue,
   Match,
   Media,
-  ServerMessage,
-  Translations,
   UIConfig,
   User,
 } from "../../../../types/moviematch";
@@ -21,12 +20,12 @@ export type ClientActions =
     payload: { route: Routes; routeParams?: Record<string, string> };
   }
   | { type: "plexLogin" }
-  | ServerMessage;
+  | ExchangeRequestMessage;
 
 export type Actions =
   | {
     type: "connect";
-    payload: { config: UIConfig; translations: Translations };
+    payload: { config: UIConfig; translations: Record<string, string> };
   }
   | { type: "disconnect" }
   | {
@@ -34,7 +33,7 @@ export type Actions =
     payload: Store["connectionStatus"];
   }
   | ClientActions
-  | ClientMessage;
+  | ExchangeResponseMessage;
 
 export type Dispatch = ReduxDispatch<ClientActions>;
 
@@ -44,7 +43,7 @@ export interface Store {
   routeParams?: Record<string, string | undefined>;
   error?: { type?: string; message?: string };
   toasts: Toast[];
-  translations?: Translations;
+  translations?: Record<string, string>;
   config?: Omit<UIConfig, "translations">;
   user?: User;
   createRoom?: {

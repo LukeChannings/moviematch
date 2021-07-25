@@ -1,13 +1,15 @@
 import type {
-  ClientMessage,
   Config,
   CreateRoomRequest,
-  FilterClientMessageByType,
+  DeleteRoomRequest,
+  ExchangeRequestMessage,
+  ExchangeResponseMessage,
+  FilterMessageByType,
   FilterValueRequest,
   JoinRoomRequest,
   Login,
   Rate,
-  ServerMessage,
+  ResetRoomRequest,
   UIConfigRequest,
 } from "../../../../types/moviematch";
 
@@ -42,7 +44,7 @@ export class MovieMatchClient extends EventTarget {
 
   private handleMessage = (e: MessageEvent<string>) => {
     try {
-      const msg: ClientMessage = JSON.parse(e.data);
+      const msg: ExchangeResponseMessage = JSON.parse(e.data);
       this.dispatchEvent(new MessageEvent(msg.type, { data: msg }));
       this.dispatchEvent(new MessageEvent("message", { data: msg }));
     } catch (err) {
@@ -73,9 +75,9 @@ export class MovieMatchClient extends EventTarget {
     this.reconnectionAttempts += 1;
   };
 
-  waitForMessage = <K extends ClientMessage["type"]>(
+  waitForMessage = <K extends ExchangeResponseMessage["type"]>(
     type: K,
-  ): Promise<FilterClientMessageByType<ClientMessage, K>> => {
+  ): Promise<FilterMessageByType<ExchangeResponseMessage, K>> => {
     return new Promise((resolve) => {
       this.addEventListener(
         type,
@@ -105,7 +107,7 @@ export class MovieMatchClient extends EventTarget {
   logout = async () => {
     await this.waitForConnected();
 
-    this.sendMessage({ type: "logout" });
+    this.sendMessage({ type: "logout", payload: undefined });
 
     return await Promise.race([
       this.waitForMessage("logoutSuccess"),
@@ -113,9 +115,7 @@ export class MovieMatchClient extends EventTarget {
     ]);
   };
 
-  joinRoom = async (
-    joinRoomRequest: JoinRoomRequest,
-  ) => {
+  joinRoom = async (joinRoomRequest: JoinRoomRequest) => {
     await this.waitForConnected();
 
     this.sendMessage({
@@ -132,6 +132,7 @@ export class MovieMatchClient extends EventTarget {
   leaveRoom = async () => {
     this.sendMessage({
       type: "leaveRoom",
+      payload: undefined,
     });
 
     return await Promise.race([
@@ -154,6 +155,62 @@ export class MovieMatchClient extends EventTarget {
     ]);
   };
 
+  deleteRoom = async (deleteRoomRequest: DeleteRoomRequest) => {
+    await this.waitForConnected();
+
+    this.sendMessage({
+      type: "deleteRoom",
+      payload: deleteRoomRequest,
+    });
+
+    return await Promise.race([
+      this.waitForMessage("deleteRoomSuccess"),
+      this.waitForMessage("deleteRoomError"),
+    ]);
+  };
+
+  resetRoom = async (resetRoomRequest: ResetRoomRequest) => {
+    await this.waitForConnected();
+
+    this.sendMessage({
+      type: "resetRoom",
+      payload: resetRoomRequest,
+    });
+
+    return await Promise.race([
+      this.waitForMessage("resetRoomSuccess"),
+      this.waitForMessage("resetRoomError"),
+    ]);
+  };
+
+  listRooms = async () => {
+    await this.waitForConnected();
+
+    this.sendMessage({
+      type: "listRooms",
+      payload: undefined,
+    });
+
+    return await Promise.race([
+      this.waitForMessage("listRoomsSuccess"),
+      this.waitForMessage("listRoomsError"),
+    ]);
+  };
+
+  listUsers = async () => {
+    await this.waitForConnected();
+
+    this.sendMessage({
+      type: "listUsers",
+      payload: undefined,
+    });
+
+    return await Promise.race([
+      this.waitForMessage("listUsersSuccess"),
+      this.waitForMessage("listUsersError"),
+    ]);
+  };
+
   rate = (rateRequest: Rate) => {
     this.sendMessage({
       type: "rate",
@@ -162,7 +219,7 @@ export class MovieMatchClient extends EventTarget {
   };
 
   requestFilters = async () => {
-    this.sendMessage({ type: "requestFilters" });
+    this.sendMessage({ type: "requestFilters", payload: undefined });
 
     return await Promise.race([
       this.waitForMessage("requestFiltersSuccess"),
@@ -202,7 +259,7 @@ export class MovieMatchClient extends EventTarget {
     ]);
   };
 
-  sendMessage(msg: ServerMessage) {
+  sendMessage(msg: ExchangeRequestMessage) {
     this.ws.send(JSON.stringify(msg));
   }
 }

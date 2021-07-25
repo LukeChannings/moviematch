@@ -12,12 +12,7 @@ Deno.test("Config -> loadConfig", async () => {
       expectedErrors: string[],
     ]
   > = [
-    [
-      ``,
-      {},
-      {},
-      ["ServersMustNotBeEmpty"],
-    ],
+    [``, {}, {}, ["ServersMustNotBeEmpty"]],
     [
       `servers:
   - url: https://plex.example.com
@@ -44,7 +39,7 @@ Deno.test("Config -> loadConfig", async () => {
             "CreateRoom",
             "DeleteRoom",
             "ResetRoom",
-            "Reconfigure",
+            "Admin",
           ],
         },
       },
@@ -78,7 +73,7 @@ servers:
             "CreateRoom",
             "DeleteRoom",
             "ResetRoom",
-            "Reconfigure",
+            "Admin",
           ],
         },
       },
@@ -112,7 +107,7 @@ servers:
             "CreateRoom",
             "DeleteRoom",
             "ResetRoom",
-            "Reconfigure",
+            "Admin",
           ],
         },
       },
@@ -145,7 +140,7 @@ servers:
             "CreateRoom",
             "DeleteRoom",
             "ResetRoom",
-            "Reconfigure",
+            "Admin",
           ],
         },
       },
@@ -156,8 +151,10 @@ servers:
   const tmpConfigPath = `/tmp/actualConfig.yaml`;
 
   for (
-    const [testIndex, [yamlConfig, env, expectedConfig, expectedErrors]]
-      of Object.entries(cases)
+    const [
+      testIndex,
+      [yamlConfig, env, expectedConfig, expectedErrors],
+    ] of Object.entries(cases)
   ) {
     if (yamlConfig) {
       await Deno.writeTextFile(tmpConfigPath, yamlConfig);
@@ -173,14 +170,20 @@ servers:
         JSON.stringify(expectedErrors) ===
           JSON.stringify(errors.map((_) => _.name)),
         `Test ${testIndex} failed. Expected ${
-          JSON.stringify(expectedErrors)
+          JSON.stringify(
+            expectedErrors,
+          )
         }, got ${JSON.stringify(errors.map((_) => _.name))}`,
       );
     } else {
       assert(
         JSON.stringify(actualConfig!) === JSON.stringify(expectedConfig),
         `Test ${testIndex} failed. Expected ${
-          JSON.stringify(expectedConfig, null, 2)
+          JSON.stringify(
+            expectedConfig,
+            null,
+            2,
+          )
         }, got ${JSON.stringify(actualConfig!, null, 2)}`,
       );
     }

@@ -26,9 +26,11 @@ export const JoinScreen = () => {
   }, [initialRoomName]);
 
   if (initialRoomName && !store.error) {
-    return <Layout>
-      <Spinner />
-    </Layout>;
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    );
   }
 
   return (
@@ -39,10 +41,11 @@ export const JoinScreen = () => {
           e.preventDefault();
         }}
       >
-        {store.error &&
+        {store.error && (
           <ErrorMessage
             message={store.error.message ?? store.error.type ?? ""}
-          />}
+          />
+        )}
         <Field
           label="Room Name"
           name="roomName"
@@ -54,7 +57,7 @@ export const JoinScreen = () => {
           <Button
             appearance="Tertiary"
             onPress={() => {
-              dispatch({ type: "logout" });
+              dispatch({ type: "logout", payload: undefined });
             }}
             testHandle="logout"
           >

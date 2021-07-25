@@ -1,11 +1,12 @@
 import { assertEquals } from "/deps.ts";
-import { Login, LoginError, User } from "/types/moviematch.ts";
+import { Login, User } from "/types/moviematch.ts";
 import {
   getWebSocket,
   sendMessage,
   startMovieMatch,
   waitForMessage,
 } from "../_utils.ts";
+import { ExchangeError } from "../../types/_async_exchange.ts";
 
 Deno.test("can't login if the server isn't set up", async () => {
   const { url, stop } = await startMovieMatch({});
@@ -19,7 +20,7 @@ Deno.test("can't login if the server isn't set up", async () => {
     });
     const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
     assertEquals(msg.type, "loginError");
-    assertEquals((msg.payload as LoginError).name, "ServerNotSetUp");
+    assertEquals((msg.payload as ExchangeError).name, "ServerNotSetUp");
   } finally {
     await stop();
   }
@@ -43,7 +44,7 @@ Deno.test("errors when the login request is invalid", async () => {
     });
     const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
     assertEquals(msg.type, "loginError");
-    assertEquals((msg.payload as LoginError).name, "MalformedMessage");
+    assertEquals((msg.payload as ExchangeError).name, "MalformedRequest");
   } finally {
     await stop();
   }
@@ -82,7 +83,7 @@ Deno.test("Anonymous usernames are case insensitive", async () => {
     });
     const msg2 = await waitForMessage(ws2, ["loginSuccess", "loginError"]);
     assertEquals(msg2.type, "loginError");
-    assertEquals((msg2.payload as LoginError).name, "AlreadyConnected");
+    assertEquals((msg2.payload as ExchangeError).name, "AlreadyConnected");
   } finally {
     await stop();
   }
@@ -112,7 +113,7 @@ Deno.test("Login fails for users with no auth types - anonymous", async () => {
     const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
     assertEquals(msg.type, "loginError");
     assertEquals(
-      (msg.payload as LoginError).name,
+      (msg.payload as ExchangeError).name,
       "AnonymousLoginNotPermitted",
     );
   } finally {
@@ -143,7 +144,7 @@ Deno.test("Login fails for users with no auth types - plex", async () => {
     });
     const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
     assertEquals(msg.type, "loginError");
-    assertEquals((msg.payload as LoginError).name, "PlexLoginNotPermitted");
+    assertEquals((msg.payload as ExchangeError).name, "PlexLoginNotPermitted");
   } finally {
     await stop();
   }
@@ -175,7 +176,10 @@ Deno.test(
       });
       const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
       assertEquals(msg.type, "loginError");
-      assertEquals((msg.payload as LoginError).name, "PlexLoginNotPermitted");
+      assertEquals(
+        (msg.payload as ExchangeError).name,
+        "PlexLoginNotPermitted",
+      );
     } finally {
       await stop();
     }
@@ -206,7 +210,7 @@ Deno.test("Login fails for users with no auth types - plexOwner", async () => {
     });
     const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
     assertEquals(msg.type, "loginError");
-    assertEquals((msg.payload as LoginError).name, "PlexLoginNotPermitted");
+    assertEquals((msg.payload as ExchangeError).name, "PlexLoginNotPermitted");
   } finally {
     await stop();
   }
@@ -270,7 +274,7 @@ Deno.test("Can login - plexFriends", async () => {
     const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
     assertEquals(msg.type, "loginSuccess");
     assertEquals(msg.payload, {
-      avatarImage: "https://plex.tv/users/582115e98e6a163c/avatar?c=1625003499",
+      avatarImage: "https://plex.tv/users/582115e98e6a163c/avatar",
       id: "plex-582115e98e6a163c",
       permissions: ["JoinRoom"],
       userName: "CarFriend",
@@ -305,7 +309,7 @@ Deno.test("Login fails for users with no auth types - plexOwner", async () => {
     const msg = await waitForMessage(ws, ["loginSuccess", "loginError"]);
     assertEquals(msg.type, "loginSuccess");
     assertEquals(msg.payload, {
-      avatarImage: "https://plex.tv/users/1a0dcfc2881c1ad1/avatar?c=1623188333",
+      avatarImage: "https://plex.tv/users/1a0dcfc2881c1ad1/avatar",
       id: "plex-1a0dcfc2881c1ad1",
       permissions: ["JoinRoom"],
       userName: "LukeChannings",

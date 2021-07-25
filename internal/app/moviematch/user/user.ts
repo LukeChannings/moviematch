@@ -1,7 +1,9 @@
 import {
   AnonymousLogin,
+  AuthType,
   Config,
   Login,
+  Permission,
   PlexLogin,
   User,
 } from "/types/moviematch.ts";
@@ -80,7 +82,7 @@ export const getUser = async (loginRequest: LoginRequest): Promise<User> => {
         authProviders.map((provider) => provider.getUserAuthType(plexUser)),
       );
 
-      const authTypesSort = {
+      const authTypesSort: Record<AuthType, number> = {
         anonymous: 0,
         plex: 1,
         plexFriends: 2,
@@ -104,7 +106,7 @@ export const getUser = async (loginRequest: LoginRequest): Promise<User> => {
         id: userId,
         userName: plexUser.username,
         permissions,
-        avatarImage: plexUser.thumb,
+        avatarImage: plexUser.thumb.replace(/\?.+$/i, ""),
       };
       break;
     }
@@ -127,6 +129,23 @@ export const setUserConnectedStatus = (userId: string, status: boolean) => {
   return userState.connected;
 };
 
+export function assertPermission(
+  user: User | undefined,
+  permission: Permission,
+): asserts user is User {
+  if (!user) {
+    throw new NotLoggedInError();
+  }
+
+  if (!user.permissions?.includes(permission)) {
+    throw new UnauthorizedError(
+      `${user.userName} does not have the permission "${permission}"`,
+    );
+  }
+}
+
+class NotLoggedInError extends MovieMatchError {}
+class UnauthorizedError extends MovieMatchError {}
 class AnonymousLoginNotPermittedError extends MovieMatchError {}
 class PlexUserUnknownError extends MovieMatchError {}
 class PlexLoginNotPermittedError extends MovieMatchError {}

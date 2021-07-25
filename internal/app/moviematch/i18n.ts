@@ -1,7 +1,6 @@
 import { Accepts, log } from "/deps.ts";
 import { readDir, readTextFile } from "pkger";
 import { memo, memo1 } from "/internal/app/moviematch/util/memo.ts";
-import { Translations } from "/types/moviematch.ts";
 
 const CONFIG_PATH = "/configs/localization";
 
@@ -33,12 +32,10 @@ export const loadTranslation = memo1(
 
 export const getTranslations = async (
   headers: Headers,
-): Promise<Translations> => {
+): Promise<Record<string, string>> => {
   const accept = new Accepts(headers);
   if (!headers.get("accept-language")) {
-    log.info(
-      `No accept-languages when loading translations. Defaulting to en`,
-    );
+    log.info(`No accept-languages when loading translations. Defaulting to en`);
     headers.set("accept-language", "en");
   }
   const availableLocales = await getAvailableLocales();
@@ -54,5 +51,5 @@ export const getTranslations = async (
     language = acceptedLanguage;
   }
 
-  return await loadTranslation(language) as Translations;
+  return await loadTranslation(language);
 };

@@ -29,74 +29,107 @@ export const resetEnv = (newEnv: Record<string, string>) => {
 
 Deno.test("Config -> loadFromEnv", async () => {
   const cases: Array<[Record<string, string>, Partial<Config>]> = [
-    [{ "HOST": "192.168.1.2", "PORT": "8080" }, {
-      hostname: "192.168.1.2",
-      port: 8080,
-    }],
-    [{ "TLS_CERT": "cert.pem", "TLS_KEY": "key.pem" }, {
-      tlsConfig: {
-        certFile: "cert.pem",
-        keyFile: "key.pem",
+    [
+      { HOST: "192.168.1.2", PORT: "8080" },
+      {
+        hostname: "192.168.1.2",
+        port: 8080,
       },
-    }],
-    [{ "AUTH_USER": "luke", "AUTH_PASS": "test" }, {
-      basicAuth: { userName: "luke", password: "test" },
-    }],
-    [{ "PLEX_URL": "https://plex.example.com" }, {
-      servers: [
-        {
-          url: "https://plex.example.com",
-        } as Config["servers"][number],
-      ],
-    }],
-    [{ "PLEX_URL": "https://plex.example.com", "PLEX_TOKEN": "abc123" }, {
-      servers: [
-        {
-          url: "https://plex.example.com",
-          token: "abc123",
-        } as Config["servers"][number],
-      ],
-    }],
-    [{ "LIBRARY_TITLE_FILTER": "Movies" }, {
-      servers: [
-        {
-          libraryTitleFilter: ["Movies"],
-        } as Config["servers"][number],
-      ],
-    }],
-    [{ "LIBRARY_TYPE_FILTER": "show" }, {
-      servers: [
-        {
-          libraryTypeFilter: ["show"],
-        } as Config["servers"][number],
-      ],
-    }],
-    [{ "MOVIE_LINK_TYPE": "app" }, {
-      servers: [
-        {
-          linkType: "app",
-        } as Config["servers"][number],
-      ],
-    }],
-    [{ "LOG_LEVEL": "INFO" }, {
-      logLevel: "INFO",
-    }],
-    [{ "ROOT_PATH": "/moviematch" }, {
-      rootPath: "/moviematch",
-    }],
-    [{ "REQUIRE_PLEX_LOGIN": "1" }, {
-      permittedAuthTypes: {
-        plex: ["JoinRoom"],
-        plexFriends: ["JoinRoom", "CreateRoom"],
-        plexOwner: [
-          "JoinRoom",
-          "CreateRoom",
-          "DeleteRoom",
-          "ResetRoom",
-          "Reconfigure",
+    ],
+    [
+      { TLS_CERT: "cert.pem", TLS_KEY: "key.pem" },
+      {
+        tlsConfig: {
+          certFile: "cert.pem",
+          keyFile: "key.pem",
+        },
+      },
+    ],
+    [
+      { AUTH_USER: "luke", AUTH_PASS: "test" },
+      {
+        basicAuth: { userName: "luke", password: "test" },
+      },
+    ],
+    [
+      { PLEX_URL: "https://plex.example.com" },
+      {
+        servers: [
+          {
+            url: "https://plex.example.com",
+          } as Config["servers"][number],
         ],
       },
-    }],
+    ],
+    [
+      { PLEX_URL: "https://plex.example.com", PLEX_TOKEN: "abc123" },
+      {
+        servers: [
+          {
+            url: "https://plex.example.com",
+            token: "abc123",
+          } as Config["servers"][number],
+        ],
+      },
+    ],
+    [
+      { LIBRARY_TITLE_FILTER: "Movies" },
+      {
+        servers: [
+          {
+            libraryTitleFilter: ["Movies"],
+          } as Config["servers"][number],
+        ],
+      },
+    ],
+    [
+      { LIBRARY_TYPE_FILTER: "show" },
+      {
+        servers: [
+          {
+            libraryTypeFilter: ["show"],
+          } as Config["servers"][number],
+        ],
+      },
+    ],
+    [
+      { MOVIE_LINK_TYPE: "app" },
+      {
+        servers: [
+          {
+            linkType: "app",
+          } as Config["servers"][number],
+        ],
+      },
+    ],
+    [
+      { LOG_LEVEL: "INFO" },
+      {
+        logLevel: "INFO",
+      },
+    ],
+    [
+      { ROOT_PATH: "/moviematch" },
+      {
+        rootPath: "/moviematch",
+      },
+    ],
+    [
+      { REQUIRE_PLEX_LOGIN: "1" },
+      {
+        permittedAuthTypes: {
+          plex: ["JoinRoom"],
+          plexFriends: ["JoinRoom", "CreateRoom"],
+          plexOwner: [
+            "JoinRoom",
+            "CreateRoom",
+            "DeleteRoom",
+            "ResetRoom",
+            "Admin",
+          ],
+        },
+      },
+    ],
   ];
 
   for (const [env, expectecConfig] of cases) {
@@ -104,9 +137,13 @@ Deno.test("Config -> loadFromEnv", async () => {
     const actualConfig = await loadFromEnv();
     assert(
       JSON.stringify(expectecConfig) == JSON.stringify(actualConfig),
-      `Expected ${JSON.stringify(expectecConfig, null, 2)}, got ${
-        JSON.stringify(actualConfig, null, 2)
-      }`,
+      `Expected ${
+        JSON.stringify(
+          expectecConfig,
+          null,
+          2,
+        )
+      }, got ${JSON.stringify(actualConfig, null, 2)}`,
     );
   }
 });

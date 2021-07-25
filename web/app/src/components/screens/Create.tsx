@@ -14,17 +14,12 @@ import styles from "./Create.module.css";
 
 export const CreateScreen = () => {
   const [{ translations, createRoom, error, routeParams }, dispatch] = useStore(
-    [
-      "translations",
-      "createRoom",
-      "error",
-      "routeParams",
-    ],
+    ["translations", "createRoom", "error", "routeParams"],
   );
   const [roomName, setRoomName] = useState<string>(routeParams?.roomName ?? "");
   const [roomNameError, setRoomNameError] = useState<string | null>(null);
   const filters = useRef(new Map<number, Filter>());
-  const handleCreateRoom = useCallback(async () => {
+  const handleCreateRoom = useCallback(() => {
     if (!roomName) {
       setRoomNameError(translations?.FIELD_REQUIRED_ERROR!);
       return;
@@ -42,7 +37,7 @@ export const CreateScreen = () => {
   }, [roomName]);
 
   useEffect(() => {
-    dispatch({ type: "requestFilters" });
+    dispatch({ type: "requestFilters", payload: undefined });
   }, []);
 
   return (

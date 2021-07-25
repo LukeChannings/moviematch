@@ -36,7 +36,7 @@ permittedAuthTypes:
     - CreateRoom
     - DeleteRoom
     - ResetRoom
-    - Reconfigure
+    - Admin
 ```
 
 MovieMatch will read the config from `config.yaml` by default.

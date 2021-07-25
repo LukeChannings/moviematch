@@ -117,10 +117,14 @@ export const UserMenu = () => {
             </div>
           )}
         </MenuGroup>
-        <MenuButton onClick={() => dispatch({ type: "leaveRoom" })}>
+        <MenuButton
+          onClick={() => dispatch({ type: "leaveRoom", payload: undefined })}
+        >
           Leave Room
         </MenuButton>
-        <MenuButton onClick={() => dispatch({ type: "logout" })}>
+        <MenuButton
+          onClick={() => dispatch({ type: "logout", payload: undefined })}
+        >
           Logout
         </MenuButton>
       </Popover>

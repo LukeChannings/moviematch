@@ -15,19 +15,11 @@ const defaultConfig: Partial<Config> = {
     anonymous: ["JoinRoom"],
     plex: ["JoinRoom"],
     plexFriends: ["JoinRoom", "CreateRoom"],
-    plexOwner: [
-      "JoinRoom",
-      "CreateRoom",
-      "DeleteRoom",
-      "ResetRoom",
-      "Reconfigure",
-    ],
+    plexOwner: ["JoinRoom", "CreateRoom", "DeleteRoom", "ResetRoom", "Admin"],
   },
 };
 
-export const applyDefaults = (
-  config: Partial<Config>,
-): Partial<Config> => {
+export const applyDefaults = (config: Partial<Config>): Partial<Config> => {
   const _config = { ...defaultConfig, ...config };
   if (Array.isArray(_config.servers)) {
     _config.servers = _config.servers.map((server) => ({

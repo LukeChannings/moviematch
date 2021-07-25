@@ -39,81 +39,91 @@ export interface Config {
   };
 }
 
-export type Message = ServerMessage | ClientMessage;
+export type WebSocketAPI =
+  | AsyncExchange<"setup", Config, SetupSuccess, SetupError>
+  | AsyncExchange<
+    "config",
+    UIConfigRequest,
+    UIConfig,
+    ExchangeError<"MalformedRequest">
+  >
+  | AsyncExchange<
+    "login",
+    Login,
+    User,
+    ExchangeError<
+      | "ServerNotSetUp"
+      | "MalformedRequest"
+      | "AnonymousLoginNotPermitted"
+      | "PlexLoginNotPermitted"
+      | "AlreadyConnected"
+    >
+  >
+  | AsyncExchange<"logout", undefined, undefined, ExchangeError<"NotLoggedIn">>
+  | AsyncExchange<
+    "createRoom",
+    CreateRoomRequest,
+    JoinRoomSuccess,
+    ExchangeError<
+      "RoomExistsError" | "UnauthorizedError" | "NotLoggedInError" | "NoMedia"
+    >
+  >
+  | AsyncExchange<
+    "joinRoom",
+    JoinRoomRequest,
+    JoinRoomSuccess,
+    ExchangeError<"PermissionDenied" | "RoomNotFound">
+  >
+  | AsyncExchange<
+    "deleteRoom",
+    DeleteRoomRequest,
+    undefined,
+    ExchangeError<"PermissionDenied" | "RoomNotFound">
+  >
+  | AsyncExchange<
+    "resetRoom",
+    ResetRoomRequest,
+    undefined,
+    ExchangeError<"PermissionDenied" | "RoomNotFound">
+  >
+  | AsyncExchange<
+    "leaveRoom",
+    undefined,
+    undefined,
+    ExchangeError<"PermissionDenied" | "NotJoined">
+  >
+  | AsyncExchange<
+    "listRooms",
+    undefined,
+    ListRoomsSuccess,
+    ExchangeError<"PermissionDenied">
+  >
+  | AsyncExchange<
+    "listUsers",
+    undefined,
+    ListUsersSuccess,
+    ExchangeError<"PermissionDenied">
+  >
+  | AsyncExchange<"rate", Rate, undefined, ExchangeError<"PermissionDenied">>
+  | AsyncExchange<"requestFilters", undefined, Filters, ExchangeError>
+  | AsyncExchange<
+    "requestFilterValues",
+    FilterValueRequest,
+    { request: FilterValueRequest; values: FilterValue[] },
+    ExchangeError
+  >
+  | Notification<"match", Match>
+  | Notification<"userLeftRoom", User>
+  | Notification<"userJoinedRoom", UserProgress>
+  | Notification<"userProgress", UserProgress>;
 
-// Messages sent from the client to the server
-export type ServerMessage =
-  | { type: "config"; payload: UIConfigRequest }
-  | { type: "login"; payload: Login }
-  | { type: "logout" }
-  | { type: "createRoom"; payload: CreateRoomRequest }
-  | { type: "joinRoom"; payload: JoinRoomRequest }
-  | { type: "leaveRoom" }
-  | { type: "rate"; payload: Rate }
-  | { type: "setup"; payload: Config }
-  | { type: "requestFilters" }
-  | { type: "requestFilterValues"; payload: FilterValueRequest };
-
-// Messages sent from the server to the client
-export type ClientMessage =
-  | { type: "configSuccess"; payload: UIConfig }
-  | { type: "configError"; payload: UIConfigError }
-  | { type: "match"; payload: Match }
-  | { type: "media"; payload: Media[] }
-  | { type: "userJoinedRoom"; payload: UserProgress }
-  | { type: "userLeftRoom"; payload: User }
-  | { type: "userProgress"; payload: UserProgress }
-  | { type: "loginSuccess"; payload: User }
-  | { type: "loginError"; payload: LoginError }
-  | { type: "logoutSuccess" }
-  | { type: "logoutError"; payload: LogoutError }
-  | { type: "createRoomSuccess"; payload: JoinRoomSuccess }
-  | { type: "createRoomError"; payload: CreateRoomError }
-  | { type: "joinRoomSuccess"; payload: JoinRoomSuccess }
-  | { type: "joinRoomError"; payload: JoinRoomError }
-  | { type: "leaveRoomSuccess" }
-  | { type: "leaveRoomError"; payload: LeaveRoomError }
-  | { type: "setupSuccess"; payload: SetupSuccess }
-  | { type: "setupError"; payload: SetupError }
-  | { type: "requestFiltersSuccess"; payload: Filters }
-  | { type: "requestFiltersError" }
-  | {
-    type: "requestFilterValuesSuccess";
-    payload: { request: FilterValueRequest; values: FilterValue[] };
-  }
-  | { type: "requestFilterValuesError" };
-
-export type FilterClientMessageByType<
-  A extends ClientMessage,
-  ClientMessageType extends string,
-> = A extends { type: ClientMessageType } ? A : never;
-
-export type FilterServerMessageByType<
-  A extends ServerMessage,
-  ServerMessageType extends string,
-> = A extends { type: ServerMessageType } ? A : never;
-
-// Translations
-export type TranslationKey =
-  | "LANG"
-  | "LOGIN_NAME"
-  | "LOGIN_ROOM_NAME"
-  | "LOGIN_SIGN_IN"
-  | "LOGIN_SIGN_IN_PLEX"
-  | "CREATE_ROOM"
-  | "RATE_SECTION_LOADING"
-  | "RATE_SECTION_EXHAUSTED_CARDS"
-  | "MATCHES_SECTION_TITLE"
-  | "MATCHES_SECTION_NO_MATCHES"
-  | "MATCHES_SECTION_CARD_LIKERS"
-  | "LIST_CONJUNCTION"
-  | "BACK"
-  | "SHARE_ROOM_TITLE"
-  | "JOIN_ROOM"
-  | "FIELD_REQUIRED_ERROR"
-  | "COPY_LINK_SUCCESS"
-  | "COPY_LINK_FAILURE"
-  | "LOGOUT";
+export type ExchangeRequestMessage = ExtractExchangeRequestMessage<
+  WebSocketAPI
+>;
+export type ExchangeResponseMessage = ExtractExchangeResponseMessage<
+  WebSocketAPI
+>;
+export type ExchangeMessage = ExchangeRequestMessage | ExchangeResponseMessage;
 
 // UI Configuration
 
@@ -125,15 +135,8 @@ export interface UIConfig {
   requiresSetup: boolean;
   requirePlexLogin: boolean;
   initialConfiguration?: Partial<Config>;
-  translations: Translations;
+  translations: Record<string, string>;
 }
-
-export interface UIConfigError {
-  name: string;
-  message: string;
-}
-
-export type Translations = Record<TranslationKey, string>;
 
 // Login (when login is required to create a new room)
 
@@ -141,27 +144,12 @@ export type Login = AnonymousLogin | PlexLogin;
 export type AnonymousLogin = { userName: string };
 export type PlexLogin = { clientId: string; plexToken: string };
 
-export interface LoginError {
-  name:
-    | "ServerNotSetUp"
-    | "MalformedMessage"
-    | "AnonymousLoginNotPermitted"
-    | "PlexLoginNotPermitted"
-    | "AlreadyConnected";
-  message: string;
-}
-
-export interface LogoutError {
-  name: "NotLoggedIn";
-  message: string;
-}
-
 export const userPermissions = [
   "JoinRoom",
   "CreateRoom",
   "DeleteRoom",
   "ResetRoom",
-  "Reconfigure",
+  "Admin",
 ] as const;
 
 export type Permission = typeof userPermissions[number];
@@ -202,26 +190,11 @@ export interface CreateRoomError {
   message: string;
 }
 
-// Contains metadata for Create Room filters
-export interface CreateRoomFilterMetadata {
-  availableFilters: Array<{ key: string; value: string; operator: string }>;
-}
-
 // Join
 
 export interface JoinRoomRequest {
   roomName: string;
   password?: string;
-}
-
-export interface JoinRoomError {
-  name:
-    | "UserAlreadyJoinedError"
-    | "AccessDeniedError"
-    | "RoomNotFoundError"
-    | "NotLoggedInError"
-    | "UnknownError";
-  message: string;
 }
 
 export interface JoinRoomSuccess {
@@ -231,10 +204,39 @@ export interface JoinRoomSuccess {
   users: Array<{ user: User; progress: number }>;
 }
 
-// Leave
+// Delete
 
-export interface LeaveRoomError {
-  errorType: "NOT_JOINED"; // Can't leave a room you're not in
+export interface DeleteRoomRequest {
+  roomName: string;
+  password?: string;
+}
+
+// Reset
+
+export interface ResetRoomRequest {
+  roomName: string;
+  password?: string;
+}
+
+// Rooms
+
+export interface Room {
+  id: string;
+  name: string;
+  creatorUserId: string;
+  password?: string;
+  filters: Filter[];
+  options: RoomOption[];
+  sort: RoomSort;
+}
+
+export interface ListRoomsSuccess {
+  rooms: Room[];
+}
+
+// List Users
+export interface ListUsersSuccess {
+  users: User[];
 }
 
 // In-Room
@@ -322,4 +324,75 @@ export interface UserProgress {
   user: User;
   // A percentage of the way through the room the user is
   progress: number;
+}
+
+/**
+ * This interface represents a request-response pair.
+ * - The first parameter is the event name from which the response and error event names will be derived.
+ * - The second parameter is the type of the request data.
+ * - The third parameter is the type of the response data.
+ * - The fourth parameter is the type of the error data.
+ */
+export interface AsyncExchange<
+  BaseEvent extends string,
+  Req = undefined,
+  Res = undefined,
+  Err = undefined,
+> {
+  requestType: BaseEvent;
+  requestPayload: Req;
+  responseType: `${BaseEvent}Success`;
+  responsePayload: Res;
+  errorType: `${BaseEvent}Error`;
+  errorPayload: Err;
+}
+
+export type ExchangeError<T extends string = string> = {
+  name: T;
+  message: string;
+};
+
+export interface WebSocketMessage<T extends string = string, P = unknown> {
+  type: T;
+  payload: P;
+}
+
+export type ExtractExchangeRequestMessage<U> = U extends {
+  requestType: string;
+  requestPayload: unknown;
+} ? WebSocketMessage<U["requestType"], U["requestPayload"]>
+  : never;
+
+export type ExtractExchangeResponseMessage<U> = U extends {
+  responseType: string;
+  responsePayload: unknown;
+  errorType: string;
+  errorPayload: unknown;
+} ? 
+  | WebSocketMessage<U["errorType"], U["errorPayload"]>
+  | WebSocketMessage<U["responseType"], U["responsePayload"]>
+  : U extends {
+    responseType: string;
+    responsePayload: unknown;
+  } ? WebSocketMessage<U["responseType"], U["responsePayload"]>
+  : never;
+
+export type FilterMessageByType<U, T extends string> = U extends
+  | {
+    requestType: T;
+  }
+  | {
+    responseType: T;
+  }
+  | {
+    errorType: T;
+  }
+  | {
+    type: T;
+  } ? U
+  : never;
+
+interface Notification<T extends string, Res = undefined> {
+  responseType: T;
+  responsePayload: Res;
 }

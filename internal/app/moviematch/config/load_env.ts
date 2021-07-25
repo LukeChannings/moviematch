@@ -22,8 +22,8 @@ const EnvBool = (value: string) => value === "1";
 const EnvList = (value: string) => value.split(",");
 
 const trimRecord = (value: Record<string, unknown>) => {
-  const entries = Object.entries(value).filter(([_key, value]) =>
-    typeof value !== "undefined"
+  const entries = Object.entries(value).filter(
+    ([_key, value]) => typeof value !== "undefined",
   );
   if (entries.length !== 0) {
     return Object.fromEntries(entries);
@@ -40,7 +40,7 @@ const getTrimmedEnv = (
 };
 
 export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
-  if (!await requestEnv()) {
+  if (!(await requestEnv())) {
     return {};
   }
 
@@ -72,7 +72,9 @@ export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
   } catch (err) {
     log.info(
       `It looks like CONFIG_JSON environment variable was set, parsing failed. ${
-        String(err)
+        String(
+          err,
+        )
       }`,
     );
   }
@@ -92,7 +94,7 @@ export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
           "CreateRoom",
           "DeleteRoom",
           "ResetRoom",
-          "Reconfigure",
+          "Admin",
         ],
       }
       : undefined,
