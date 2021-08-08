@@ -64,6 +64,7 @@ export async function loadConfig(
 
   try {
     validateConfig(config);
+    cachedConfig = config;
   } catch (configErrors: unknown) {
     return [config as Config, (configErrors as AggregateError)?.errors];
   }
