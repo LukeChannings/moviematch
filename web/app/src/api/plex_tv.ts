@@ -105,3 +105,8 @@ export const getLogin = ():
   if (pin) return { pin };
   return null;
 };
+
+export const clearLogin = () => {
+  localStorage.removeItem("plexToken");
+  localStorage.removeItem("plexTvPin");
+};

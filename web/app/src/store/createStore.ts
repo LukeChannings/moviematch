@@ -17,7 +17,7 @@ const getExistingLogin = async () => {
     if ("pin" in plexLoginStatus) {
       try {
         return await plex.verifyPin(plexLoginStatus.pin);
-      } catch (err) {
+      } catch {
         return null;
       }
     } else {
@@ -118,6 +118,8 @@ export const createStore = () => {
 
         if (action.type === "plexLogin") {
           plex.signIn();
+        } else if (action.type === "loginError") {
+          plex.clearLogin();
         }
 
         return next(action);
