@@ -20,7 +20,7 @@ module.exports = {
         const defaultWSHandler = (err, _req, socket, _head) => {
           if (err) {
             if (err.code !== "ECONNRESET") {
-              console.error('proxy error', err);
+              console.error("proxy error", err);
             }
             socket.destroy();
           }
@@ -31,7 +31,7 @@ module.exports = {
           socket,
           head,
           {
-            hostname: 'localhost',
+            hostname: "localhost",
             port: 8000,
           },
           defaultWSHandler,
