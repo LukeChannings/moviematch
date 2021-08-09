@@ -10,7 +10,7 @@ import { ErrorMessage } from "../atoms/ErrorMessage";
 import { Spinner } from "../atoms/Spinner";
 
 export const JoinScreen = () => {
-  const [store, dispatch] = useStore(["room", "error"]);
+  const [store, dispatch] = useStore(["room", "user", "error"]);
   const [initialRoomName] = useState<string | null>(
     new URLSearchParams(location.search).get("roomName"),
   );
@@ -63,30 +63,34 @@ export const JoinScreen = () => {
           >
             <Tr name="LOGOUT" />
           </Button>
-          <Button
-            appearance="Secondary"
-            onPress={() => {
-              dispatch({
-                type: "navigate",
-                payload: { route: "createRoom", routeParams: { roomName } },
-              });
-            }}
-            testHandle="create-room"
-          >
-            <Tr name="CREATE_ROOM" />
-          </Button>
-          <Button
-            appearance="Primary"
-            onPress={() => {
-              if (roomName) {
-                dispatch({ type: "joinRoom", payload: { roomName } });
-              }
-            }}
-            type="submit"
-            testHandle="join-room"
-          >
-            <Tr name="JOIN_ROOM" />
-          </Button>
+          {store.user?.permissions?.includes("CreateRoom") && (
+            <Button
+              appearance="Secondary"
+              onPress={() => {
+                dispatch({
+                  type: "navigate",
+                  payload: { route: "createRoom", routeParams: { roomName } },
+                });
+              }}
+              testHandle="create-room"
+            >
+              <Tr name="CREATE_ROOM" />
+            </Button>
+          )}
+          {store.user?.permissions?.includes("JoinRoom") && (
+            <Button
+              appearance="Primary"
+              onPress={() => {
+                if (roomName) {
+                  dispatch({ type: "joinRoom", payload: { roomName } });
+                }
+              }}
+              type="submit"
+              testHandle="join-room"
+            >
+              <Tr name="JOIN_ROOM" />
+            </Button>
+          )}
         </ButtonContainer>
       </form>
     </Layout>
