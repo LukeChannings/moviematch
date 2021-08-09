@@ -44,6 +44,7 @@ export const handler: RouteHandler = async (req: ServerRequest) => {
 
   return {
     status: 200,
+    headers: new Headers({ "Content-Type": "text/html" }),
     body: interpolate(template, {
       ...translations,
       config: (config as unknown) as KVP,
