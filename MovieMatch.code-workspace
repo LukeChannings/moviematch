@@ -3,19 +3,18 @@
 		{
 			"path": "."
 		},
-    {
-			"path": "./web"
+		{
+			"path": "web/app"
 		}
-  ],
-  "settings": {
-    "deno.importMap": "configs/import_map.json",
-    "deno.lint": true,
-    "deno.suggest.completeFunctionCalls": true,
-    "deno.unstable": true,
-    "deno.codeLens.referencesAllFunctions": true,
-    "deno.codeLens.references": true,
-    "deno.codeLens.implementations": true,
-    "editor.defaultFormatter": "denoland.vscode-deno",
-    "editor.formatOnSave": true
-  }
+	],
+	"settings": {
+		"deno.codeLens.implementations": true,
+		"deno.codeLens.references": true,
+		"deno.codeLens.referencesAllFunctions": true,
+		"deno.importMap": "configs/import_map.json",
+		"deno.lint": true,
+		"deno.suggest.completeFunctionCalls": true,
+		"deno.unstable": true,
+		"deno.enable": true
+	}
 }

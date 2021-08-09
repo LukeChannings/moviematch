@@ -1,7 +1,0 @@
-{
-  "deno.enable": true,
-  "deno.codeLens.testArgs": [
-    "--allow-all"
-  ],
-  "prettier.enable": false
-}
