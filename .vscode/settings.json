@@ -1,9 +1,7 @@
 {
   "deno.enable": true,
   "deno.codeLens.testArgs": [
-    "--allow-all",
-    "--import-map",
-    "./configs/import_map.json"
+    "--allow-all"
   ],
   "prettier.enable": false
 }
