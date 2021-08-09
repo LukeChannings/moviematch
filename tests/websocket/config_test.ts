@@ -50,6 +50,67 @@ Deno.test("requiresSetup is false when config has servers", async () => {
   await stop();
 });
 
+Deno.test("requirePlexLogin is false by default", async () => {
+  const { url, stop } = await startMovieMatch({
+    servers: [
+      {
+        url: Deno.env.get("TEST_PLEX_URL")!,
+        token: Deno.env.get("TEST_PLEX_TOKEN")!,
+        libraryTypeFilter: ["show"],
+      },
+    ],
+  });
+  const ws = await getWebSocket(url);
+  sendMessage(ws, { type: "config", payload: { locale: "en" } });
+  const config = await waitForMessage(ws, "configSuccess");
+  assertEquals(
+    config.payload.requirePlexLogin,
+    false,
+    "requirePlexLogin should be false",
+  );
+
+  await stop();
+});
+
+Deno.test("requirePlexLogin is true when permittedAuthTypes does not include any anonymous options", async () => {
+  const { url, stop } = await startMovieMatch({
+    servers: [
+      {
+        url: Deno.env.get("TEST_PLEX_URL")!,
+        token: Deno.env.get("TEST_PLEX_TOKEN")!,
+        libraryTypeFilter: ["show"],
+      },
+    ],
+    permittedAuthTypes: {
+      anonymous: [],
+      "plex": [
+        "JoinRoom",
+      ],
+      "plexFriends": [
+        "JoinRoom",
+        "CreateRoom",
+      ],
+      "plexOwner": [
+        "JoinRoom",
+        "CreateRoom",
+        "DeleteRoom",
+        "ResetRoom",
+        "Admin",
+      ],
+    },
+  });
+  const ws = await getWebSocket(url);
+  sendMessage(ws, { type: "config", payload: { locale: "en" } });
+  const config = await waitForMessage(ws, "configSuccess");
+  assertEquals(
+    config.payload.requirePlexLogin,
+    true,
+    "requirePlexLogin should be false",
+  );
+
+  await stop();
+});
+
 Deno.test(
   "configure command fails when the configuration is invalid",
   async () => {

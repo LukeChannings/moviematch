@@ -170,9 +170,9 @@ class Socket {
           }
 
           const requiresSetup = this.#doesRequireConfiguration();
-          const requirePlexLogin = Boolean(
-            this.#context.config.permittedAuthTypes?.anonymous?.length,
-          );
+          const requirePlexLogin =
+            (this.#context.config.permittedAuthTypes?.anonymous?.length ?? 0) <
+              1;
 
           const translations = await getTranslations(
             new Headers([["accept-language", msg.payload.locale]]),
