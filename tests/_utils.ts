@@ -34,7 +34,9 @@ export const startMovieMatch = async (
     cmd: [
       "deno",
       "run",
-      "-A",
+      "--allow-env",
+      "--allow-net",
+      "--allow-read=.",
       "--unstable",
       "--import-map",
       "configs/import_map.json",

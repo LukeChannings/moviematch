@@ -3,7 +3,6 @@
  * See - https://forums.plex.tv/t/authenticating-with-plex/609370
  */
 
-import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { parseXML } from "/internal/app/plex/util.ts";
 import { HomeUsers, Users } from "/internal/app/plex/types/users.ts";
 import { PlexMediaContainer } from "/internal/app/plex/types/common.ts";
@@ -43,23 +42,22 @@ export const getUser = async ({
     "X-Plex-Token": plexToken,
   });
 
-  if (!await requestNet("plex.tv")) {
-    throw new Error(`Net access was denied for plex.tv`);
+  try {
+    const req = await fetch(`https://plex.tv/api/v2/user?${String(search)}`, {
+      headers: {
+        accept: "application/json",
+      },
+    });
+    if (!req.ok) {
+      throw new Error(`${req.status}: ${await req.text()}`);
+    }
+
+    const user = await req.json();
+
+    return user;
+  } catch (err) {
+    throw new Error(`Failed to load plex.tv user: ${err}`);
   }
-
-  const req = await fetch(`https://plex.tv/api/v2/user?${String(search)}`, {
-    headers: {
-      accept: "application/json",
-    },
-  });
-
-  if (!req.ok) {
-    throw new Error(`${req.status}: ${await req.text()}`);
-  }
-
-  const user = await req.json();
-
-  return user;
 };
 
 export const getPlexUsers = async ({

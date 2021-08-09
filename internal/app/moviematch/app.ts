@@ -13,7 +13,6 @@ import {
   createProvider,
   MovieMatchProvider,
 } from "/internal/app/moviematch/providers/provider.ts";
-import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import type { RouteHandler } from "./types.ts";
 
 export class ProviderUnavailableError extends Error {}
@@ -67,12 +66,6 @@ export const Application = (
     }
 
     try {
-      if (!(await requestNet(`${config.hostname}:${config.port}`))) {
-        log.critical(
-          `Permission denied: Cannot start MovieMatch on ${config.hostname}:${config.port}`,
-        );
-        Deno.exit(1);
-      }
       server = config.tlsConfig
         ? serveTLS({ ...config.tlsConfig, ...config })
         : serve(config);

@@ -1,5 +1,4 @@
 import { log } from "/deps.ts";
-import { requestEnv } from "/internal/app/moviematch/util/permission.ts";
 import { Config } from "/types/moviematch.ts";
 
 export type ConfigEnvVariableName =
@@ -25,6 +24,7 @@ const trimRecord = (value: Record<string, unknown>) => {
   const entries = Object.entries(value).filter(
     ([_key, value]) => typeof value !== "undefined",
   );
+
   if (entries.length !== 0) {
     return Object.fromEntries(entries);
   }
@@ -39,11 +39,7 @@ const getTrimmedEnv = (
   if (value) return Type(value.trim());
 };
 
-export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
-  if (!(await requestEnv())) {
-    return {};
-  }
-
+export const loadFromEnv = (): Partial<Config> => {
   const server = trimRecord({
     url: getTrimmedEnv("PLEX_URL"),
     token: getTrimmedEnv("PLEX_TOKEN"),
@@ -80,6 +76,7 @@ export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
   }
 
   const requirePlexLogin = getTrimmedEnv("REQUIRE_PLEX_LOGIN", EnvBool);
+
   return trimRecord({
     hostname: getTrimmedEnv("HOST"),
     port: getTrimmedEnv("PORT", Number),
@@ -102,5 +99,5 @@ export const loadFromEnv = async (): Promise<Partial<Config> | undefined> => {
     basicAuth,
     tlsConfig,
     ...jsonConfig,
-  });
+  }) ?? {};
 };

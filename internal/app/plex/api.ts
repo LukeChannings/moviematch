@@ -3,7 +3,6 @@ import type {
   FilterValue,
   FilterValues,
 } from "./types/library_filter_values.ts";
-import { requestNet } from "/internal/app/moviematch/util/permission.ts";
 import { Capabilities } from "/internal/app/plex/types/capabilities.ts";
 import { Identity } from "/internal/app/plex/types/identity.ts";
 import { PlexMediaContainer } from "/internal/app/plex/types/common.ts";
@@ -40,11 +39,6 @@ export class PlexApi {
       url.searchParams.set(key, value);
     }
 
-    if (!await requestNet(url.host)) {
-      log.critical(`Permission was denied to ${url.href}. Cannot continue!`);
-      Deno.exit(1);
-    }
-
     log.debug(`Fetching: ${url.href}`);
 
     const req = await fetch(url.href, {
@@ -53,6 +47,11 @@ export class PlexApi {
         "accept-language": this.options.language ?? "en",
       },
     });
+
+    if (!req.ok) {
+      log.critical(`Permission was denied to ${url.href}. Cannot continue!`);
+      Deno.exit(1);
+    }
 
     try {
       const data: PlexMediaContainer<T> = await req.json();

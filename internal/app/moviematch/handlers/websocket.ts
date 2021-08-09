@@ -141,7 +141,11 @@ class Socket {
             };
           }
 
-          await updateConfiguration(newConfig);
+          try {
+            await updateConfiguration(newConfig);
+          } catch (err) {
+            log.warning(`Failed to update configuration: ${err}`);
+          }
 
           await this.sendMessage({
             type: "setupSuccess",

@@ -7,11 +7,10 @@ import {
   ProviderUnavailableError,
 } from "/internal/app/moviematch/app.ts";
 import { ConfigReloadError } from "/internal/app/moviematch/config/errors.ts";
-import { getEnv } from "/internal/app/moviematch/util/env.ts";
 
 const flags = parseFlags(Deno.args, { alias: { v: "version" } });
 
-const CONFIG_PATH = flags.config ?? await getEnv("CONFIG_PATH");
+const CONFIG_PATH = flags.config ?? await Deno.env.get("CONFIG_PATH");
 
 if (flags.version) {
   console.log(`MovieMatch ${await getVersion()}`);
