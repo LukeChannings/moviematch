@@ -51,7 +51,9 @@ export const SegmentedControls = ({
           onChange((e.target as HTMLInputElement).value);
         }
       }}
-      style={paddingTop ? { marginTop: `var(--${paddingTop})` } : {}}
+      style={paddingTop
+        ? { marginTop: `var(--${paddingTop})` }
+        : {}}
     >
       <ul className={styles.list}>
         {children.map((child) => {

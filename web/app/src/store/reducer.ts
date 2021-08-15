@@ -117,6 +117,9 @@ export const reducer: Reducer<Store, Actions> = (
     case "leaveRoomSuccess": {
       return { ...state, room: undefined, route: "join" };
     }
+    case "listRoomsSuccess": {
+      return { ...state, roomList: action.payload.rooms };
+    }
     case "requestFiltersSuccess": {
       return {
         ...state,

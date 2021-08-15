@@ -298,7 +298,6 @@ class Socket {
           break;
         }
         case "listRooms": {
-          assertPermission(this.user, "Admin");
           assert(this.user);
           const rooms = listRooms(this.user);
           this.sendMessage({

@@ -27,9 +27,7 @@ export const LoginScreen = () => {
           e.preventDefault();
         }}
       >
-        {error && (
-          <ErrorMessage message={error.message ?? error.type ?? ""} />
-        )}
+        {error && <ErrorMessage message={error.message ?? error.type ?? ""} />}
         {!config?.requirePlexLogin && (
           <Field
             label={<Tr name="LOGIN_NAME" />}

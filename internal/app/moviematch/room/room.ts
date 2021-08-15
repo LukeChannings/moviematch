@@ -72,6 +72,7 @@ export const createRoom = (
     id: roomId,
     name: createRoomRequest.roomName,
     creatorUserId: user.id,
+    creationDate: Date.now(),
     password: createRoomRequest.password,
     options: createRoomRequest.options ?? [],
     filters: createRoomRequest.filters ?? [],
@@ -127,11 +128,15 @@ export const resetRoom = (user: User, resetRoomRequest: ResetRoomRequest) => {
 };
 
 export const listRooms = (user: User): Room[] => {
-  if (!user.permissions?.includes("Admin")) {
-    throw new PermissionDeniedError(
-      `${user.userName} does not have permission to list rooms`,
-    );
-  }
+  const isAdmin = user.permissions?.includes("Admin");
 
-  return [...rooms.values()];
+  const roomsToReturn = [...rooms.values()].filter((room) => {
+    if (isAdmin) {
+      return true;
+    }
+
+    return room.creatorUserId === user.id;
+  });
+
+  return roomsToReturn;
 };

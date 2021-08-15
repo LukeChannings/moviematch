@@ -228,6 +228,7 @@ export interface Room {
   id: string;
   name: string;
   creatorUserId: string;
+  creationDate: number;
   password?: string;
   filters: Filter[];
   options: RoomOption[];

@@ -76,12 +76,12 @@ export const Card = forwardRef<HTMLDivElement & HTMLAnchorElement, CardProps>(
                     />
                   </Pill>
                 )}
-                {media.genres.map((genre) => (
-                  <Pill key={genre}>{genre}</Pill>
-                ))}
+                {media.genres.map((genre) => <Pill key={genre}>{genre}</Pill>)}
                 {!href && (
                   <Pill href={media.linkUrl}>
-                    <span>Open in Plex</span>
+                    <span>
+                      Open in Plex
+                    </span>
                     <ShareIcon />
                   </Pill>
                 )}

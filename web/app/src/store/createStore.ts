@@ -53,6 +53,7 @@ export const createStore = () => {
               const response = await client.login(action.payload);
               if (response.type === "loginSuccess") {
                 localStorage.setItem("userName", response.payload.userName);
+                client.listRooms(undefined);
               }
               break;
             }

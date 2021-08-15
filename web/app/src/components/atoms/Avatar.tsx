@@ -54,15 +54,17 @@ export const Avatar = ({ userName, avatarUrl, progress = 0 }: AvatarProps) => {
       <g>
         <circle cx="16" cy="16" r="15" className={styles.progress} />
         {!avatarUrl &&
-          <text
-            x="50%"
-            y="55%"
-            textAnchor="middle"
-            dy=".3em"
-            className={styles.letter}
-          >
-            {letter}
-          </text>}
+          (
+            <text
+              x="50%"
+              y="55%"
+              textAnchor="middle"
+              dy=".3em"
+              className={styles.letter}
+            >
+              {letter}
+            </text>
+          )}
       </g>
     </svg>
   );

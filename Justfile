@@ -28,7 +28,7 @@ start: install
   while true; do sleep 60; done
 
 start-server:
-  denon -c configs/denon.config.json run --inspect {{ deno_options }} ./cmd/moviematch/main.ts
+  deno run --watch {{ deno_options }} ./cmd/moviematch/main.ts
 
 start-ui:
   rm -rf {{ui_build_dir}}
@@ -106,7 +106,6 @@ install-node-modules:
   cd {{ui_dir}} && npm install
 
 install-deno-dependencies:
-  deno install --unstable -qAf https://deno.land/x/denon@2.4.7/denon.ts
   PUPPETEER_PRODUCT=chrome deno run --unstable -A https://deno.land/x/puppeteer@9.0.0/install.ts
 
 clean: clean-ui clean-server

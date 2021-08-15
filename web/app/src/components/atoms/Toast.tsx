@@ -35,7 +35,9 @@ export const ToastList = ({ toasts, removeToast }: ToastProps) => {
 
   return (
     <TransitionGroup className={styles.toastList}>
-      {toasts?.map((toast) => (
+      {toasts?.map((
+        toast,
+      ) => (
         <CSSTransition key={String(toast.id)} timeout={200} classNames="toast">
           <Toast toast={toast} />
         </CSSTransition>

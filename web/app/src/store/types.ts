@@ -8,6 +8,7 @@ import type {
   FilterValue,
   Match,
   Media,
+  Room,
   UIConfig,
   User,
 } from "../../../../types/moviematch";
@@ -50,6 +51,7 @@ export interface Store {
     availableFilters?: Filters;
     filterValues?: Record<string, FilterValue[]>;
   };
+  roomList?: Room[];
   room?: {
     name: string;
     joined: boolean;
