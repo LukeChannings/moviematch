@@ -1,0 +1,21 @@
+{
+  "LANG": "es",
+  "LOGIN_NAME": "Nombre",
+  "LOGIN_ROOM_NAME": "Sala",
+  "LOGIN_SIGN_IN": "Entrar",
+  "LOGIN_SIGN_IN_PLEX": "Entrar con Plex",
+  "CREATE_ROOM": "Crear sala",
+  "JOIN_ROOM": "Unirse",
+  "LOGOUT": "Salir",
+  "RATE_SECTION_LOADING": "Cargando películas...",
+  "RATE_SECTION_EXHAUSTED_CARDS": "¡Eso es todo! ✌️",
+  "MATCHES_SECTION_TITLE": "Coincidencias",
+  "MATCHES_SECTION_NO_MATCHES": "Sin coincidencias... ¿has probado a rebajar un poco a tus impecables gustos cinéfilos?",
+  "MATCHES_SECTION_CARD_LIKERS": "${users} quieren ver ${movie}",
+  "LIST_CONJUNCTION": "y",
+  "BACK": "Atrás",
+  "SHARE_ROOM_TITLE": "¡Elijamos una película que ver!",
+  "FIELD_REQUIRED_ERROR": "Campo requerido",
+  "COPY_LINK_SUCCESS": "Enlace copiado al portapapeles",
+  "COPY_LINK_FAILURE": "No se pudo copiar el enlace al portapapeles"
+}
