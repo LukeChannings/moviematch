@@ -1,0 +1,21 @@
+{
+  "LANG": "pl",
+  "LOGIN_NAME": "Imię",
+  "LOGIN_ROOM_NAME": "Nazwa pokoju",
+  "LOGIN_SIGN_IN": "Zaloguj się",
+  "LOGIN_SIGN_IN_PLEX": "Zaloguj się przez Plex",
+  "CREATE_ROOM": "Stwórz pokój",
+  "JOIN_ROOM": "Dołącz",
+  "LOGOUT": "Wyloguj się",
+  "RATE_SECTION_LOADING": "Ładuję filmy...",
+  "RATE_SECTION_EXHAUSTED_CARDS": "To wszystko ✌️",
+  "MATCHES_SECTION_TITLE": "Dopasowania",
+  "MATCHES_SECTION_NO_MATCHES": "Na razie brak dopasowań... czy próbowałeś już trochę obniżyć swoje wyśrubowane wymagania?",
+  "MATCHES_SECTION_CARD_LIKERS": "${users} chcą obejrzeć ${movie}",
+  "LIST_CONJUNCTION": "i",
+  "BACK": "Wstecz",
+  "SHARE_ROOM_TITLE": "Wybierzmy film do obejrzenia!",
+  "FIELD_REQUIRED_ERROR": "To pole jest wymagane",
+  "COPY_LINK_SUCCESS": "Link skopiowany do schowka",
+  "COPY_LINK_FAILURE": "Nie można skopiować linku do schowka"
+}
