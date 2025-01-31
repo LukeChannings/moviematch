@@ -21,21 +21,30 @@ export class CardView {
       this.rate(e.data, this.getAnimation(e.data ? 'right' : 'left'))
     )
 
-    const { title, type, art, year, guid } = this.movieData
+    const { title, type, art, year, guid, summary, rating, director, key, duration, contentRating, audienceRating, audienceRatingImage, criticRating, criticRatingImage } = this.movieData
     node.dataset.guid = guid
 
     const srcSet = [
-      `${this.basePath}${art}?w=300`,
-      `${this.basePath}${art}?w=450 1.5x`,
-      `${this.basePath}${art}?w=600 2x`,
-      `${this.basePath}${art}?w=900 3x`,
+      `${this.basePath}${art}?w=600`,
+      `${this.basePath}${art}?w=950 1.5x`,
+      `${this.basePath}${art}?w=1200 2x`,
+      `${this.basePath}${art}?w=1800 3x`,
     ]
 
     node.innerHTML = `
       <img class="poster" src="${
         srcSet[0]
       }" decode="async" srcset="${srcSet.join(', ')}" alt="${title} poster" />
-      <p>${title}${type === 'movie' ? ` (${year})` : ''}</p>
+      <p><span class="title">${title}${type === 'movie' ? ` (${year})` : ''}
+      ${contentRating == undefined ? '' : ` <span class="contentRating">${contentRating}</span>`}</span>
+      <br/><span class="summary">${summary}</span>
+      <br/>
+      <br/>${rating == undefined ? '' : `<span class="rating">${rating}/10⭐</span>&nbsp;`}
+      ${criticRating == undefined ? '' : `<span class="rating">${criticRating} <img height="20px" src="${criticRatingImage}" alt="critic rating"/></span>&nbsp;`}
+      ${audienceRating == undefined ? '' : `<span class="rating">${audienceRating} <img height="20px" src="${audienceRatingImage}" alt="critic rating"/></span>`}
+      <br/>
+      ${duration == undefined ? '' : `<span class="duration">Running Time: ${this.msToTime(duration)}</span>`}
+      </p>
     `
     cardList.appendChild(node)
   }
@@ -153,5 +162,15 @@ export class CardView {
 
   destroy() {
     this.node.remove()
+  }
+
+  msToTime(duration) {
+    var minutes = Math.floor((duration / (1000 * 60)) % 60),
+      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+  
+    hours = (hours < 10) ? "0" + hours : hours;
+    minutes = (minutes < 10) ? "0" + minutes : minutes;
+  
+    return hours + ":" + minutes;
   }
 }

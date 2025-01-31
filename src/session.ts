@@ -24,6 +24,12 @@ interface MediaItem {
   rating: string
   key: string
   type: 'movie' | 'artist' | 'photo' | 'show'
+  contentRating: string
+  duration: string
+  audienceRating: string
+  audienceRatingImage: string
+  criticRating: string
+  criticRatingImage: string
 }
 
 interface WebSocketLoginMessage {
@@ -178,9 +184,17 @@ class Session {
                 summary: plexMovie.summary,
                 year: plexMovie.year,
                 director: (plexMovie.Director ?? [{ tag: undefined }])[0].tag,
-                rating: plexMovie.rating,
+                rating: plexMovie.userRating,
                 type: plexMovie.type,
-              }
+                contentRating: plexMovie.contentRating,
+                duration: plexMovie.duration,
+                audienceRating: plexMovie.audienceRating,
+                audienceRatingImage: plexMovie.audienceRatingImage !== undefined ? `/assets/icons/${plexMovie.audienceRatingImage
+                  .replace('rottentomatoes://','rt.',)}.svg` : '',
+                criticRating: plexMovie.rating,
+                criticRatingImage: plexMovie.ratingImage !== undefined ? `/assets/icons/${plexMovie.ratingImage
+                  .replace('rottentomatoes://','rt.',)}.svg` : ''
+                }
 
               return movie
             } catch (err) {
